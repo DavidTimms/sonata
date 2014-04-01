@@ -1,0 +1,1347 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"make",
+				"makeIdentifier"
+			],
+			[
+				"conver",
+				"convertExp"
+			],
+			[
+				"mak",
+				"makeIdentifer"
+			],
+			[
+				"cons",
+				"console"
+			],
+			[
+				"las",
+				"lastAssignment"
+			],
+			[
+				"res",
+				"reassignments"
+			],
+			[
+				"def",
+				"defaultAssign"
+			],
+			[
+				"arg",
+				"argNum"
+			],
+			[
+				"id",
+				"identifiers"
+			],
+			[
+				"con",
+				"context"
+			],
+			[
+				"para",
+				"paramDefaults"
+			],
+			[
+				"ex",
+				"expression"
+			],
+			[
+				"na",
+				"nameIdent"
+			],
+			[
+				"e",
+				"expressions"
+			],
+			[
+				"func",
+				"funcName"
+			],
+			[
+				"mu",
+				"mutate_fold"
+			],
+			[
+				"Ba",
+				"Base_seq"
+			],
+			[
+				"muta",
+				"mutate_sequence"
+			],
+			[
+				"ne",
+				"newSequenceBarCount"
+			],
+			[
+				"write",
+				"writeln"
+			],
+			[
+				"L",
+				"LB_Bar"
+			],
+			[
+				"Ch",
+				"Chord_notes"
+			],
+			[
+				"B",
+				"Bass_notes"
+			],
+			[
+				"in",
+				"inputProcess"
+			],
+			[
+				"hi",
+				"history_string"
+			],
+			[
+				"wri",
+				"writeln"
+			],
+			[
+				"Lo",
+				"Lookback"
+			],
+			[
+				"Loo",
+				"Lookback_ticks"
+			],
+			[
+				"last",
+				"last_tick"
+			],
+			[
+				"La",
+				"Last_tick"
+			],
+			[
+				"bea",
+				"beatPattern"
+			],
+			[
+				"map",
+				"mapTest"
+			],
+			[
+				"tes",
+				"testList"
+			],
+			[
+				"appe",
+				"append"
+			],
+			[
+				"slc",
+				"sliced"
+			],
+			[
+				"re",
+				"replace"
+			],
+			[
+				"_",
+				"_start"
+			],
+			[
+				"pre",
+				"prepend"
+			],
+			[
+				"reve",
+				"reversed"
+			],
+			[
+				"rev",
+				"reversed"
+			],
+			[
+				"list",
+				"listFunc"
+			],
+			[
+				"to",
+				"toArray"
+			],
+			[
+				"ls",
+				"listFunc"
+			],
+			[
+				"a",
+				"appended"
+			],
+			[
+				"sq",
+				"squared"
+			],
+			[
+				"co",
+				"concat"
+			],
+			[
+				"ma",
+				"mapList"
+			],
+			[
+				"lis",
+				"listFunc"
+			],
+			[
+				"li",
+				"listFunc"
+			],
+			[
+				"compose_bar",
+				"compose_bar_seq"
+			],
+			[
+				"Tic",
+				"Tick_list"
+			],
+			[
+				"note",
+				"note_rating"
+			],
+			[
+				"seq",
+				"seq2"
+			],
+			[
+				"se",
+				"seq1"
+			],
+			[
+				"inst",
+				"instruments"
+			],
+			[
+				"pr",
+				"probabilities"
+			],
+			[
+				"curr",
+				"current_key"
+			],
+			[
+				"Curre",
+				"current_key"
+			],
+			[
+				"In",
+				"Interval"
+			],
+			[
+				"Inte",
+				"interval"
+			],
+			[
+				"key",
+				"key_notes"
+			],
+			[
+				"Noe",
+				"Notes"
+			],
+			[
+				"Tai",
+				"Tail_rating"
+			],
+			[
+				"dumm",
+				"dummy_notes"
+			],
+			[
+				"played",
+				"played_note"
+			],
+			[
+				"Merged",
+				"Merged_tail"
+			],
+			[
+				"appen",
+				"append_shallow"
+			],
+			[
+				"com",
+				"compose_section_seq"
+			],
+			[
+				"Pat",
+				"Patterns"
+			],
+			[
+				"pat",
+				"Pat_H"
+			],
+			[
+				"JS",
+				"JSON_Seqs"
+			],
+			[
+				"json",
+				"jsonify"
+			],
+			[
+				"Arg",
+				"Arg_names"
+			],
+			[
+				"Me",
+				"Mel_T"
+			],
+			[
+				"Key_n",
+				"key_note_weighs"
+			],
+			[
+				"Goo",
+				"Good_mel"
+			],
+			[
+				"melod",
+				"melody_to_seq"
+			],
+			[
+				"atom",
+				"atom_json_term"
+			],
+			[
+				"c",
+				"currentX"
+			],
+			[
+				"ch",
+				"children"
+			],
+			[
+				"margin",
+				"margin-top"
+			],
+			[
+				"JSON",
+				"JSON_list"
+			],
+			[
+				"me",
+				"Mel_len"
+			],
+			[
+				"ton",
+				"tokenize"
+			],
+			[
+				"pus",
+				"pushToken"
+			],
+			[
+				"tok",
+				"tokenize"
+			],
+			[
+				"Play",
+				"played_chords"
+			],
+			[
+				"Tick",
+				"ticks_per_bar"
+			],
+			[
+				"TB",
+				"TPB"
+			],
+			[
+				"Las",
+				"Last_tick"
+			],
+			[
+				"S",
+				"Seq_len"
+			],
+			[
+				"mat",
+				"match_sequence"
+			],
+			[
+				"pri",
+				"primeNumbers"
+			],
+			[
+				"C",
+				"Current_seq"
+			],
+			[
+				"api",
+				"apiKey"
+			],
+			[
+				"i",
+				"important"
+			],
+			[
+				"text",
+				"text-decoration"
+			],
+			[
+				"gre",
+				"grey-dark"
+			],
+			[
+				"New",
+				"New_sequence"
+			],
+			[
+				"Start",
+				"startTime"
+			],
+			[
+				"clic",
+				"clickTrackOut"
+			],
+			[
+				"st",
+				"startTrack"
+			],
+			[
+				"Ke",
+				"Key_notes"
+			],
+			[
+				"Ro",
+				"Rotated"
+			],
+			[
+				"find",
+				"find_best_key"
+			],
+			[
+				"all",
+				"All_notes"
+			],
+			[
+				"de",
+				"deltaTime"
+			],
+			[
+				"insta",
+				"instanceof"
+			],
+			[
+				"print",
+				"printAST"
+			],
+			[
+				"get",
+				"getVal"
+			],
+			[
+				"fu",
+				"function"
+			],
+			[
+				"el",
+				"elseBody"
+			],
+			[
+				"block",
+				"blockIndent"
+			],
+			[
+				"comp",
+				"compound"
+			],
+			[
+				"exp",
+				"expression"
+			],
+			[
+				"cook",
+				"cookies"
+			],
+			[
+				"new",
+				"newTrack"
+			],
+			[
+				"stop",
+				"stopNotes"
+			],
+			[
+				"msg",
+				"msgQueue"
+			],
+			[
+				"create",
+				"createInput"
+			],
+			[
+				"test",
+				"test-results"
+			],
+			[
+				"font",
+				"font-weight"
+			],
+			[
+				"min",
+				"min-width"
+			],
+			[
+				"por",
+				"portName"
+			],
+			[
+				"midi",
+				"midiIn"
+			],
+			[
+				"nex",
+				"nextNote"
+			],
+			[
+				"mid",
+				"midiMsg"
+			],
+			[
+				"m",
+				"midiMsg"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "lisp-tokenizer.js",
+			"settings":
+			{
+				"buffer_size": 943,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "lisp-parser.js",
+			"settings":
+			{
+				"buffer_size": 1341,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "compile.js",
+			"settings":
+			{
+				"buffer_size": 612,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "ast-converter.js",
+			"settings":
+			{
+				"buffer_size": 10231,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "tail-call.lisp",
+			"settings":
+			{
+				"buffer_size": 252,
+				"line_ending": "Windows",
+				"name": "("
+			}
+		},
+		{
+			"file": "tail-call.lisp.js",
+			"settings":
+			{
+				"buffer_size": 607,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lisp-test.lisp",
+			"settings":
+			{
+				"buffer_size": 424,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "lisp-test.lisp.js",
+			"settings":
+			{
+				"buffer_size": 749,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "node.lisp",
+			"settings":
+			{
+				"buffer_size": 139,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "node.lisp.js",
+			"settings":
+			{
+				"buffer_size": 281,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/JSHint/JSHint.sublime-build",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+			[
+				"shell",
+				"SublimeREPL: Shell"
+			],
+			[
+				"repl",
+				"SublimeREPL: Shell"
+			],
+			[
+				"Package Control: ins",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			],
+			[
+				"",
+				"Package Control: Install Package"
+			],
+			[
+				"pac",
+				"Package Control: Install Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 432.0
+	},
+	"console":
+	{
+		"height": 216.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Users/Dave/Web/compile-to-js/compile.js",
+		"/C/Users/Dave/Web/useful-JS-bits/texo/test/texo-test.js",
+		"/C/Users/Dave/Web/useful-JS-bits/texo/texo.min.js",
+		"/C/Users/Dave/Web/useful-JS-bits/texo/texo.js",
+		"/C/Users/Dave/Web/compile-to-js/out",
+		"/C/Users/Dave/Web/useful-JS-bits/texo/README.md",
+		"/C/Users/Dave/Web/compile-to-js/node_modules/texo/texo.js",
+		"/C/Users/Dave/Web/compile-to-js/lisp-compiler.js",
+		"/C/Users/Dave/Web/compile-to-js/lisp-tokenizer.js",
+		"/C/Users/Dave/Web/compile-to-js/lisp-parser.js",
+		"/C/Users/Dave/Web/compile-to-js/ast-converter.js",
+		"/C/Users/Dave/Web/compile-to-js/node.lisp",
+		"/C/Users/Dave/Web/compile-to-js/print.js",
+		"/C/Users/Dave/Web/compile-to-js/node.lisp.js",
+		"/C/Users/Dave/Web/compile-to-js/parse-engine.js",
+		"/C/Users/Dave/Web/compile-to-js/lisp-test.lisp.js",
+		"/C/Users/Dave/Web/compile-to-js/lisp-test.lisp",
+		"/C/Users/Dave/Web/useful-JS-bits/texo/test/browser-test.html",
+		"/C/Users/Dave/Web/useful-JS-bits/texo/test/browser-test.js",
+		"/C/Users/Dave/Web/useful-JS-bits/texo/test/texo-bench.js",
+		"/C/Users/Dave/Web/useful-JS-bits/texo/package.json",
+		"/C/Users/Dave/Web/useful-JS-bits/texo/texo-test.js",
+		"/C/Users/Dave/Web/compile-to-js/lisp-test.lisp.json",
+		"/C/Users/Dave/Web/sonata/compiler/lisp-compiler.js",
+		"/C/Users/Dave/Uni/improv-project/improvise/js/replay.pl",
+		"/C/Users/Dave/Uni/improv-project/improvise/js/replays/replay.pl",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/utils/wait.coffee",
+		"/C/Users/Dave/Web/useful-JS-bits/texo/texo-bench.js",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/utils/improv-midi.coffee",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/beats/test-beat.txt",
+		"/C/Users/Dave/Downloads/aggregates.pl",
+		"/C/Users/Dave/Web/useful-JS-bits/named-args-curry.js",
+		"/C/Users/Dave/Uni/improv-project/specification.xml",
+		"/C/Users/Dave/Web/useful-JS-bits/immutables.js",
+		"/C/Users/Dave/Web/useful-JS-bits/immutables-test.js",
+		"/C/Users/Dave/Web/useful-JS-bits/immutables-bench.js",
+		"/C/Users/Dave/Web/useful-JS-bits/BetterList.html",
+		"/C/Users/Dave/Web/useful-JS-bits/lazily.js",
+		"/C/Users/Dave/Uni/improv-project/handbook/poster.tex",
+		"/C/Users/Dave/Uni/improv-project/handbook/Makefile",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/test/test.coffee",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/rhythm-composer/rhythm.coffee",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/test-beat.txt",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/half-time-beat.txt",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/house-beat",
+		"/C/Users/Dave/Uni/improv-project/improvise/test-beat.txt",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/analysis.pl",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/pitch_analysis.pl",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/prediction.pl",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/grammar.pl",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/converters.pl",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/utils.pl",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/rhythm.pl",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/utils/helpers.coffee",
+		"/C/Users/Dave/AppData/Local/Temp/Temp1_clojure-1.5.1.zip/clojure-1.5.1/readme.txt",
+		"/C/Users/Dave/Web/tiny-style/package.json",
+		"/C/Users/Dave/Web/live-list/test.coffee",
+		"/C/Users/Dave/Web/panic.js",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/pick-distribution.pl",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/pitch-analysis.pl",
+		"/C/Users/Dave/Web/sonata/vm.js",
+		"/C/Users/Dave/Web/sonata/jit.js",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/sequence.coffee",
+		"/C/Users/Dave/Uni/improv-project/teVirtualMIDI SDK_1_1_2_25/C/teVirtualMIDITest.c",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/coins.pl",
+		"/C/Users/Dave/Web/sonata/compiler/examples/test-source.son",
+		"/C/Users/Dave/Web/sonata/tests/control-flow.son",
+		"/C/Users/Dave/Web/sonata/tests/functions.son",
+		"/C/Users/Dave/AppData/Roaming/Sublime Text 2/Packages/User/Preferences.sublime-settings",
+		"/C/Users/Dave/AppData/Roaming/Sublime Text 2/Packages/JavaScript/JavaScript.tmLanguage",
+		"/C/Program Files/Sublime Text 2/Pristine Packages/JavaScript.sublime-package",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/prolog.coffee",
+		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/test.js",
+		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node_modules/swipl/swipl.js",
+		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node_modules/swipl/src/libswipl.cc",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/prolog-thread.coffee",
+		"/C/Users/Dave/Web/type-checked-functional-lang-design.txt",
+		"/C/Users/Dave/Uni/improv-project/node-swipl-windows-build-hack.txt",
+		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node-prolog-swi/src/SWI-Prolog.h",
+		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node-prolog-swi/build/libswipl.vcxproj",
+		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node-prolog-swi/swipl.js",
+		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node-prolog-swi/src/libswipl.cc",
+		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node-prolog-swi/binding.gyp",
+		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node-prolog-swi/src/libswipl.h",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/pl_json.pl",
+		"/C/Users/Dave/Uni/improv-project/pengines/web/pengine.html",
+		"/C/Users/Dave/Uni/improv-project/pengines/web/simple.html",
+		"/C/Users/Dave/Uni/improv-project/AILP-assignment-1/readme.txt",
+		"/C/Users/Dave/Uni/improv-project/AILP-assignment-1/ailp/command_channel.pl",
+		"/C/Users/Dave/Uni/improv-project/pengine/server.pl",
+		"/C/Program Files/swipl/doc/packages/examples/pengines/server.pl",
+		"/C/Users/Dave/Uni/improv-project/pengines/web/mine.html",
+		"/C/Users/Dave/Uni/improv-project/pengines/client.js",
+		"/C/Users/Dave/Uni/improv-project/pengines/pengine.js",
+		"/C/Users/Dave/Uni/improv-project/pengines/client.py",
+		"/C/Users/Dave/Uni/improv-project/pengines/web/dummy.json",
+		"/C/Program Files/swipl/VERSION",
+		"/C/Users/Dave/Web/tokenizer/visualizer/index.html",
+		"/C/Users/Dave/Web/tokenizer/visualizer/ast-to-graph.js",
+		"/C/Users/Dave/Web/tokenizer/visualizer/test.html",
+		"/C/Users/Dave/Web/tokenizer/visualizer/data.json",
+		"/C/Users/Dave/Web/tokenizer/visualizer/sigma/README.md",
+		"/C/Users/Dave/Web/tokenizer/tokenize.js",
+		"/C/Users/Dave/Web/tokenizer/example.txt",
+		"/C/Users/Dave/Web/wamp/www/Portfolio/php/projects/0_bubl.php",
+		"/C/Users/Dave/Web/wamp/www/Portfolio/php/about_me.php",
+		"/C/Users/Dave/Web/wamp/www/Portfolio/php/projects/0_tiny_style.php",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/prediction_old.pl",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/pl-json.pl",
+		"/C/Users/Dave/Web/leo-wordpress/credentials.csv",
+		"/C/Users/Dave/Web/leo-wordpress/index.html",
+		"/C/Users/Dave/Web/parser/vm.js",
+		"/C/Users/Dave/Web/parser/tests/primes.lang",
+		"/C/Users/Dave/Web/leo-wordpress/behance/behance.py",
+		"/C/Users/Dave/Web/leo-wordpress/portfolio/php/wp-admin/includes/image-edit.php",
+		"/C/Users/Dave/Downloads/imgbox.com.har",
+		"/C/Users/Dave/Web/leo-wordpress/portfolio/php/wp-admin/media-upload.php",
+		"/C/Users/Dave/Web/leo-wordpress/behance/index.js",
+		"/C/Users/Dave/Web/leo-wordpress/behance/behance_python/MANIFEST",
+		"/C/Users/Dave/Web/leo-wordpress/behance/behance_python/setup.py",
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/blob.pl",
+		"/C/Users/Dave/Web/leo-wordpress/centreal-child/centreal-child-modified/style.scss",
+		"/C/Users/Dave/chat.cmd",
+		"/C/Users/Dave/blah.py",
+		"/C/Users/Dave/blob",
+		"/C/Users/Dave/black mirror.lyrics",
+		"/C/Users/Dave/Web/leo-wordpress/ocr/harrys.txt",
+		"/C/Users/Dave/Web/parser/vm-test.json"
+	],
+	"find":
+	{
+		"height": 36.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"    ",
+			"makeIdentifer",
+			"    ",
+			"convertTail",
+			"convertFuncBody",
+			"convertParameters",
+			"markTailRecursion",
+			"findAssignments",
+			"convertParameters",
+			"console",
+			"    ",
+			"ExpressionSta",
+			"conso",
+			"cons",
+			"Un",
+			"unknown",
+			"unkown",
+			"    ",
+			"convertFuncBody",
+			"slice",
+			"(\n",
+			"convertFuncBody",
+			"console",
+			"    ",
+			"convertNode",
+			"ding",
+			"),",
+			"\\==",
+			"lookback",
+			"nth0",
+			"nth",
+			"nth0",
+			"played_note",
+			"maybe",
+			"]).\n",
+			"print",
+			"prolog",
+			"inputProcess",
+			"swipl",
+			"swipl.",
+			"scr",
+			"$.",
+			"$",
+			"  ",
+			"pushToken",
+			"key(",
+			"key_",
+			"),\n",
+			"print",
+			"].",
+			"print",
+			"playNote",
+			"out",
+			"];\n",
+			"<= ",
+			"ns",
+			"deref",
+			"ns",
+			"let",
+			"item",
+			"midi",
+			"startTime",
+			"tick",
+			"tempo",
+			"noteOffQueue",
+			"  ",
+			"  \n",
+			"\")\n",
+			"]",
+			"operators",
+			"curr ",
+			"sEx",
+			" ",
+			"    ",
+			"typeCompare",
+			"pushToken(",
+			"tokens.push",
+			"function",
+			"min",
+			"$",
+			"internally",
+			");\n",
+			"cmd",
+			"on",
+			"cmdHistory",
+			"radi",
+			"Amazon",
+			"other",
+			"+ 10",
+			"Chart",
+			"E",
+			"D",
+			"C",
+			"B",
+			"A",
+			"Z",
+			"S",
+			"Sh",
+			"Z",
+			"DYNA",
+			"trader_type_dict[",
+			"pressure",
+			"left",
+			"populate_market",
+			"   print",
+			" asks",
+			"data.labels",
+			"rotationDegree",
+			"data.labels",
+			"animationLoop",
+			"print",
+			"	",
+			"__ini",
+			"	",
+			"process_order2",
+			"Trade",
+			"sys",
+			"bookkeep",
+			"balance",
+			"lob['asks']['best']",
+			"DYNA",
+			"    print",
+			"print",
+			"__init",
+			"Trader",
+			"Trader(",
+			"__initTrue",
+			"__init"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"	",
+			"makeIdentifier",
+			"	",
+			"convertExp",
+			"najax.",
+			"najax",
+			"	",
+			" ",
+			"	",
+			"pushToken",
+			"fn",
+			"movement",
+			"    ",
+			"peek",
+			"	",
+			"\"",
+			"sq",
+			"\"",
+			"_",
+			"    ",
+			"	",
+			")",
+			"img(",
+			"",
+			"Node",
+			"get_distance",
+			"++j",
+			"++i",
+			"*dimension",
+			"NULL",
+			"null",
+			"euclid_dist",
+			"g",
+			"\"",
+			"'",
+			"",
+			"\\n\\",
+			"",
+			"&",
+			">",
+			"<",
+			"\"",
+			"player2",
+			"player1",
+			"",
+			"##",
+			"btn-inverse",
+			"chat",
+			"new $scope.Chatter",
+			"$scope.newMessage",
+			"new Message(",
+			"container",
+			"speed / 2",
+			"hide_effect",
+			"show_effect",
+			"al",
+			"self",
+			"    ",
+			"\"",
+			"<?php echo $img_dir;?>"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "lisp-tokenizer.js",
+					"settings":
+					{
+						"buffer_size": 943,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								491,
+								491
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "lisp-parser.js",
+					"settings":
+					{
+						"buffer_size": 1341,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								989,
+								989
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 540.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "compile.js",
+					"settings":
+					{
+						"buffer_size": 612,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "ast-converter.js",
+					"settings":
+					{
+						"buffer_size": 10231,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7643,
+								7643
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 5756.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "tail-call.lisp",
+					"settings":
+					{
+						"buffer_size": 252,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								250,
+								250
+							]
+						],
+						"settings":
+						{
+							"auto_name": "(",
+							"syntax": "Packages/Lisp/Lisp.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "tail-call.lisp.js",
+					"settings":
+					{
+						"buffer_size": 607,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "lisp-test.lisp",
+					"settings":
+					{
+						"buffer_size": 424,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								424,
+								424
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lisp/Lisp.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "lisp-test.lisp.js",
+					"settings":
+					{
+						"buffer_size": 749,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								749,
+								749
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 180.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "node.lisp",
+					"settings":
+					{
+						"buffer_size": 139,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lisp/Lisp.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "node.lisp.js",
+					"settings":
+					{
+						"buffer_size": 281,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								281,
+								281
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 286.0
+	},
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": false,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"show_minimap": false,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}
