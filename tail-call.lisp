@@ -9,6 +9,6 @@
 			(sum (tail items) (+ total (items 0)))
 		))
 	)))
-	(= xs (list.range 5000))
+	(= xs (range 5000))
 	(console.log (& "sum = " (sum xs)))
 )

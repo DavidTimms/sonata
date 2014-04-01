@@ -1,11 +1,11 @@
 (function () {
     'use strict';
-    var list = require('texo');
+    var list = require('texo'), range = list.range;
     var tail, sum, xs;
-    tail = function tail(items) {
+    function tail(items) {
         return items.slice(1);
-    };
-    sum = function sum(items, total) {
+    }
+    function sum(items, total) {
         while (true) {
             if (total === undefined)
                 total = 0;
@@ -13,11 +13,16 @@
                 return total;
             } else {
                 var $temp_items = tail(items);
-                total = total + items(0);
+                total = +total + +items(0);
                 items = $temp_items;
             }
         }
-    };
-    xs = list.range(5000);
-    return console.log('sum = ' + sum(xs));
+    }
+    xs = range(5000);
+    console.log('sum = ' + sum(xs));
+    return console.log({
+        name: 'Dave',
+        age: 21,
+        gender: 'male'
+    });
 }());

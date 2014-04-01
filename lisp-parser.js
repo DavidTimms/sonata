@@ -2,6 +2,13 @@ var engine = require("./parse-engine.js");
 var tokenize = require("./lisp-tokenizer.js");
 var buildTokenSet = require("./utils/build-token-set.js");
 var type = require("./utils/type.js");
+var jsonpretty = require('jsonpretty');
+
+function printObj (obj) {
+	console.log(jsonpretty(obj));
+	return obj;
+}
+
 var rule = engine.rule;
 var parse = engine.parse;
 var rep0 = engine.rep0;
@@ -24,8 +31,11 @@ function nonbracket (str) {
 rule("exp", ["(", rep1(rule("exp")), ")"], function (tokens) {
 	return tokens.slice(1, -1);
 });
-rule("exp", ["[", rep1(rule("exp")), "]"], function (tokens) {
+rule("exp", ["[", rep0(rule("exp")), "]"], function (tokens) {
 	return ([{type: "Identifier", name: "list"}]).concat(tokens.slice(1, -1));
+});
+rule("exp", ["{", rep0(rule("exp")), "}"], function (tokens) {
+	return ([{type: "Identifier", name: "object"}]).concat(tokens.slice(1, -1));
 });
 rule("exp", ["true"], function () {
 	return literal(true);
@@ -61,5 +71,7 @@ function literal (value) {
 
 module.exports = function (source) {
 	var tokenized = tokenize(source);
+	printObj(tokenized);
+	process.exit();
 	return parse.exp(tokenized).result;
 };

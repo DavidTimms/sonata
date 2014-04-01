@@ -14,9 +14,12 @@
 	(++ xs [6 7 8])
 	(& 12 "b")
 	(^ x 2)
-	(= person (obj 
+	(= person {
 		(name "Dave") 
 		(age 21) 
 		(gender "male")
-	))
+	})
+	(mix person {
+		(height 180)
+	})
 )

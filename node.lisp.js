@@ -1,12 +1,28 @@
 (function () {
     'use strict';
-    var print, sayHello;
-    print = require('./print.js');
-    sayHello = function (name) {
-        if (arguments.length < 1)
+    var list = require('texo'), range = list.range, mix = function (parent, child) {
+            var key;
+            var obj = {};
+            for (key in parent) {
+                obj[key] = parent[key];
+            }
+            for (key in child) {
+                obj[key] = child[key];
+            }
+            return obj;
+        };
+    var sayHello, person, dave;
+    function sayHello(name) {
+        if (name === undefined)
             name = 'mate';
-        return print('Hello', name);
-    };
+        return console.log('Hello', name);
+    }
     sayHello();
-    return sayHello('Dave');
+    sayHello('Dave');
+    person = { sayHello: sayHello };
+    dave = mix(person, {
+        name: 'Dave',
+        age: 21
+    });
+    return console.log(dave);
 }());

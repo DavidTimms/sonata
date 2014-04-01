@@ -19,6 +19,7 @@ fs.readFile(inputFile, "utf8", function (err, source) {
 	var start = Date.now();
 	var parsed = parse(source);
 	var JsAst = convertAST(parsed);
+	//printObj(JsAst);
 	var compiled = escodegen.generate(JsAst);
 	var duration = Date.now() - start;
 	console.log("successfully compiled in " + duration + "ms");

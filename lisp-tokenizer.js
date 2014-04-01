@@ -19,7 +19,7 @@ function tokenize (source) {
 			}
 		}
 		// brackets
-		else if (chr.match(/[(){}\[\]]/)) {
+		else if (chr.match(/[(){}\[\].]/)) {
 			removeEmptyToken(tokens).push(chr, "");
 		}
 		// whitespace (including commas)

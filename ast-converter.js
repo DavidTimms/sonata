@@ -1,20 +1,26 @@
 var list = require("texo");
+var jsonpretty = require('jsonpretty');
+var runtimeImport = require('./compile-runtime.js').runtimeImport;
+
+function printObj (obj) {
+	console.log(jsonpretty(obj));
+	return obj;
+}
 
 function convertAST (ast) {
 	//console.log(JSON.stringify(ast));
+	var context = {isFuncBody: true};
+	printObj(ast);
+	var body = convertBody(ast, context);
 
-	var body = convertFuncBody(ast);
 	body.unshift({
 		type: "VariableDeclaration",
-		declarations: [{
-			type: "VariableDeclarator",
-			id: makeIdentifier("list"),
-			init: {
-				type: "CallExpression",
-				callee: makeIdentifier("require"),
-				arguments: [makeLiteral("texo")]
-			}
-		}],
+		declarations: [
+			makeRequire("list", "texo"),
+			makeDeclarator("range", convertMemberAccess(["list", "range"])),
+			runtimeImport("mix"),
+			runtimeImport("type")
+		],
 		kind: "var"
 	});
 	// Define the program with an immediately invoked function wrapper
@@ -35,16 +41,29 @@ function convertAST (ast) {
 	};
 }
 
-function convertFuncBody (expressions, context) {
-	// set default parameters
+function convertBody (expressions, context) {
+	context = context || {};
 	var statements = [];
-	if (context && context.params.defaults) {
+	var isFuncBody = context.isFuncBody;
+	context.isFuncBody = false;
+
+	// set default parameters
+	if (context.params && context.params.defaults) {
 		statements = createDefaultAssignments(context.params.defaults);
 		context.params.defaults = false;
 	}
 
 	expressions.slice(0, -1).forEach(function (exp) {
-		statements.push(makeExpStatement(convertExp(exp)));
+		if (isFuncBody &&
+			(isCallTo("def", exp) || isCallTo("=", exp)) && 
+			isCallTo("function", exp[2])) {
+			context.nameIdent = exp[1];
+			context.isDeclaration = true;
+			statements.push(converters["function"](exp[2].slice(1), context));
+		}
+		else {
+			statements.push(makeExpStatement(convertExp(exp)));
+		}
 	});
 	var tailStatements = convertTail(expressions[expressions.length - 1], context);
 	statements = statements.concat(tailStatements);
@@ -61,8 +80,8 @@ function convertTail (tail, context) {
 		return [{
 			type: "IfStatement",
 			test: convertExp(tail[1]),
-			consequent: makeBlock(convertFuncBody(tail[2], context)),
-			alternate: makeBlock(tail[3] ? convertFuncBody(tail[3], context) : [{
+			consequent: makeBlock(convertBody(tail[2], context)),
+			alternate: makeBlock(tail[3] ? convertBody(tail[3], context) : [{
 				type: "ReturnStatement",
 				argument: makeLiteral(false)
 			}])
@@ -157,11 +176,16 @@ function convertExp (node) {
 			return converter(node.slice(1));
 		}
 		else {
-			return functionCall(convertExp(node[0]), node.slice(1));
+			return makeFunctionCall(convertExp(node[0]), node.slice(1));
 		}
 	}
 	else if (node.type === "Member") {
 		return convertMemberAccess(node.names.slice());
+	}
+	else if (node.type === "Literal" && 
+		typeof(node.value) === "number" && 
+		node.value < 0) {
+		return makeUnary("-", makeLiteral(Math.abs(node.value)));
 	}
 	else {
 		return node;
@@ -214,12 +238,15 @@ function markTailRecursion (expressions, context) {
 var converters = {
 	"function": function (parts, context) {
 		context = context || {};
+		var type = (context.isDeclaration ? "FunctionDeclaration" : "FunctionExpression");
+		context.isDeclaration = false;
 		var params = convertParameters(parts[0]);
 		var bodyExpressions = parts[1];
 		var isTailRecursive = context.nameIdent && 
 			markTailRecursion(bodyExpressions, context);
 		context.params = params;
-		var funcBody = convertFuncBody(bodyExpressions, context);
+		context.isFuncBody = true;
+		var funcBody = convertBody(bodyExpressions, context);
 		if (isTailRecursive) {
 			funcBody = [{
 				type: "WhileStatement",
@@ -228,7 +255,7 @@ var converters = {
 			}];
 		}
 		return {
-			type: "FunctionExpression",
+			type: type,
 			id: context.nameIdent || null,
 			params: params.identifiers,
 			body: makeBlock(funcBody),
@@ -236,7 +263,8 @@ var converters = {
 			expression: false
 		};
 	},
-	"if": function (parts) {
+	"if": function (parts, context) {
+		context = context || {};
 		return {
 			type: "ConditionalExpression",
 			test: convertExp(parts[0]),
@@ -255,6 +283,12 @@ var converters = {
 			return makeAssignment(identifier, convertExp(value));
 		}
 	},
+	"+": function (parts) {
+		return makeBinary(
+			"+", 
+			makeUnary("+", convertExp(parts[0])), 
+			makeUnary("+", convertExp(parts[1])));
+	},
 	"++": function (parts) {
 		return {
 			type: "CallExpression",
@@ -270,29 +304,17 @@ var converters = {
 	"&": function (parts) {
 		if ((parts[0].type === "Literal" && typeof(parts[0].value) === "string") ||
 			(parts[1].type === "Literal" && typeof(parts[1].value) === "string")) {
-			return {
-				type: "BinaryExpression",
-				operator: "+",
-				left: convertExp(parts[0]),
-				right: convertExp(parts[1])
-			};
+			return makeBinary("+", convertExp(parts[0]), convertExp(parts[1]));
 		}
-		return {
-			type: "BinaryExpression",
-			operator: "+",
-			left: {
-				type: "BinaryExpression",
-				operator: "+",
-				left: makeLiteral(""),
-				right: convertExp(parts[0])
-			},
-			right: convertExp(parts[1])
-		};
+		return makeBinary(
+			"+", 
+			makeBinary("+", makeLiteral(""), convertExp(parts[0])), 
+			convertExp(parts[1]));
 	},
 	"^": function (parts) {
 		return convertExp([{type: "Member", names: ["Math", "pow"]}].concat(parts));
 	},
-	"obj": function (parts) {
+	"object": function (parts) {
 		return {
 			type: "ObjectExpression",
 			properties: parts.map(function (pair) {
@@ -307,7 +329,7 @@ var converters = {
 	}
 };
 
-(["+", "-", "*", "/", "%"]).forEach(function (op) {
+(["-", "*", "/", "%"]).forEach(function (op) {
 	converters[op] = binaryExpressionMaker("BinaryExpression", op);
 });
 (["<", ">", "<=", ">="]).forEach(function (op) {
@@ -322,7 +344,7 @@ converters["and"] = binaryExpressionMaker("LogicalExpression", "&&");
 converters["or"] = binaryExpressionMaker("LogicalExpression", "||");
 converters["def"] = converters["="];
 
-function functionCall (func, args) {
+function makeFunctionCall (func, args) {
 	return {
 		type: "CallExpression",
 		callee: func,
@@ -339,6 +361,24 @@ function binaryExpressionMaker (type, op) {
 			right: convertExp(args[1])
 		};
 	};
+}
+
+function makeBinary (operator, left, right) {
+	return {
+		type: "BinaryExpression",
+		operator: operator,
+		left: left,
+		right: right
+	}
+}
+
+function makeUnary (operator, argument) {
+	return {
+		type: "UnaryExpression",
+		operator: operator,
+		argument: argument,
+		prefix: true
+	}
 }
 
 function makeIdentifier (name) {
@@ -376,6 +416,26 @@ function makeExpStatement (expression) {
 		type: "ExpressionStatement",
 		expression: expression
 	}
+}
+
+function makeDeclarator (variable, init) {
+	return {
+		type: "VariableDeclarator",
+		id: makeIdentifier(variable),
+		init: init
+	};
+}
+
+function makeRequire (variable, moduleName) {
+	return {
+		type: "VariableDeclarator",
+		id: makeIdentifier(variable),
+		init: {
+			type: "CallExpression",
+			callee: makeIdentifier("require"),
+			arguments: [makeLiteral(moduleName)]
+		}
+	};
 }
 
 function walkNode (node, callback) {
