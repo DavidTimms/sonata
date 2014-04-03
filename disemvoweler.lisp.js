@@ -28,11 +28,26 @@
             }
             return false;
         };
-    var msg, chars, decoded;
-    msg = 'Etvmp$Jsspw%%%%[e}$xs$ks%$]sy$lezi$wspzih$xli$lmhhir$qiwweki2$Rs{$mx$mw$}syv$xyvr$xs$nsmrmr$sr$xlmw$tvero2$Hs$rsx$tswx$er}xlmrk$xlex${mpp$kmzi$e{e}$xlmw$qiwweki2$Pixtistpi$higshi$xli$qiwweki$sr$xlimv$s{r$erh$vieh$xlmw$qiwweki2$]sy$ger$tpe}$epsrkf}$RSX$tswxmrk$ls{$}sy$higshih$xlmw$qiwweki2$Mrwxieh$tswx$}syv$wspyxmsr$xs$fi$}syvjezsvmxi$Lipps${svph$tvskveq$mr$sri$perkyeki$sj$}syv$glsmgi2$Qeoi$wyvi$}syv$tvskveq$we}w$&Lipps$[svph%%%&${mxl$7$%$ex$xli$irh2$Xlmw${e}tistpi$fvs{wmrk$xli$gleppirki${mpp$xlmro${i$lezi$epp$pswx$syv$qmrhw2$Xlswi${ls$tswx$lipps{svph$wspyxmsrw${mxlsyx$xli$xlvii$%%%${mpp$lezi$rsx$higshih$xli$qiwweki$erh$ws$}sy$ger$tspmxip}$tsmrx$syx$xlimv$wspyxmsr$mw$mr$ivvsv$,xli}$evi$nywx$jspps{mrk$epsrk${mxlsyx$ors{mrk-Irns}$xlmw$jyr2$Xli$xvyxl${mpp$fi$liph$f}$xlswi${ls$ger$higshi$xli$qiwweki2$>-';
-    chars = msg.split('');
-    decoded = chars.map(function (x) {
-        return String.fromCharCode(x.charCodeAt(0) - 4);
+    var vowels, input, chars, seperated;
+    vowels = list('a', 'e', 'i', 'o', 'u');
+    input = list.fromArray(process.argv)(2);
+    chars = list.fromArray(input.split(''));
+    seperated = chars.reduce({
+        con: list(),
+        vow: list()
+    }, function (stacks, char) {
+        if (contains(vowels, char)) {
+            return {
+                con: stacks.con,
+                vow: stacks.vow.append(char)
+            };
+        } else {
+            return {
+                con: stacks.con.append(char),
+                vow: stacks.vow
+            };
+        }
     });
-    return print(contains(list(1, 2, list('foo', 'bar'), 'beep'), list('foo', 'bar')));
+    print(seperated.con.join(''));
+    return print(seperated.vow.join(''));
 }());

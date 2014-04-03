@@ -5,13 +5,17 @@ function removeEmptyToken (tokens) {
 	return tokens;
 }
 
+function isLiteralDelimiter(chr) {
+	return !!chr.match(/["'\/]/);
+}
+
 function tokenize (source) {
 	var input = source.split("");
 
 	function reduceInput (tokens, chr) {
 		var lastToken = tokens[tokens.length - 1];
 		// inside string literals
-		if (lastToken && lastToken.match(/^["']/)) {
+		if (lastToken && isLiteralDelimiter(lastToken)) {
 			tokens[tokens.length - 1] += chr;
 			if (lastToken.charAt(0) === chr && 
 				lastToken.charAt(lastToken.length - 1) !== "\\") {
@@ -19,7 +23,7 @@ function tokenize (source) {
 			}
 		}
 		// brackets
-		else if (chr.match(/[(){}\[\].]/)) {
+		else if (chr.match(/[(){}\[\]]/)) {
 			removeEmptyToken(tokens).push(chr, "");
 		}
 		// whitespace (including commas)
@@ -27,7 +31,7 @@ function tokenize (source) {
 			removeEmptyToken(tokens).push("");
 		}
 		// string literal start
-		else if (chr.match(/["']/)) {
+		else if (isLiteralDelimiter(chr)) {
 			removeEmptyToken(tokens).push(chr);
 		}
 		// anything else

@@ -1,7 +1,7 @@
 (
 	(print "hello" "world")
 	(console.log "hi")
-	(if (> x 2) hi)
+	(if (not (> x 2)) hi)
 	(= x 2)
 	(and (== x 3) (or (> 45 2) (!= 32 4)))
 	(* 34 (+ 3 5))
@@ -22,4 +22,8 @@
 	(mix person {
 		(height 180)
 	})
+	(= regex /\/^hi/)
+	"multi
+		line
+			string"
 )

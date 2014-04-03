@@ -21,14 +21,14 @@ function num (str) {
 }
 
 function stringLiteral (str) {
-	return !!str.match(/^".*"$|^'.*'$/);
+	return !!str.match(/^"[\s\S]*"$|^'[\s\S]*'$|^\/[\s\S]*\/$/);
 }
 
 function nonbracket (str) {
 	return !str.match(/[(){}\[\]]/);
 }
 
-rule("exp", ["(", rep1(rule("exp")), ")"], function (tokens) {
+rule("exp", ["(", rep0(rule("exp")), ")"], function (tokens) {
 	return tokens.slice(1, -1);
 });
 rule("exp", ["[", rep0(rule("exp")), "]"], function (tokens) {
@@ -47,7 +47,7 @@ rule("exp", [num], function (tokens) {
 	return literal(Number(tokens[0]));
 });
 rule("exp", [stringLiteral], function (tokens) {
-	return literal(eval(tokens[0]));
+	return literal(eval(tokens[0].replace(/\r\n|\r|\n/g, "\\n")));
 });
 rule("exp", [nonbracket], function (tokens) {
 	if (tokens[0].indexOf(".") > 0) {
@@ -72,6 +72,6 @@ function literal (value) {
 module.exports = function (source) {
 	var tokenized = tokenize(source);
 	printObj(tokenized);
-	process.exit();
+	//process.exit();
 	return parse.exp(tokenized).result;
 };

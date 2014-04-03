@@ -8,9 +8,8 @@ function printObj (obj) {
 }
 
 function convertAST (ast) {
-	//console.log(JSON.stringify(ast));
+	//printObj(ast);
 	var context = {isFuncBody: true};
-	printObj(ast);
 	var body = convertBody(ast, context);
 
 	body.unshift({
@@ -19,7 +18,12 @@ function convertAST (ast) {
 			makeRequire("list", "texo"),
 			makeDeclarator("range", convertMemberAccess(["list", "range"])),
 			runtimeImport("mix"),
-			runtimeImport("type")
+			runtimeImport("type"),
+			runtimeImport("print"),
+			runtimeImport("forIn"),
+			runtimeImport("contains"),
+			runtimeImport("repeat"),
+			runtimeImport("$sonata_Continuation")
 		],
 		kind: "var"
 	});
@@ -54,15 +58,18 @@ function convertBody (expressions, context) {
 	}
 
 	expressions.slice(0, -1).forEach(function (exp) {
-		if (isFuncBody &&
-			(isCallTo("def", exp) || isCallTo("=", exp)) && 
-			isCallTo("function", exp[2])) {
-			context.nameIdent = exp[1];
-			context.isDeclaration = true;
-			statements.push(converters["function"](exp[2].slice(1), context));
-		}
-		else {
-			statements.push(makeExpStatement(convertExp(exp)));
+		// ignore comments
+		if (!isCallTo("#", exp)) {
+			if (isFuncBody &&
+				(isCallTo("def", exp) || isCallTo("=", exp)) && 
+				isCallTo("function", exp[2])) {
+				context.nameIdent = exp[1];
+				context.isDeclaration = true;
+				statements.push(converters["function"](exp[2].slice(1), context));
+			}
+			else {
+				statements.push(makeExpStatement(convertExp(exp)));
+			}
 		}
 	});
 	var tailStatements = convertTail(expressions[expressions.length - 1], context);
@@ -193,6 +200,7 @@ function convertExp (node) {
 }
 
 function convertMemberAccess (names) {
+	names = names.slice();
 	var identifier = makeIdentifier(names.pop());
 	if (names.length < 1) {
 		return identifier;
@@ -283,6 +291,18 @@ var converters = {
 			return makeAssignment(identifier, convertExp(value));
 		}
 	},
+	"get": function getMember (members) {
+		var member = convertExp(members[members.length - 1]);
+		if (members.length  < 2) {
+			return member;
+		}
+		return {
+			type: "MemberExpression",
+			computed: true,
+			object: getMember(members.slice(0, -1)),
+			property: member
+		};
+	},
 	"+": function (parts) {
 		return makeBinary(
 			"+", 
@@ -311,9 +331,9 @@ var converters = {
 			makeBinary("+", makeLiteral(""), convertExp(parts[0])), 
 			convertExp(parts[1]));
 	},
-	"^": function (parts) {
-		return convertExp([{type: "Member", names: ["Math", "pow"]}].concat(parts));
-	},
+	"^": macro(function (left, right) {
+		return ["Math.pow", left, right];
+	}),
 	"object": function (parts) {
 		return {
 			type: "ObjectExpression",
@@ -326,7 +346,26 @@ var converters = {
 				};
 			})
 		};
-	}
+	},
+	"not": function (parts) {
+		return makeUnary("!", convertExp(parts[0]));
+	},
+	"new": function (parts) {
+		return {
+			type: "NewExpression",
+			callee: convertExp(parts[0]),
+			arguments: parts.slice(1).map(function (part) {
+				return convertExp(part);
+			})
+		};
+	},
+	"continue": macro(function () {
+		var args = ([]).slice.call(arguments);
+		return ["new", "$sonata_Continuation"].concat(args);
+	}),
+	"for": macro(function (key, inKeyword, collection, body) {
+		return ["forIn", collection, ["fn", [key], body]];
+	})
 };
 
 (["-", "*", "/", "%"]).forEach(function (op) {
@@ -337,12 +376,38 @@ var converters = {
 });
 converters["=="] = binaryExpressionMaker("BinaryExpression", "===");
 converters["!="] = binaryExpressionMaker("BinaryExpression", "!==");
-(["&&", "||"]).forEach(function (op) {
-	converters[op] = binaryExpressionMaker("LogicalExpression", op);
-});
+//(["&&", "||"]).forEach(function (op) {
+//	converters[op] = binaryExpressionMaker("LogicalExpression", op);
+//});
 converters["and"] = binaryExpressionMaker("LogicalExpression", "&&");
 converters["or"] = binaryExpressionMaker("LogicalExpression", "||");
+
+// proxies
 converters["def"] = converters["="];
+converters["fn"] = converters["function"];
+
+function macro (macroFunc) {
+	return function (parts) {
+		var fragment = macroFunc.apply(null, parts);
+		return convertExp(wrapToken(fragment));
+	}
+}
+
+function wrapToken (token) {
+	if (token instanceof Array) {
+		return token.map(wrapToken);
+	}
+	else {
+		switch (typeof(token)) {
+			case "number":
+				return makeLiteral(token);
+			case "string":
+				return convertMemberAccess(token.split("."));
+			default:
+				return token;
+		}
+	}
+}
 
 function makeFunctionCall (func, args) {
 	return {

@@ -4,5 +4,4 @@
 	(= decoded (chars.map (function (x) (
 		(String.fromCharCode (- (x.charCodeAt 0) 4))
 	))))
-	(console.log (decoded.join ""))
 )
