@@ -176,6 +176,7 @@ function convertParameters (params) {
 }
 
 function convertExp (node) {
+	//printObj(node);
 	// Array represents a function application
 	if (node instanceof Array) {
 		var converter = converters[node[0].name];

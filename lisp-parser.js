@@ -2,12 +2,7 @@ var engine = require("./parse-engine.js");
 var tokenize = require("./lisp-tokenizer.js");
 var buildTokenSet = require("./utils/build-token-set.js");
 var type = require("./utils/type.js");
-var jsonpretty = require('jsonpretty');
-
-function printObj (obj) {
-	console.log(jsonpretty(obj));
-	return obj;
-}
+var printObj = require('./utils/print-object.js');
 
 var rule = engine.rule;
 var parse = engine.parse;
@@ -71,7 +66,5 @@ function literal (value) {
 
 module.exports = function (source) {
 	var tokenized = tokenize(source);
-	printObj(tokenized);
-	//process.exit();
 	return parse.exp(tokenized).result;
 };
