@@ -1,17 +1,2 @@
 x = (34 * 56) * 23.33 + 
-45 - -2 <= sonata("hello", -2) / [1 [2, 3] 34]
-
-defop 30 ($left ++ $right):
-	[concat $left $right]
-
-function concat (a, b):
-	blah blah
-
-function addLists(a, b):
-	all a(i) + b(i) where i in range(x.count)
-
-addLists([4 3 2] [12 6 3]) == [16 9 5]
-
-xs.reduce(fn(x y) {
-	x + y
-});
+45 - -2 <= sonata("hello", - 2) / [1 [2, 3] 34].map(fn(x, y ) x * y)

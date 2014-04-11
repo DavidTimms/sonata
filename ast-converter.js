@@ -187,6 +187,7 @@ function convertExp (node) {
 			return makeFunctionCall(convertExp(node[0]), node.slice(1));
 		}
 	}
+	// Should now never occur
 	else if (node.type === "Member") {
 		return convertMemberAccess(node.names.slice());
 	}
@@ -200,6 +201,7 @@ function convertExp (node) {
 	}
 }
 
+// shouldn't be needed any more. "." is now just a normal function
 function convertMemberAccess (names) {
 	names = names.slice();
 	var identifier = makeIdentifier(names.pop());
@@ -213,6 +215,7 @@ function convertMemberAccess (names) {
 		property: identifier
 	};
 }
+
 
 function convertSequence (expressions) {
 	if (expressions instanceof Array) {
@@ -291,6 +294,14 @@ var converters = {
 		else {
 			return makeAssignment(identifier, convertExp(value));
 		}
+	},
+	".": function (parts) {
+		return {
+			type: "MemberExpression",
+			computed: false,
+			object: convertExp(parts[0]),
+			property: parts[1]
+		};
 	},
 	"get": function getMember (members) {
 		var member = convertExp(members[members.length - 1]);

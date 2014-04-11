@@ -1,29 +1,36 @@
 var type = require("./utils/type.js");
 var printObj = require('./utils/print-object.js');
 
-var tokens;
-var pointer = 0;
+module.exports = function (tokens) {
+	var parsed = parseExpression(tokens);
+	//console.log(lispString(parsed.exp));
+	return [parsed.exp];
+};
 
 function parseExpression (tokens, pointer, precedence) {
 	pointer = pointer || 0;
 	precedence = precedence || 0;
-	var parseResult, exp, parseFunction, token = tokens[pointer];
+	var parseResult;
+	var exp = null;
+	var token = tokens[pointer];
 
 	// Parse initial atom of the expression:
 
 	// try to find specific parse function for token, else 
 	// find generic parse function for the token type
-	parseFunction = prefixOperators[token.string] || tokenTypeParsers[token.type];
+	var parseFunction = prefixOperators[token.string] || tokenTypeParsers[token.type];
 	if (!parseFunction) {
-		throw SyntaxError("Could not parse \"" + token + "\".");
+		throw SyntaxError("Unknown token type " + token);
 	}
-	parseResult = parseFunction(tokens, pointer, precedence);
-	pointer = parseResult.pointer;
-	exp = parseResult.exp;
 
-	// Parse additional parts joined by infix operators:
+	// Parse expression fragments:
 
-	while (true) {
+	do {
+		parseResult = parseFunction(tokens, pointer, precedence, exp);
+		pointer = parseResult.pointer;
+		exp = parseResult.exp;
+
+		// get the infix parse function for the next token
 		pointer = advancePointer(tokens, pointer);
 		token = tokens[pointer];
 		parseFunction = infixOperators[token.string];
@@ -33,19 +40,12 @@ function parseExpression (tokens, pointer, precedence) {
 			throw Error("Undefined precedence for infix operator " + token);
 		}
 
+		// break to stop function calls being split over line breaks
+		if (isBracketAtStartOfLine(tokens, pointer)) break;
+
 		// if the token is an operator with higher precedence than 
-		// the current master operator, parse operator's partial expression
-		if (parseFunction && parseFunction.precedence >= precedence) {
-
-			// break to stop function calls being split over line breaks
-			if (isBracketAtStartOfLine(tokens, pointer)) break;
-
-			parseResult = parseFunction(tokens, pointer, precedence, exp);
-			pointer = parseResult.pointer;
-			exp = parseResult.exp;
-		}
-		else break;
-	}
+		// the current master operator, loop to add the partial expression
+	} while (parseFunction && parseFunction.precedence >= precedence);
 
 	return parseResult;
 }
@@ -88,19 +88,6 @@ function parseIdentifier (tokens, pointer, precedence) {
 function parsePunctuation (tokens, pointer) {
 	throw SyntaxError("Unknown punctuation token: " + tokens[pointer]);
 }
-
-/*
-function parseUnary (tokens, pointer, precedence) {
-	var operandResult = parseExpression(
-		tokens, 
-		pointer + 1, 
-		unaryOpPrecedences[tokens[pointer].string]);
-	return {
-		exp: [makeIdentifier(tokens[pointer].string), operandResult.exp], 
-		pointer: operandResult.pointer
-	};
-}
-*/
 
 function unaryOp (unaryOpPrecedence) {
 	function parseUnary (tokens, pointer, precedence) {
@@ -153,6 +140,108 @@ function parseCall (tokens, pointer, precedence, callee) {
 	return {exp: functionCall, pointer: pointer + 1};
 }
 
+function parseMemberAccess (tokens, pointer, precedence, parent) {
+	if (tokens[pointer + 1].type !== "Identifier") {
+		errorAt(tokens[pointer], 
+			"the property of an object must be an identifier");
+	}
+	var child = makeIdentifier(tokens[pointer + 1].string);
+	return {exp: [makeIdentifier("."), parent, child], pointer: pointer + 2};
+}
+
+function parseLambda (tokens, pointer) {
+	var params = parseParams(tokens, pointer + 1);
+	var body = parseExpression(tokens, params.pointer, 0);
+
+	return {
+		exp: [makeIdentifier("fn"), params.exp, [body.exp]], 
+		pointer: body.pointer
+	};
+}
+
+function parseParams (tokens, pointer) {
+	var params = [];
+	checkToken(tokens, pointer, "(");
+	pointer += 1;
+	while (tokens[pointer].string !== ")") {
+		param = parseParam(tokens, pointer);
+		pointer = param.pointer;
+		params.push(param.exp);
+		pointer = advancePointer(tokens, pointer);
+	}
+	return {exp: params, pointer: pointer + 1};
+}
+
+function parseParam (tokens, pointer) {
+	var param = parseExpression(tokens, pointer);
+	if (param.exp instanceof Array && 
+		isIdentifier(param.exp[0], "=") && 
+		isIdentifier(param.exp[1])) {
+		return param;
+	}
+	else if (isIdentifier(param.exp)) {
+		return param;
+	}
+	errorAt(tokens[pointer], 
+		"invalid parameter name in function");
+}
+
+var prefixOperators = {
+	"-": unaryOp(60),
+	"not": unaryOp(30),
+	"(": function (tokens, pointer, precedence) {
+		var inner = parseExpression(tokens, pointer + 1, 0);
+		pointer = advancePointer(tokens, inner.pointer);
+		checkToken(tokens, pointer, ")");
+		return {exp: inner.exp, pointer: pointer + 1};
+	},
+	"[": function (tokens, pointer, precedence) {
+		return parseCall(tokens, pointer, precedence, makeIdentifier("list"));
+	},
+	"fn": parseLambda
+};
+
+var infixOperators = {
+	"++": binaryOp(55),
+	"&": binaryOp(55),
+	"*": binaryOp(50),
+	"/": binaryOp(50),
+	"%": binaryOp(50),
+	"+": binaryOp(40),
+	"-": binaryOp(40),
+	"<": binaryOp(30),
+	">": binaryOp(30),
+	"<=": binaryOp(30),
+	">=": binaryOp(30),
+	"==": binaryOp(25),
+	"!=": binaryOp(25),
+	"and": binaryOp(20),
+	"or": binaryOp(15),
+	"=": binaryOp(10),
+	"(": withPrecedence(70, parseCall),
+	".": withPrecedence(80, parseMemberAccess)
+};
+
+var tokenTypeParsers = {
+	"Number": parseNumber,
+	"String": parseLiteral,
+	"Regex": parseLiteral,
+	"Boolean": parseLiteral,
+	"Indent": ignoreToken,
+	"Identifier": parseIdentifier,
+	"Punctuation": parsePunctuation
+};
+
+// --------------------HELPER FUNCTIONS-----------------------
+
+function lispString(ast) {
+	return (ast instanceof Array) ? 
+		"(" + ast.map(lispString).join(" ") + ")" 
+			: (typeof(ast.value) === "string") ? 
+				"'" + ast.value + "'" 
+			: ast.value || ast.name;
+}
+
 function isBracketAtStartOfLine (tokens, pointer) {
 	return tokens[pointer].string in matchToken && 
 		tokens[pointer - 1] && 
@@ -176,92 +265,25 @@ function advancePointer (tokens, pointer) {
 function checkToken (tokens, pointer, expected) {
 	var token = tokens[pointer];
 	if (token.string !== expected) {
-		console.log("Expected \"" + expected + "\", but found \"" + 
-			token.string + "\", at line " + token.position.line + 
-			":" + token.position.column);
-		system.exit(1);
+		errorAt(token, "Expected \"" + expected + 
+			"\", but found \"" + token.string + "\"");
 	}
 	return true;
+}
+
+function isIdentifier(node, name) {
+	return typeof(node) === "object" && 
+		node.type === "Identifier" && 
+		(name ? node.name === name : true);
+}
+
+function errorAt(token, message) {
+	console.log("Parse Error: " + message + 
+		"\nat line " + token.position.line + ":" + token.position.column);
+	system.exit(1);
 }
 
 function withPrecedence (precedence, func) {
 	func.precedence = precedence;
 	return func;
 }
-
-var unaryOpPrecedences = {
-	"-": 60,
-	"not": 30
-};
-
-var binaryOpPrecedences = {
-	"*": 50,
-	"/": 50,
-	"%": 50,
-	"+": 40,
-	"-": 40,
-	"<": 30,
-	">": 30,
-	"<=": 30,
-	">=": 30,
-	"==": 25,
-	"!=": 25,
-	"and": 20,
-	"or": 15,
-	"=": 10,
-	"(": 80
-};
-
-var prefixOperators = {
-	"-": unaryOp(60),
-	"not": unaryOp(30),
-	"(": function (tokens, pointer, precedence) {
-		var inner = parseExpression(tokens, pointer + 1, 0);
-		pointer = advancePointer(tokens, inner.pointer);
-		checkToken(tokens, pointer, ")");
-		return {exp: inner.exp, pointer: pointer + 1};
-	},
-	"[": function (tokens, pointer, precedence) {
-		return parseCall(tokens, pointer, precedence, makeIdentifier("list"));
-	}
-};
-
-var infixOperators = {
-	"*": binaryOp(50),
-	"/": binaryOp(50),
-	"%": binaryOp(50),
-	"+": binaryOp(40),
-	"-": binaryOp(40),
-	"<": binaryOp(30),
-	">": binaryOp(30),
-	"<=": binaryOp(30),
-	">=": binaryOp(30),
-	"==": binaryOp(25),
-	"!=": binaryOp(25),
-	"and": binaryOp(20),
-	"or": binaryOp(15),
-	"=": binaryOp(10),
-	"(": withPrecedence(80, parseCall)
-};
-
-var tokenTypeParsers = {
-	"Number": parseNumber,
-	"String": parseLiteral,
-	"Regex": parseLiteral,
-	"Boolean": parseLiteral,
-	"Indent": ignoreToken,
-	"Identifier": parseIdentifier,
-	"Punctuation": parsePunctuation
-};
-
-function lispString(ast) {
-	return (ast instanceof Array) ? 
-		"(" + ast.map(lispString).join(" ") + ")" 
-		: ast.value || ast.name;
-}
-
-module.exports = function (tokens) {
-	var parsed = parseExpression(tokens);
-	//console.log(lispString(parsed.exp));
-	return [parsed.exp];
-};

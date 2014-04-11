@@ -16,6 +16,8 @@ runTests({
 
 	"23 * (2 - 3)":  "((* 23 (- 2 3)))",
 
+	"(23 * 2) - 3":  "((- (* 23 2) 3))",
+
 	"func()":  "((func))",
 
 	"func( arg\n)":  "((func arg))",
@@ -36,6 +38,20 @@ runTests({
 
 	"x == 2.7 / 3.3 / 2":  "((== x (/ 2.7 (/ 3.3 2))))",
 
+	"person.name == 'Dave'":  "((== (. person name) 'Dave'))",
+
+	"getCar().maker.country":  "((. (. (getCar) maker) country))",
+
+	"(5 + 4).toString()":  "(((. (+ 5 4) toString)))",
+
+	"[1 2] ++ [3 4 5]":  "((++ (list 1 2) (list 3 4 5)))",
+
+	"fn () 45 - 2": "((fn () ((- 45 2))))",
+
+	"xs.reduce(fn (x y) x & y)": "(((. xs reduce) (fn (x y) ((& x y)))))",
+
+	"fn (name = 'Dave') name & '!'": "((fn ((= name 'Dave')) ((& name '!'))))",
+
 });
 
 
@@ -52,7 +68,9 @@ function test(input, output) {
 function lispString(ast) {
 	return (ast instanceof Array) ? 
 		"(" + ast.map(lispString).join(" ") + ")" 
-		: ast.value || ast.name;
+			: (typeof(ast.value) === "string") ? 
+				"'" + ast.value + "'" 
+			: ast.value || ast.name;
 }
 
 function runTests(tests) {

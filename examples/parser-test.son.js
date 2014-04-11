@@ -58,5 +58,7 @@
             this.args = arguments;
         };
     var x;
-    return x = +(34 * 56 * 23.33) + +(45 - -2) <= sonata('hello', -2)()() / list(1, list(2, 3), 34);
+    return x = +(34 * 56 * 23.33) + +(45 - -2) <= sonata('hello' - 2) / list(1, list(2, 3), 34).map(function (x, y) {
+        return x * y;
+    });
 }());
