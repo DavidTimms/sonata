@@ -7,6 +7,9 @@ module.exports = function (tokens) {
 	return [parsed.exp];
 };
 
+var lambdaParamsNeedParens = true;
+var bracesForBlocks = true;
+
 function parseExpression (tokens, pointer, precedence) {
 	pointer = pointer || 0;
 	precedence = precedence || 0;
@@ -99,7 +102,7 @@ function unaryOp (unaryOpPrecedence) {
 			exp: [makeIdentifier(tokens[pointer].string), operandResult.exp], 
 			pointer: operandResult.pointer
 		};
-	};
+	}
 	return parseUnary;
 }
 
@@ -113,7 +116,7 @@ function binaryOp (binaryOpPrecedence) {
 			exp: [makeIdentifier(tokens[pointer].string), left, rightResult.exp], 
 			pointer: rightResult.pointer
 		};
-	};
+	}
 	// set the precedence to a property of the function, so 
 	// parseExpression() can see it to know whether to include the op
 	parseBinary.precedence = binaryOpPrecedence;
@@ -151,7 +154,7 @@ function parseMemberAccess (tokens, pointer, precedence, parent) {
 
 function parseLambda (tokens, pointer) {
 	var params = parseParams(tokens, pointer + 1);
-	var body = parseExpression(tokens, params.pointer, 0);
+	var body = parseExpression(tokens, params.pointer);
 
 	return {
 		exp: [makeIdentifier("fn"), params.exp, [body.exp]], 
@@ -160,10 +163,13 @@ function parseLambda (tokens, pointer) {
 }
 
 function parseParams (tokens, pointer) {
-	var params = [];
-	checkToken(tokens, pointer, "(");
-	pointer += 1;
-	while (tokens[pointer].string !== ")") {
+	var params = [], endToken = ":";
+	if (lambdaParamsNeedParens) {
+		checkToken(tokens, pointer, "(");
+		pointer += 1;
+		endToken = ")";
+	}
+	while (tokens[pointer].string !== endToken) {
 		param = parseParam(tokens, pointer);
 		pointer = param.pointer;
 		params.push(param.exp);
@@ -174,16 +180,38 @@ function parseParams (tokens, pointer) {
 
 function parseParam (tokens, pointer) {
 	var param = parseExpression(tokens, pointer);
-	if (param.exp instanceof Array && 
+	if ((param.exp instanceof Array && 
 		isIdentifier(param.exp[0], "=") && 
-		isIdentifier(param.exp[1])) {
+		isIdentifier(param.exp[1])) || 
+		isIdentifier(param.exp)) {
 		return param;
 	}
-	else if (isIdentifier(param.exp)) {
-		return param;
-	}
-	errorAt(tokens[pointer], 
+	else errorAt(tokens[pointer], 
 		"invalid parameter name in function");
+}
+
+function parseIf (tokens, pointer) {
+	var test = parseExpression(tokens, pointer + 1);
+	checkToken(tokens, test.pointer, "?");
+	var ifBody = parseExpression(tokens, test.pointer + 1);
+	var elseBody = parseElse(tokens, ifBody.pointer);
+	//elseBody.exp will be an empty array if there is no else part
+	return {
+		exp: [makeIdentifier("if"), test.exp, [ifBody.exp]].concat(elseBody.exp), 
+		pointer: elseBody.pointer
+	};
+}
+
+function parseElse (tokens, pointer) {
+	advPointer = advancePointer(tokens, pointer);
+	if (tokens[advPointer].string === "else") {
+		var elseBody = parseExpression(tokens, advPointer + 1);
+		return {
+			exp: [[elseBody.exp]], 
+			pointer: elseBody.pointer
+		};
+	}
+	else return {exp: [], pointer: pointer};
 }
 
 var prefixOperators = {
@@ -198,7 +226,8 @@ var prefixOperators = {
 	"[": function (tokens, pointer, precedence) {
 		return parseCall(tokens, pointer, precedence, makeIdentifier("list"));
 	},
-	"fn": parseLambda
+	"fn": parseLambda,
+	"if": parseIf,
 };
 
 var infixOperators = {
@@ -219,7 +248,7 @@ var infixOperators = {
 	"or": binaryOp(15),
 	"=": binaryOp(10),
 	"(": withPrecedence(70, parseCall),
-	".": withPrecedence(80, parseMemberAccess)
+	".": withPrecedence(80, parseMemberAccess),
 };
 
 var tokenTypeParsers = {
@@ -229,7 +258,7 @@ var tokenTypeParsers = {
 	"Boolean": parseLiteral,
 	"Indent": ignoreToken,
 	"Identifier": parseIdentifier,
-	"Punctuation": parsePunctuation
+	"Punctuation": parsePunctuation,
 };
 
 // --------------------HELPER FUNCTIONS-----------------------

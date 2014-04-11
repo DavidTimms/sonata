@@ -4,6 +4,54 @@
 		"selected_items":
 		[
 			[
+				"else",
+				"elseBody"
+			],
+			[
+				"if",
+				"ifBody"
+			],
+			[
+				"adv",
+				"advancePointer"
+			],
+			[
+				"par",
+				"parseExpression"
+			],
+			[
+				"pars",
+				"parseParams"
+			],
+			[
+				"lis",
+				"lispString"
+			],
+			[
+				"with",
+				"withPrecedence"
+			],
+			[
+				"parse",
+				"parseBinary"
+			],
+			[
+				"in",
+				"infixOperators"
+			],
+			[
+				"un",
+				"unaryOp"
+			],
+			[
+				"pref",
+				"prefixOperators"
+			],
+			[
+				"unaryOp",
+				"unaryOpPrecedences"
+			],
+			[
 				"say",
 				"sayGoodbye"
 			],
@@ -28,16 +76,8 @@
 				"expected"
 			],
 			[
-				"pars",
-				"parseExpression"
-			],
-			[
 				"parseL",
 				"parseList"
-			],
-			[
-				"par",
-				"parseResult"
 			],
 			[
 				"funct",
@@ -72,10 +112,6 @@
 				"precedence"
 			],
 			[
-				"parse",
-				"parseIdentifier"
-			],
-			[
 				"I",
 				"Identifier"
 			],
@@ -90,10 +126,6 @@
 			[
 				"to",
 				"tokenized"
-			],
-			[
-				"in",
-				"inputFile"
 			],
 			[
 				"ch",
@@ -344,10 +376,6 @@
 				"squared"
 			],
 			[
-				"lis",
-				"listFunc"
-			],
-			[
 				"li",
 				"listFunc"
 			],
@@ -486,34 +514,6 @@
 			[
 				"pus",
 				"pushToken"
-			],
-			[
-				"Play",
-				"played_chords"
-			],
-			[
-				"Tick",
-				"ticks_per_bar"
-			],
-			[
-				"TB",
-				"TPB"
-			],
-			[
-				"Las",
-				"Last_tick"
-			],
-			[
-				"mat",
-				"match_sequence"
-			],
-			[
-				"C",
-				"Current_seq"
-			],
-			[
-				"api",
-				"apiKey"
 			]
 		]
 	},
@@ -531,7 +531,7 @@
 			"file": "main-tokenizer.js",
 			"settings":
 			{
-				"buffer_size": 3835,
+				"buffer_size": 3837,
 				"line_ending": "Windows"
 			}
 		},
@@ -539,7 +539,7 @@
 			"file": "tdop-parser.js",
 			"settings":
 			{
-				"buffer_size": 5528,
+				"buffer_size": 8431,
 				"line_ending": "Windows"
 			}
 		},
@@ -547,7 +547,7 @@
 			"file": "parser-tests/test.js",
 			"settings":
 			{
-				"buffer_size": 1254,
+				"buffer_size": 2111,
 				"line_ending": "Windows"
 			}
 		},
@@ -555,7 +555,7 @@
 			"file": "examples/parser-test.son",
 			"settings":
 			{
-				"buffer_size": 300,
+				"buffer_size": 93,
 				"line_ending": "Windows"
 			}
 		},
@@ -563,7 +563,7 @@
 			"file": "examples/parser-test.son.js",
 			"settings":
 			{
-				"buffer_size": 2362,
+				"buffer_size": 2409,
 				"line_ending": "Unix"
 			}
 		},
@@ -571,7 +571,7 @@
 			"file": "ast-converter.js",
 			"settings":
 			{
-				"buffer_size": 13247,
+				"buffer_size": 13491,
 				"line_ending": "Windows"
 			}
 		},
@@ -789,6 +789,9 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"conso",
+			"checkToken",
+			"\".\"",
 			"makeLiteral",
 			"{\n",
 			"result",
@@ -913,10 +916,7 @@
 			"S",
 			"Sh",
 			"Z",
-			"DYNA",
-			"trader_type_dict[",
-			"pressure",
-			"left"
+			"DYNA"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1002,7 +1002,7 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -1037,15 +1037,15 @@
 					"file": "main-tokenizer.js",
 					"settings":
 					{
-						"buffer_size": 3835,
+						"buffer_size": 3837,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3356,
-								3356
+								130,
+								130
 							]
 						],
 						"settings":
@@ -1054,7 +1054,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1920.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1064,15 +1064,15 @@
 					"file": "tdop-parser.js",
 					"settings":
 					{
-						"buffer_size": 5528,
+						"buffer_size": 8431,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3451,
-								3451
+								231,
+								231
 							]
 						],
 						"settings":
@@ -1081,7 +1081,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3126.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1091,23 +1091,24 @@
 					"file": "parser-tests/test.js",
 					"settings":
 					{
-						"buffer_size": 1254,
+						"buffer_size": 2111,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								101,
-								101
+								963,
+								963
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 600.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1117,15 +1118,15 @@
 					"file": "examples/parser-test.son",
 					"settings":
 					{
-						"buffer_size": 300,
+						"buffer_size": 93,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								300,
-								300
+								93,
+								93
 							]
 						],
 						"settings":
@@ -1143,15 +1144,15 @@
 					"file": "examples/parser-test.son.js",
 					"settings":
 					{
-						"buffer_size": 2362,
+						"buffer_size": 2409,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2362,
-								2362
+								2409,
+								2409
 							]
 						],
 						"settings":
@@ -1171,15 +1172,15 @@
 					"file": "ast-converter.js",
 					"settings":
 					{
-						"buffer_size": 13247,
+						"buffer_size": 13491,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3185,
-								3185
+								7843,
+								7843
 							]
 						],
 						"settings":
@@ -1188,7 +1189,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 9720.0,
+						"translation.y": 5646.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

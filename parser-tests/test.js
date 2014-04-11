@@ -8,6 +8,8 @@ runTests({
 
 	"a + b":  "((+ a b))",
 
+	"name = 'Maria'":  "((= name 'Maria'))",
+
 	"a * b - 2":  "((- (* a b) 2))",
 
 	"a + \n23":  "((+ a 23))",
@@ -51,6 +53,12 @@ runTests({
 	"xs.reduce(fn (x y) x & y)": "(((. xs reduce) (fn (x y) ((& x y)))))",
 
 	"fn (name = 'Dave') name & '!'": "((fn ((= name 'Dave')) ((& name '!'))))",
+
+	"if x < 2? print(x)": "((if (< x 2) ((print x))))",
+
+	"if true? 34 * 23 else 93 - 2": "((if true ((* 34 23)) ((- 93 2))))",
+
+	"if isTrue() ?\n10 \nelse\n 5": "((if (isTrue) (10) (5)))",
 
 });
 
