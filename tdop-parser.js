@@ -9,46 +9,38 @@ function parseExpression (tokens, pointer, precedence) {
 	precedence = precedence || 0;
 	var parseResult, exp, parseFunction, token = tokens[pointer];
 
-	// TODO: generalize to allow all prefix syntax rules
-	if (token.string in unaryOpPrecedences) {
-		parseResult = parseUnary(tokens, pointer, precedence);
-		pointer = parseResult.pointer;
-		exp = parseResult.exp;
+	// Parse initial atom of the expression:
+
+	// try to find specific parse function for token, else 
+	// find generic parse function for the token type
+	parseFunction = prefixOperators[token.string] || tokenTypeParsers[token.type];
+	if (!parseFunction) {
+		throw SyntaxError("Could not parse \"" + token + "\".");
 	}
-//	if (token.string in prefixOperators) {
-//		parseResult = parseUnary(tokens, pointer, precedence);
-//		pointer = parseResult.pointer;
-//		exp = parseResult.exp;
-//	}
-	else {
-		parseFunction = tokenTypeParsers[token.type];
-		if (!parseFunction) {
-			throw SyntaxError("Could not parse \"" + token + "\".");
-		}
-		parseResult = parseFunction(tokens, pointer, precedence);
-		pointer = parseResult.pointer;
-		exp = parseResult.exp;
-	}
+	parseResult = parseFunction(tokens, pointer, precedence);
+	pointer = parseResult.pointer;
+	exp = parseResult.exp;
+
+	// Parse additional parts joined by infix operators:
 
 	while (true) {
 		pointer = advancePointer(tokens, pointer);
 		token = tokens[pointer];
-		opPrec = binaryOpPrecedences[token.string];
+		parseFunction = infixOperators[token.string];
 
-		if (opPrec && opPrec >= precedence) {
-			if (token.string in punctuationInfixParsers) {
-				if (token.string in matchToken && 
-					tokens[pointer - 1] && 
-					tokens[pointer - 1].type == "Indent") {
-					// break to stop function calls being split over line breaks
-					break;
-				}
-				parseResult = punctuationInfixParsers[token.string](
-					tokens, pointer, exp, precedence);
-			}
-			else {
-				parseResult = parseBinary(tokens, pointer, exp, precedence);
-			}
+		// Check that the operator has a precedence
+		if (parseFunction && parseFunction.precedence === undefined) {
+			throw Error("Undefined precedence for infix operator " + token);
+		}
+
+		// if the token is an operator with higher precedence than 
+		// the current master operator, parse operator's partial expression
+		if (parseFunction && parseFunction.precedence >= precedence) {
+
+			// break to stop function calls being split over line breaks
+			if (isBracketAtStartOfLine(tokens, pointer)) break;
+
+			parseResult = parseFunction(tokens, pointer, precedence, exp);
 			pointer = parseResult.pointer;
 			exp = parseResult.exp;
 		}
@@ -93,6 +85,11 @@ function parseIdentifier (tokens, pointer, precedence) {
 	return {exp: makeIdentifier(tokens[pointer].string), pointer: pointer + 1};
 }
 
+function parsePunctuation (tokens, pointer) {
+	throw SyntaxError("Unknown punctuation token: " + tokens[pointer]);
+}
+
+/*
 function parseUnary (tokens, pointer, precedence) {
 	var operandResult = parseExpression(
 		tokens, 
@@ -103,21 +100,37 @@ function parseUnary (tokens, pointer, precedence) {
 		pointer: operandResult.pointer
 	};
 }
+*/
 
-function parseBinary (tokens, pointer, left, precedence) {
-	var tokenString = tokens[pointer].string;
-	var rightResult = parseExpression(
-		tokens, 
-		pointer + 1, 
-		binaryOpPrecedences[tokenString]);
-	return {
-		exp: [makeIdentifier(tokenString), left, rightResult.exp], 
-		pointer: rightResult.pointer
+function unaryOp (unaryOpPrecedence) {
+	function parseUnary (tokens, pointer, precedence) {
+		var operandResult = parseExpression(
+			tokens, 
+			pointer + 1, 
+			unaryOpPrecedence);
+		return {
+			exp: [makeIdentifier(tokens[pointer].string), operandResult.exp], 
+			pointer: operandResult.pointer
+		};
 	};
+	return parseUnary;
 }
 
-function parsePunctuation (tokens, pointer, precedence) {
-	return punctuationPrefixParsers[tokens[pointer].string](tokens, pointer, precedence);
+function binaryOp (binaryOpPrecedence) {
+	function parseBinary (tokens, pointer, precedence, left) {
+		var rightResult = parseExpression(
+			tokens, 
+			pointer + 1, 
+			binaryOpPrecedence);
+		return {
+			exp: [makeIdentifier(tokens[pointer].string), left, rightResult.exp], 
+			pointer: rightResult.pointer
+		};
+	};
+	// set the precedence to a property of the function, so 
+	// parseExpression() can see it to know whether to include the op
+	parseBinary.precedence = binaryOpPrecedence;
+	return parseBinary;
 }
 
 var matchToken = {
@@ -126,19 +139,25 @@ var matchToken = {
 	"{": "}"
 };
 
-function parseCall (tokens, pointer, callee, precedence) {
-		var functionCall = [callee];
-		var endToken = matchToken[tokens[pointer].string];
-		// advance pointer to start of first argument
-		pointer += 1;
-		while (tokens[pointer].string !== endToken) {
-			parseResult = parseExpression(tokens, pointer, precedence);
-			pointer = parseResult.pointer;
-			functionCall.push(parseResult.exp);
-			pointer = advancePointer(tokens, pointer);
-		}
-		return {exp: functionCall, pointer: pointer + 1};
+function parseCall (tokens, pointer, precedence, callee) {
+	var functionCall = [callee];
+	var endToken = matchToken[tokens[pointer].string];
+	// advance pointer to start of first argument
+	pointer += 1;
+	while (tokens[pointer].string !== endToken) {
+		parseResult = parseExpression(tokens, pointer, 0);
+		pointer = parseResult.pointer;
+		functionCall.push(parseResult.exp);
+		pointer = advancePointer(tokens, pointer);
 	}
+	return {exp: functionCall, pointer: pointer + 1};
+}
+
+function isBracketAtStartOfLine (tokens, pointer) {
+	return tokens[pointer].string in matchToken && 
+		tokens[pointer - 1] && 
+		tokens[pointer - 1].type == "Indent";
+}
 
 function makeIdentifier (name) {
 	return {
@@ -165,6 +184,11 @@ function checkToken (tokens, pointer, expected) {
 	return true;
 }
 
+function withPrecedence (precedence, func) {
+	func.precedence = precedence;
+	return func;
+}
+
 var unaryOpPrecedences = {
 	"-": 60,
 	"not": 30
@@ -189,7 +213,35 @@ var binaryOpPrecedences = {
 };
 
 var prefixOperators = {
+	"-": unaryOp(60),
+	"not": unaryOp(30),
+	"(": function (tokens, pointer, precedence) {
+		var inner = parseExpression(tokens, pointer + 1, 0);
+		pointer = advancePointer(tokens, inner.pointer);
+		checkToken(tokens, pointer, ")");
+		return {exp: inner.exp, pointer: pointer + 1};
+	},
+	"[": function (tokens, pointer, precedence) {
+		return parseCall(tokens, pointer, precedence, makeIdentifier("list"));
+	}
+};
 
+var infixOperators = {
+	"*": binaryOp(50),
+	"/": binaryOp(50),
+	"%": binaryOp(50),
+	"+": binaryOp(40),
+	"-": binaryOp(40),
+	"<": binaryOp(30),
+	">": binaryOp(30),
+	"<=": binaryOp(30),
+	">=": binaryOp(30),
+	"==": binaryOp(25),
+	"!=": binaryOp(25),
+	"and": binaryOp(20),
+	"or": binaryOp(15),
+	"=": binaryOp(10),
+	"(": withPrecedence(80, parseCall)
 };
 
 var tokenTypeParsers = {
@@ -201,23 +253,6 @@ var tokenTypeParsers = {
 	"Identifier": parseIdentifier,
 	"Punctuation": parsePunctuation
 };
-
-var punctuationInfixParsers = {
-	"(": parseCall
-};
-
-var punctuationPrefixParsers = {
-	"(": function (tokens, pointer, precedence) {
-		var inner = parseExpression(tokens, pointer + 1, 0);
-		pointer = advancePointer(tokens, inner.pointer);
-		checkToken(tokens, pointer, ")");
-		return {exp: inner.exp, pointer: pointer + 1};
-	},
-	"[": function (tokens, pointer, precedence) {
-		return parseCall(tokens, pointer, makeIdentifier("list"), precedence);
-	}
-};
-
 
 function lispString(ast) {
 	return (ast instanceof Array) ? 

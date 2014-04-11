@@ -4,20 +4,100 @@
 		"selected_items":
 		[
 			[
+				"say",
+				"sayGoodbye"
+			],
+			[
+				"pr",
+				"prototype"
+			],
+			[
+				"is",
+				"isChild"
+			],
+			[
+				"fa",
+				"failedCount"
+			],
+			[
+				"test",
+				"testCount"
+			],
+			[
+				"ex",
+				"expected"
+			],
+			[
+				"pars",
+				"parseExpression"
+			],
+			[
+				"parseL",
+				"parseList"
+			],
+			[
+				"par",
+				"parseResult"
+			],
+			[
+				"funct",
+				"functionCall"
+			],
+			[
+				"end",
+				"endOfFile"
+			],
+			[
+				"va",
+				"value"
+			],
+			[
+				"lef",
+				"leftContext"
+			],
+			[
+				"pa",
+				"parseFunction"
+			],
+			[
+				"str",
+				"stringifyAST"
+			],
+			[
+				"st",
+				"stringifyAST"
+			],
+			[
+				"pre",
+				"precedence"
+			],
+			[
+				"parse",
+				"parseIdentifier"
+			],
+			[
+				"I",
+				"Identifier"
+			],
+			[
+				"make",
+				"makeLiteral"
+			],
+			[
+				"toke",
+				"tokenized"
+			],
+			[
+				"to",
+				"tokenized"
+			],
+			[
 				"in",
-				"index"
+				"inputFile"
 			],
 			[
 				"ch",
 				"charAt"
-			],
-			[
-				"toke",
-				"tokenString"
-			],
-			[
-				"to",
-				"tokens"
 			],
 			[
 				"token",
@@ -64,20 +144,12 @@
 				"converters"
 			],
 			[
-				"make",
-				"makeIdentifier"
-			],
-			[
 				"S",
 				"sonata_Continuation"
 			],
 			[
 				"vow",
 				"vowels"
-			],
-			[
-				"pre",
-				"prefixSlice"
 			],
 			[
 				"eval",
@@ -92,16 +164,8 @@
 				"typeof"
 			],
 			[
-				"pr",
-				"printObj"
-			],
-			[
 				"find",
 				"findNode"
-			],
-			[
-				"va",
-				"variable"
 			],
 			[
 				"dec",
@@ -118,10 +182,6 @@
 			[
 				"op",
 				"operator"
-			],
-			[
-				"parse",
-				"parsed"
 			],
 			[
 				"js",
@@ -162,10 +222,6 @@
 			[
 				"para",
 				"paramDefaults"
-			],
-			[
-				"ex",
-				"expression"
 			],
 			[
 				"na",
@@ -458,62 +514,6 @@
 			[
 				"api",
 				"apiKey"
-			],
-			[
-				"i",
-				"important"
-			],
-			[
-				"text",
-				"text-decoration"
-			],
-			[
-				"gre",
-				"grey-dark"
-			],
-			[
-				"New",
-				"New_sequence"
-			],
-			[
-				"Start",
-				"startTime"
-			],
-			[
-				"clic",
-				"clickTrackOut"
-			],
-			[
-				"st",
-				"startTrack"
-			],
-			[
-				"Ke",
-				"Key_notes"
-			],
-			[
-				"Ro",
-				"Rotated"
-			],
-			[
-				"all",
-				"All_notes"
-			],
-			[
-				"de",
-				"deltaTime"
-			],
-			[
-				"insta",
-				"instanceof"
-			],
-			[
-				"get",
-				"getVal"
-			],
-			[
-				"fu",
-				"function"
 			]
 		]
 	},
@@ -523,7 +523,7 @@
 			"file": "compile.js",
 			"settings":
 			{
-				"buffer_size": 706,
+				"buffer_size": 847,
 				"line_ending": "Windows"
 			}
 		},
@@ -531,23 +531,47 @@
 			"file": "main-tokenizer.js",
 			"settings":
 			{
-				"buffer_size": 2903,
+				"buffer_size": 3835,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "lisp-parser.js",
+			"file": "tdop-parser.js",
 			"settings":
 			{
-				"buffer_size": 1838,
+				"buffer_size": 5528,
 				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "parser-tests/test.js",
+			"settings":
+			{
+				"buffer_size": 1254,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "examples/parser-test.son",
+			"settings":
+			{
+				"buffer_size": 300,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "examples/parser-test.son.js",
+			"settings":
+			{
+				"buffer_size": 2362,
+				"line_ending": "Unix"
 			}
 		},
 		{
 			"file": "ast-converter.js",
 			"settings":
 			{
-				"buffer_size": 13228,
+				"buffer_size": 13247,
 				"line_ending": "Windows"
 			}
 		},
@@ -560,84 +584,10 @@
 			}
 		},
 		{
-			"file": "tail-call.lisp",
-			"settings":
-			{
-				"buffer_size": 247,
-				"line_ending": "Windows",
-				"name": "("
-			}
-		},
-		{
-			"file": "tail-call.lisp.js",
-			"settings":
-			{
-				"buffer_size": 697,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "lisp-test.lisp",
-			"settings":
-			{
-				"buffer_size": 495,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "lisp-test.lisp.js",
-			"settings":
-			{
-				"buffer_size": 3024,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "runtime.js",
 			"settings":
 			{
 				"buffer_size": 1636,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "node.lisp",
-			"settings":
-			{
-				"buffer_size": 410,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/C/Users/Dave/Uni/project business plan/business-plan-notes.md",
-			"settings":
-			{
-				"buffer_size": 0,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "node.lisp.js",
-			"settings":
-			{
-				"buffer_size": 2906,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "calc.lisp",
-			"settings":
-			{
-				"buffer_size": 537,
-				"line_ending": "Windows",
-				"name": "("
-			}
-		},
-		{
-			"file": "disemvoweler.lisp",
-			"settings":
-			{
-				"buffer_size": 420,
 				"line_ending": "Windows"
 			}
 		}
@@ -694,6 +644,22 @@
 	},
 	"file_history":
 	[
+		"/C/Users/Dave/new language examples/class april 2014.txt",
+		"/C/Users/Dave/Documents/job-applications/give-me-a-job.md",
+		"/C/Users/Dave/Documents/job-applications/netsight.md",
+		"/C/Users/Dave/Web/useful-JS-bits/texo/test/texo-test.js",
+		"/C/Users/Dave/Web/compile-to-js/lisp-examples/lisp-test.lisp.js",
+		"/C/Users/Dave/Web/compile-to-js/tail-call.lisp",
+		"/C/Users/Dave/Web/compile-to-js/tail-call.lisp.js",
+		"/C/Users/Dave/Web/compile-to-js/lisp-test.lisp",
+		"/C/Users/Dave/Web/compile-to-js/lisp-test.lisp.js",
+		"/C/Users/Dave/Web/compile-to-js/node.lisp",
+		"/C/Users/Dave/Uni/project business plan/business-plan-notes.md",
+		"/C/Users/Dave/Web/compile-to-js/node.lisp.js",
+		"/C/Users/Dave/Web/compile-to-js/calc.lisp",
+		"/C/Users/Dave/Web/compile-to-js/disemvoweler.lisp",
+		"/C/Users/Dave/Web/compile-to-js/print-object.js",
+		"/C/Users/Dave/Web/compile-to-js/lisp-compiler.js",
 		"/C/Users/Dave/Web/compile-to-js/main-tokenizer.js",
 		"/C/Users/Dave/Web/compile-to-js/node_modules/texo/texo.js",
 		"/C/Users/Dave/Web/useful-JS-bits/texo/texo.js",
@@ -702,22 +668,16 @@
 		"/C/Users/Dave/Web/useful-JS-bits/texo/texo.min.js",
 		"/C/Users/Dave/Web/useful-JS-bits/texo/test/browser-test.js",
 		"/C/Users/Dave/Web/useful-JS-bits/texo/package.json",
-		"/C/Users/Dave/Web/useful-JS-bits/texo/test/texo-test.js",
 		"/C/Users/Dave/Web/compile-to-js/decoder.lisp",
 		"/C/Users/Dave/Prolog/ff1.pl",
 		"/C/Users/Dave/Web/compile-to-js/out",
 		"/C/Users/Dave/Web/compile-to-js/compile.js",
 		"/C/Users/Dave/Web/useful-JS-bits/texo/README.md",
-		"/C/Users/Dave/Web/compile-to-js/lisp-compiler.js",
 		"/C/Users/Dave/Web/compile-to-js/lisp-tokenizer.js",
 		"/C/Users/Dave/Web/compile-to-js/lisp-parser.js",
 		"/C/Users/Dave/Web/compile-to-js/ast-converter.js",
-		"/C/Users/Dave/Web/compile-to-js/node.lisp",
 		"/C/Users/Dave/Web/compile-to-js/print.js",
-		"/C/Users/Dave/Web/compile-to-js/node.lisp.js",
 		"/C/Users/Dave/Web/compile-to-js/parse-engine.js",
-		"/C/Users/Dave/Web/compile-to-js/lisp-test.lisp.js",
-		"/C/Users/Dave/Web/compile-to-js/lisp-test.lisp",
 		"/C/Users/Dave/Web/useful-JS-bits/texo/test/browser-test.html",
 		"/C/Users/Dave/Web/useful-JS-bits/texo/test/texo-bench.js",
 		"/C/Users/Dave/Web/useful-JS-bits/texo/texo-test.js",
@@ -811,17 +771,7 @@
 		"/C/Users/Dave/Web/leo-wordpress/credentials.csv",
 		"/C/Users/Dave/Web/leo-wordpress/index.html",
 		"/C/Users/Dave/Web/parser/vm.js",
-		"/C/Users/Dave/Web/parser/tests/primes.lang",
-		"/C/Users/Dave/Web/leo-wordpress/behance/behance.py",
-		"/C/Users/Dave/Web/leo-wordpress/portfolio/php/wp-admin/includes/image-edit.php",
-		"/C/Users/Dave/Downloads/imgbox.com.har",
-		"/C/Users/Dave/Web/leo-wordpress/portfolio/php/wp-admin/media-upload.php",
-		"/C/Users/Dave/Web/leo-wordpress/behance/index.js",
-		"/C/Users/Dave/Web/leo-wordpress/behance/behance_python/MANIFEST",
-		"/C/Users/Dave/Web/leo-wordpress/behance/behance_python/setup.py",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/blob.pl",
-		"/C/Users/Dave/Web/leo-wordpress/centreal-child/centreal-child-modified/style.scss",
-		"/C/Users/Dave/chat.cmd"
+		"/C/Users/Dave/Web/parser/tests/primes.lang"
 	],
 	"find":
 	{
@@ -839,6 +789,14 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"makeLiteral",
+			"{\n",
+			"result",
+			".result",
+			"prefixParseFuncs",
+			"parseExpression",
+			"unaryOperators",
+			"binaryOperators",
 			");\n",
 			"}\n",
 			"();\n",
@@ -958,15 +916,7 @@
 			"DYNA",
 			"trader_type_dict[",
 			"pressure",
-			"left",
-			"populate_market",
-			"   print",
-			" asks",
-			"data.labels",
-			"rotationDegree",
-			"data.labels",
-			"animationLoop",
-			"print"
+			"left"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -974,6 +924,9 @@
 		"regex": false,
 		"replace_history":
 		[
+			"tokenTypeParsers",
+			"unaryOpPrecedences",
+			"binaryOpPrecedences",
 			"	",
 			"eq",
 			"makeFunctionCall",
@@ -1049,7 +1002,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 3,
 			"sheets":
 			[
 				{
@@ -1057,15 +1010,15 @@
 					"file": "compile.js",
 					"settings":
 					{
-						"buffer_size": 706,
+						"buffer_size": 847,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								706,
-								706
+								38,
+								125
 							]
 						],
 						"settings":
@@ -1084,15 +1037,15 @@
 					"file": "main-tokenizer.js",
 					"settings":
 					{
-						"buffer_size": 2903,
+						"buffer_size": 3835,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								328,
-								328
+								3356,
+								3356
 							]
 						],
 						"settings":
@@ -1101,17 +1054,70 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1920.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "lisp-parser.js",
+					"file": "tdop-parser.js",
 					"settings":
 					{
-						"buffer_size": 1838,
+						"buffer_size": 5528,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3451,
+								3451
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3126.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "parser-tests/test.js",
+					"settings":
+					{
+						"buffer_size": 1254,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								101,
+								101
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "examples/parser-test.son",
+					"settings":
+					{
+						"buffer_size": 300,
 						"regions":
 						{
 						},
@@ -1124,8 +1130,7 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/Python/Python.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1134,19 +1139,47 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "ast-converter.js",
+					"buffer": 5,
+					"file": "examples/parser-test.son.js",
 					"settings":
 					{
-						"buffer_size": 13228,
+						"buffer_size": 2362,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7726,
-								7726
+								2362,
+								2362
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 720.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "ast-converter.js",
+					"settings":
+					{
+						"buffer_size": 13247,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3185,
+								3185
 							]
 						],
 						"settings":
@@ -1155,13 +1188,13 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 5128.0,
+						"translation.y": 9720.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 7,
 					"file": "compile-runtime.js",
 					"settings":
 					{
@@ -1178,7 +1211,8 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 480.0,
@@ -1187,118 +1221,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "tail-call.lisp",
-					"settings":
-					{
-						"buffer_size": 247,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								247,
-								247
-							]
-						],
-						"settings":
-						{
-							"auto_name": "(",
-							"syntax": "Packages/Lisp/Lisp.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "tail-call.lisp.js",
-					"settings":
-					{
-						"buffer_size": 697,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								358,
-								358
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 120.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "lisp-test.lisp",
-					"settings":
-					{
-						"buffer_size": 495,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								448,
-								448
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lisp/Lisp.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
 					"buffer": 8,
-					"file": "lisp-test.lisp.js",
-					"settings":
-					{
-						"buffer_size": 3024,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3024,
-								3024
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 900.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 9,
 					"file": "runtime.js",
 					"settings":
 					{
@@ -1315,143 +1238,11 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 960.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "node.lisp",
-					"settings":
-					{
-						"buffer_size": 410,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								410,
-								410
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lisp/Lisp.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 60.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "/C/Users/Dave/Uni/project business plan/business-plan-notes.md",
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Markdown/Markdown.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "node.lisp.js",
-					"settings":
-					{
-						"buffer_size": 2906,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2892,
-								2892
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1260.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 13,
-					"file": "calc.lisp",
-					"settings":
-					{
-						"buffer_size": 537,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								537,
-								537
-							]
-						],
-						"settings":
-						{
-							"auto_name": "(",
-							"syntax": "Packages/Lisp/Lisp.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 14,
-					"file": "disemvoweler.lisp",
-					"settings":
-					{
-						"buffer_size": 420,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								420,
-								420
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lisp/Lisp.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
