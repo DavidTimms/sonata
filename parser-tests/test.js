@@ -1,7 +1,7 @@
 var tokenize = require("../main-tokenizer.js");
 var parse = require("../tdop-parser.js");
 
-runTests({
+var tests = {
 	"-2":  "(-2)",
 
 	"45.2":  "(45.2)",
@@ -14,7 +14,7 @@ runTests({
 
 	"a + \n23":  "((+ a 23))",
 
-	"a + b\n23":  "((+ a b))",
+	"a + b\n":  "((+ a b))",
 
 	"23 * (2 - 3)":  "((* 23 (- 2 3)))",
 
@@ -25,8 +25,6 @@ runTests({
 	"func( arg\n)":  "((func arg))",
 
 	"func(arg1, arg2 + something)":  "((func arg1 (+ arg2 something)))",
-
-	"variable\n(another + expression)":  "(variable)",
 
 	"func(arg) % 4 == 2":  "((== (% (func arg) 4) 2))",
 
@@ -60,14 +58,25 @@ runTests({
 
 	"if isTrue() ?\n10 \nelse\n 5": "((if (isTrue) (10) (5)))",
 
-});
+	"exp1 \nexp2":  "(exp1 exp2)",
 
+	"variable\n(another + expression)":  "(variable (+ another expression))",
+};
+
+multilineTest([
+	"print(", 
+	"	'hello' 'world'",
+	")"
+],"((print 'hello' 'world'))");
+
+runTests(tests);
 
 function test(input, output) {
 	var parsed = lispString(parse(tokenize(input)));
 	if (parsed !== output) {
 		console.log("Test failed: ");
 		console.log("	Expected " + output + ", but received " + parsed);
+		console.log(tokenize(input));
 		return false;
 	}
 	return true;
@@ -91,4 +100,8 @@ function runTests(tests) {
 	if (failedCount === 0) {
 		console.log("All tests passed");
 	}
+}
+
+function multilineTest(lines, expectedOutput) {
+	test[lines.join("\n")] = expectedOutput;
 }

@@ -123,7 +123,7 @@ function Token (tokenString, position) {
 	if (tokenString === "") {
 		this.type = "Empty";
 	}
-	if (tokenString === "End of File") {
+	else if (tokenString === "End of File") {
 		this.type = "End of File";
 	}
 	else if (tokenString.match(/^\n.*/)) {
@@ -131,6 +131,7 @@ function Token (tokenString, position) {
 		this.width = tokenString.length - 1;
 	}
 	else if (Number(tokenString).toString() !== "NaN") {
+
 		this.type = "Number";
 		this.value = Number(tokenString);
 	}

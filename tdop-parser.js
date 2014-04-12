@@ -2,13 +2,29 @@ var type = require("./utils/type.js");
 var printObj = require('./utils/print-object.js');
 
 module.exports = function (tokens) {
-	var parsed = parseExpression(tokens);
+	var parsed = parseBraceBlock(tokens);
+
+	//console.log(lispString(parsed.exp), parsed.exp.length);
 	//console.log(lispString(parsed.exp));
-	return [parsed.exp];
+	return parsed.exp;
 };
 
 var lambdaParamsNeedParens = true;
-var bracesForBlocks = true;
+
+function parseBraceBlock (tokens, pointer) {
+	var parseExpResult, expressions = [];
+	pointer = advancePointer(tokens, pointer || 0);
+
+	while (tokens[pointer].type !== "End of File" && 
+		tokens[pointer].string !== "}") {
+
+		parseExpResult = parseExpression(tokens, pointer);
+		expressions.push(parseExpResult.exp);
+		pointer = advanceToNextExpression(tokens, parseExpResult.pointer);
+	}
+
+	return {exp: expressions, pointer: pointer};
+}
 
 function parseExpression (tokens, pointer, precedence) {
 	pointer = pointer || 0;
@@ -291,6 +307,22 @@ function advancePointer (tokens, pointer) {
 	return pointer;
 }
 
+function advanceToNextExpression(tokens, pointer) {
+	var foundDivider = false;
+	while (tokens[pointer].type === "Indent" || tokens[pointer].string === ";") {
+		pointer += 1;
+		foundDivider = true;
+	}
+	if (!foundDivider && 
+		tokens[pointer].type !== "End of File" && 
+		tokens[pointer].string !== "}") {
+
+		errorAt(tokens[pointer], 
+			"Expressions must be separated by a newline or semicolon");
+	}
+	return pointer;
+}
+
 function checkToken (tokens, pointer, expected) {
 	var token = tokens[pointer];
 	if (token.string !== expected) {
@@ -309,7 +341,7 @@ function isIdentifier(node, name) {
 function errorAt(token, message) {
 	console.log("Parse Error: " + message + 
 		"\nat line " + token.position.line + ":" + token.position.column);
-	system.exit(1);
+	process.exit(1);
 }
 
 function withPrecedence (precedence, func) {
