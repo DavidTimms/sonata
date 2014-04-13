@@ -52,22 +52,34 @@ var tests = {
 
 	"fn (name = 'Dave') name & '!'": "((fn ((= name 'Dave')) ((& name '!'))))",
 
-	"if x < 2? print(x)": "((if (< x 2) ((print x))))",
+	"if (x < 2) print(x)": "((if (< x 2) ((print x))))",
 
-	"if true? 34 * 23 else 93 - 2": "((if true ((* 34 23)) ((- 93 2))))",
+	"if true 34 * 23 else 93 - 2": "((if true ((* 34 23)) ((- 93 2))))",
 
-	"if isTrue() ?\n10 \nelse\n 5": "((if (isTrue) (10) (5)))",
+	"if isTrue() \n10 \nelse\n 5": "((if (isTrue) (10) (5)))",
 
-	"exp1 \nexp2":  "(exp1 exp2)",
+	"if y > z {y + 2}": "((if (> y z) ((+ y 2))))",
+
+	"exp1; exp2":  "(exp1 exp2)",
 
 	"variable\n(another + expression)":  "(variable (+ another expression))",
 };
 
 multilineTest([
-	"print(", 
-	"	'hello' 'world'",
-	")"
-],"((print 'hello' 'world'))");
+	"if s.match(/\s/) {",
+	"	s2 = s & '?'",
+	"	print(s)",
+	"} else {",
+	"	print('no')",
+	"}"
+], "((if ((. s match) /\s/) ((= s2 (& s '?')) (print s)) ((print 'no'))))");
+
+multilineTest([
+	"xs.map(fn (x) {",
+	"	print(x)",
+	"	x * x",
+	"}).join(' ')"
+], "(((. ((. xs map) (fn (x) ((print x) (* x x)))) join) ' '))");
 
 runTests(tests);
 

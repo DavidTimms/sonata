@@ -170,10 +170,10 @@ function parseMemberAccess (tokens, pointer, precedence, parent) {
 
 function parseLambda (tokens, pointer) {
 	var params = parseParams(tokens, pointer + 1);
-	var body = parseExpression(tokens, params.pointer);
+	var body = parseBody(tokens, params.pointer);
 
 	return {
-		exp: [makeIdentifier("fn"), params.exp, [body.exp]], 
+		exp: [makeIdentifier("fn"), params.exp, body.exp], 
 		pointer: body.pointer
 	};
 }
@@ -208,12 +208,12 @@ function parseParam (tokens, pointer) {
 
 function parseIf (tokens, pointer) {
 	var test = parseExpression(tokens, pointer + 1);
-	checkToken(tokens, test.pointer, "?");
-	var ifBody = parseExpression(tokens, test.pointer + 1);
+
+	var ifBody = parseBody(tokens, test.pointer);
 	var elseBody = parseElse(tokens, ifBody.pointer);
 	//elseBody.exp will be an empty array if there is no else part
 	return {
-		exp: [makeIdentifier("if"), test.exp, [ifBody.exp]].concat(elseBody.exp), 
+		exp: [makeIdentifier("if"), test.exp, ifBody.exp].concat(elseBody.exp), 
 		pointer: elseBody.pointer
 	};
 }
@@ -221,13 +221,26 @@ function parseIf (tokens, pointer) {
 function parseElse (tokens, pointer) {
 	advPointer = advancePointer(tokens, pointer);
 	if (tokens[advPointer].string === "else") {
-		var elseBody = parseExpression(tokens, advPointer + 1);
+		var elseBody = parseBody(tokens, advPointer + 1);
 		return {
-			exp: [[elseBody.exp]], 
+			exp: [elseBody.exp], 
 			pointer: elseBody.pointer
 		};
 	}
 	else return {exp: [], pointer: pointer};
+}
+
+function parseBody (tokens, pointer) {
+	pointer = advancePointer(tokens, pointer);
+	if (tokens[pointer].string === "{") {
+		var blockResult = parseBraceBlock(tokens, pointer + 1);
+		checkToken(tokens, blockResult.pointer, "}");
+		return {exp: blockResult.exp, pointer: blockResult.pointer + 1};
+	}
+	else {
+		var expResult = parseExpression(tokens, pointer);
+		return {exp: [expResult.exp], pointer: expResult.pointer};
+	}
 }
 
 var prefixOperators = {
@@ -313,6 +326,8 @@ function advanceToNextExpression(tokens, pointer) {
 		pointer += 1;
 		foundDivider = true;
 	}
+
+	// throw an error if two expressions are on the same line without a semicolon
 	if (!foundDivider && 
 		tokens[pointer].type !== "End of File" && 
 		tokens[pointer].string !== "}") {

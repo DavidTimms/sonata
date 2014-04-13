@@ -176,6 +176,7 @@ function convertParameters (params) {
 }
 
 function convertExp (node) {
+	//console.log(node);
 	//printObj(node);
 	// Array represents a function application
 	if (node instanceof Array) {
@@ -321,6 +322,15 @@ var converters = {
 			makeUnary("+", convertExp(parts[0])), 
 			makeUnary("+", convertExp(parts[1])));
 	},
+	"-": function (parts) {
+		if (parts[1]) {
+			return makeBinary("-", convertExp(parts[0]), convertExp(parts[1]));	
+		}
+		// unary minus
+		else {
+			return makeUnary("-", convertExp(parts[0]));	
+		}
+	},
 	"++": function (parts) {
 		return {
 			type: "CallExpression",
@@ -380,7 +390,7 @@ var converters = {
 	})
 };
 
-(["-", "*", "/", "%"]).forEach(function (op) {
+(["*", "/", "%"]).forEach(function (op) {
 	converters[op] = binaryExpressionMaker("BinaryExpression", op);
 });
 (["<", ">", "<=", ">="]).forEach(function (op) {
