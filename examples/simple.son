@@ -1,0 +1,12 @@
+square = fn (x) {
+	x * x
+}
+
+abs = fn (x) {
+	if (x >= 0) x
+	else - x 
+}
+
+xs = [0 12 -4 8.3 -2]
+
+print(xs.map(abs).map(square))
