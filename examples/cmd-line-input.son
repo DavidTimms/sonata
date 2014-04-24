@@ -1,0 +1,7 @@
+
+main = fn (name age) {
+	print({
+		name = name
+		age = age
+	})
+}

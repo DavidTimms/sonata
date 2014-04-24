@@ -255,6 +255,9 @@ var prefixOperators = {
 	"[": function (tokens, pointer, precedence) {
 		return parseCall(tokens, pointer, precedence, makeIdentifier("list"));
 	},
+	"{": function (tokens, pointer, precedence) {
+		return parseCall(tokens, pointer, precedence, makeIdentifier("object"));
+	},
 	"fn": parseLambda,
 	"if": parseIf,
 };
@@ -262,6 +265,7 @@ var prefixOperators = {
 var infixOperators = {
 	"++": binaryOp(55),
 	"&": binaryOp(55),
+	"^": binaryOp(52),
 	"*": binaryOp(50),
 	"/": binaryOp(50),
 	"%": binaryOp(50),

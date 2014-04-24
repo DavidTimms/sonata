@@ -1,4 +1,4 @@
-square = fn (x) {
+square-num = fn (x) {
 	x * x
 }
 
@@ -9,4 +9,4 @@ abs = fn (x) {
 
 xs = [0 12 -4 8.3 -2]
 
-print(xs.map(abs).map(square))
+print(xs.map(abs).map(square-num))

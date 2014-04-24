@@ -10,7 +10,8 @@ function tokenize (source) {
 		var last = tokens.last();
 
 		// inside string literals
-		if (isLiteralDelimiter(last.at(0)) && !chr.match(/\s/)) {
+		if (isLiteralDelimiter(last.at(0)) && 
+			!(last.at(0) === "/" && chr.match(/\s/))) {
 			last.string += chr;
 			// end string literal
 			if (last.at(0) === chr && 

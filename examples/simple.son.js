@@ -56,18 +56,23 @@
             return result;
         }, $sonata_Continuation = function () {
             this.args = arguments;
+        }, $sonata_startMain = function () {
+            if (typeof main === 'function' && require && require.main && module && require.main === module && process && process.argv instanceof Array) {
+                main.apply(null, process.argv.slice(2));
+            }
         };
-    var square, abs, xs;
-    square = function (x) {
+    var square_$U45_num, abs, xs;
+    function square_$U45_num(x) {
         return x * x;
-    };
-    abs = function (x) {
+    }
+    function abs(x) {
         if (x >= 0) {
             return x;
         } else {
             return -x;
         }
-    };
+    }
     xs = list(0, 12, -4, 8.3, -2);
-    return print(xs.map(abs).map(square));
+    print(xs.map(abs).map(square_$U45_num));
+    $sonata_startMain();
 }());

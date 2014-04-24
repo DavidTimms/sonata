@@ -56,18 +56,34 @@
             return result;
         }, $sonata_Continuation = function () {
             this.args = arguments;
-        }, $sonata_startMain = function () {
-            if (typeof main === 'function' && require && require.main && module && require.main === module && process && process.argv instanceof Array) {
-                main.apply(null, process.argv.slice(2));
-            }
         };
-    var x;
-    x = +(34 * 56 * 23.33) + +(45 - -2) <= sonata('hello' - 2) / list(1, list(2, 3), 34).map(function (x, y) {
-        return x * y;
-    });
-    return print({
-        'first-name': 'Dave',
-        'age': 21
-    });
-    $sonata_startMain();
+    var pascal, getCell;
+    function pascal(n, rowCount, prev) {
+        while (true) {
+            var next;
+            if (rowCount === undefined)
+                rowCount = 2;
+            if (prev === undefined)
+                prev = list(list(1));
+            if (rowCount > n) {
+                return prev;
+            } else {
+                next = range(rowCount).map(function (rowNum) {
+                    return range(+rowNum + +1).map(function (colNum) {
+                        return +getCell(prev, rowNum, colNum) + +(+getCell(prev, rowNum - 1, colNum) + +getCell(prev, rowNum - 1, colNum - 1));
+                    });
+                });
+                var $temp_n = n, $temp_rowCount = +rowCount + +1;
+                prev = next;
+                n = $temp_n;
+                rowCount = $temp_rowCount;
+            }
+        }
+    }
+    function getCell(pyramid, x, y) {
+        return x >= 0 && (y >= 0 && (pyramid(x) && pyramid(x)(y))) || 0;
+    }
+    return print(pascal(14).map(function (row) {
+        return row.join('\t\t');
+    }).join('\n'));
 }());

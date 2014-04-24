@@ -1,0 +1,34 @@
+
+main = fn(playerMove) {
+	playerBeats = get(moves, playerMove)
+	if not playerBeats {
+		print("invalid move")
+	} else {
+		cpuMove = randomMove()
+		print("player picks: " & playerMove)
+		print("computer picks: " & cpuMove)
+		print(
+			if playerMove == cpuMove
+				"it's a draw!"
+			else if verb = get(playerBeats cpuMove)
+				playerMove & verb & cpuMove & ", player wins!"
+			else
+				cpuMove & get(get(moves cpuMove) playerMove) & 
+					playerMove & ", computer wins!"
+		)
+	}
+}
+
+randomMove = fn() {
+	options = list.fromArray(Object.keys(moves))
+	index = Math.floor(Math.random() * options.count)
+	options(index)
+}
+
+moves = {
+	Rock = {Lizard = " crushes ", Scissors = " crushes "}
+	Paper = {Rock = " covers ", Spock = " disproves "}
+	Scissors = {Paper = " cut ", Lizard = " decapitate "}
+	Lizard = {Spock = " poisons ", Paper = " eats "}
+	Spock = {Scissors = " smashes ", Rock = " vaporizes "}
+}

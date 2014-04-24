@@ -1,0 +1,22 @@
+
+pascal = fn (n, rowCount = 2, prev = [[1]]) {
+	if rowCount > n
+		prev
+	else {
+		next = range(rowCount).map(fn (rowNum) {
+			range(rowNum + 1).map(fn (colNum) {
+				getCell(prev, rowNum, colNum)
+					 + getCell(prev, rowNum - 1, colNum)
+					 + getCell(prev, rowNum - 1, colNum - 1)
+			})
+		})
+		pascal(n, rowCount + 1, next)
+	}
+}
+
+getCell = fn (pyramid x y) {
+	(x >= 0 and y >= 0 and pyramid(x) and pyramid(x)(y)) or 0
+}
+
+
+print(pascal(14).map(fn (row) row.join("\t\t")).join("\n"))

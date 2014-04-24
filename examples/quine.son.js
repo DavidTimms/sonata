@@ -56,18 +56,9 @@
             return result;
         }, $sonata_Continuation = function () {
             this.args = arguments;
-        }, $sonata_startMain = function () {
-            if (typeof main === 'function' && require && require.main && module && require.main === module && process && process.argv instanceof Array) {
-                main.apply(null, process.argv.slice(2));
-            }
         };
-    var x;
-    x = +(34 * 56 * 23.33) + +(45 - -2) <= sonata('hello' - 2) / list(1, list(2, 3), 34).map(function (x, y) {
-        return x * y;
-    });
-    return print({
-        'first-name': 'Dave',
-        'age': 21
-    });
-    $sonata_startMain();
+    var q, s;
+    q = String.fromCharCode(34);
+    s = 'q = String.fromCharCode(34); s = %s; print(s, q & s & q)';
+    return print(s, '' + q + ('' + s + q));
 }());

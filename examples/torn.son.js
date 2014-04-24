@@ -56,18 +56,38 @@
             return result;
         }, $sonata_Continuation = function () {
             this.args = arguments;
-        }, $sonata_startMain = function () {
-            if (typeof main === 'function' && require && require.main && module && require.main === module && process && process.argv instanceof Array) {
-                main.apply(null, process.argv.slice(2));
-            }
         };
-    var x;
-    x = +(34 * 56 * 23.33) + +(45 - -2) <= sonata('hello' - 2) / list(1, list(2, 3), 34).map(function (x, y) {
-        return x * y;
-    });
-    return print({
-        'first-name': 'Dave',
-        'age': 21
-    });
-    $sonata_startMain();
+    var isTorn, findTornNumbers;
+    function isTorn(x) {
+        var s, slicePoint, left, right;
+        s = x.toString();
+        slicePoint = Math.floor(s.length / 2);
+        left = Number(s.slice(0, slicePoint));
+        right = Number(s.slice(slicePoint));
+        return x === Math.pow(+left + +right, 2);
+    }
+    function findTornNumbers(n, x, found) {
+        while (true) {
+            if (x === undefined)
+                x = 10;
+            if (found === undefined)
+                found = list();
+            if (isTorn(x)) {
+                if (n === 1) {
+                    return found.append(x);
+                } else {
+                    var $temp_n = n - 1, $temp_x = +x + +1;
+                    found = found.append(x);
+                    n = $temp_n;
+                    x = $temp_x;
+                }
+            } else {
+                var $temp_n = n, $temp_x = +x + +1;
+                found = found;
+                n = $temp_n;
+                x = $temp_x;
+            }
+        }
+    }
+    return print(findTornNumbers(5));
 }());

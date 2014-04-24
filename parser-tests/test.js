@@ -63,6 +63,12 @@ var tests = {
 	"exp1; exp2":  "(exp1 exp2)",
 
 	"variable\n(another + expression)":  "(variable (+ another expression))",
+
+	"{name = 'Dave' age = 21}":  "((object (= name 'Dave') (= age 21)))",
+
+	"{}":  "((object))",
+
+	"{nested = {inner = value}}":  "((object (= nested (object (= inner value)))))",
 };
 
 multilineTest([
@@ -80,6 +86,14 @@ multilineTest([
 	"	x * x",
 	"}).join(' ')"
 ], "(((. ((. xs map) (fn (x) ((print x) (* x x)))) join) ' '))");
+
+multilineTest([
+	"print({",
+	"	x = 2,",
+	"	y = 5.5",
+	"})"
+], "((print (object (= x 2) (= y 5.5))))");
+
 
 runTests(tests);
 

@@ -1,6 +1,9 @@
 var list = require("texo");
 var jsonpretty = require('jsonpretty');
-var runtimeImport = require('./compile-runtime.js').runtimeImport;
+var runtimeImport = require("./compile-runtime").runtimeImport;
+var identifierUtils = require("./utils/identifier-utils");
+var normalizeIdentifier = identifierUtils.normalizeIdentifier;
+var isValidJSIdentifier = identifierUtils.isValidJSIdentifier;
 
 function printObj (obj) {
 	console.log(jsonpretty(obj));
@@ -9,7 +12,7 @@ function printObj (obj) {
 
 function convertAST (ast) {
 	//printObj(ast);
-	var context = {isFuncBody: true};
+	var context = {isFuncBody: true, noReturn: true};
 	var body = convertBody(ast, context);
 
 	body.unshift({
@@ -23,7 +26,8 @@ function convertAST (ast) {
 			runtimeImport("forIn"),
 			runtimeImport("contains"),
 			runtimeImport("repeat"),
-			runtimeImport("$sonata_Continuation")
+			runtimeImport("$sonata_Continuation"),
+			runtimeImport("$sonata_startMain")
 		],
 		kind: "var"
 	});
@@ -36,7 +40,7 @@ function convertAST (ast) {
 				type: "FunctionExpression",
 				id: null,
 				params: [],
-				body: makeBlock(strictMode(body)),
+				body: makeBlock(strictMode(addMainCall(body))),
 				generator: false,
 				expression: false
 			},
@@ -48,37 +52,58 @@ function convertAST (ast) {
 function convertBody (expressions, context) {
 	context = context || {};
 	var statements = [];
+	var noReturn = context.noReturn;
 	var isFuncBody = context.isFuncBody;
-	context.isFuncBody = false;
+	context.noReturn = false;
 
 	// set default parameters
-	if (context.params && context.params.defaults) {
+	if (isFuncBody && context.params && context.params.defaults) {
 		statements = createDefaultAssignments(context.params.defaults);
 		context.params.defaults = false;
 	}
 
-	expressions.slice(0, -1).forEach(function (exp) {
+	if (noReturn) {
+		statements = statements.concat(convertStatements(expressions, context));
+	}
+	else {
+		statements = statements.concat(
+			convertStatements(expressions.slice(0, -1), context));
+
+		context.isFuncBody = false;
+		var tailStatements = convertTail(expressions[expressions.length - 1], context);
+		statements = statements.concat(tailStatements);
+	}
+
+	if (isFuncBody) {
+		// hoist variables to the top of the function scope
+		var varDeclarations = createVarDeclarations(expressions);
+		if (varDeclarations.declarations.length > 0) {
+			statements.unshift(varDeclarations);
+		}
+	}
+	return statements;
+}
+
+function convertStatements (expressions, context) {
+	context = context || {};
+	var statements = [];
+	var isFuncBody = context.isFuncBody;
+	context.isFuncBody = false;
+	expressions.forEach(function (exp) {
 		// ignore comments
 		if (!isCallTo("#", exp)) {
 			if (isFuncBody &&
 				(isCallTo("def", exp) || isCallTo("=", exp)) && 
-				isCallTo("function", exp[2])) {
+				isCallTo("fn", exp[2])) {
 				context.nameIdent = exp[1];
 				context.isDeclaration = true;
-				statements.push(converters["function"](exp[2].slice(1), context));
+				statements.push(converters["fn"](exp[2].slice(1), context));
 			}
 			else {
 				statements.push(makeExpStatement(convertExp(exp)));
 			}
 		}
 	});
-	var tailStatements = convertTail(expressions[expressions.length - 1], context);
-	statements = statements.concat(tailStatements);
-	// hoist variables to the top of the function scope
-	var varDeclarations = createVarDeclarations(expressions);
-	if (varDeclarations.declarations.length > 0) {
-		statements.unshift(varDeclarations);
-	}
 	return statements;
 }
 
@@ -94,7 +119,7 @@ function convertTail (tail, context) {
 			}])
 		}];
 	}
-	else if (isCallTo("tail-call", tail)) {
+	else if (isCallTo("$sonata_tailCall", tail)) {
 		var params = context.params.identifiers.slice();
 		var lastParam = params.pop();
 		var lastArg = tail[tail.length - 1];
@@ -116,7 +141,10 @@ function convertTail (tail, context) {
 			return makeExpStatement(makeAssignment(param, 
 				makeIdentifier("$temp_" + param.name)));
 		});
-		return [tempAssignments, lastAssignment].concat(reassignments);
+		if (tempDeclarations.length < 1) {
+			return [lastAssignment].concat(reassignments);
+		}
+		else return [tempAssignments, lastAssignment].concat(reassignments);
 	}
 	else {
 		return [{
@@ -197,6 +225,9 @@ function convertExp (node) {
 		node.value < 0) {
 		return makeUnary("-", makeLiteral(Math.abs(node.value)));
 	}
+	else if (node.type === "Identifier") {
+		return makeIdentifier(node.name);
+	}
 	else {
 		return node;
 	}
@@ -237,7 +268,7 @@ function markTailRecursion (expressions, context) {
 	}
 	var tail = expressions[expressions.length - 1];
 	if (isCallTo(context.nameIdent.name, tail)) {
-		tail[0] = makeIdentifier("tail-call");
+		tail[0] = makeIdentifier("$sonata_tailCall");
 		foundTCR = true;
 	}
 	else if (isCallTo("if", tail)) {
@@ -248,8 +279,18 @@ function markTailRecursion (expressions, context) {
 	return foundTCR;
 }
 
+function convertObjectKey (node) {
+	if (node && node.type === "Identifier") {
+		return makeLiteral(node.name);
+	}
+	else if (node && node.type === "Literal" && typeof(node.value) === "string") {
+		return node;
+	}
+	else throw "Invalid key in object literal: " + node;
+}
+
 var converters = {
-	"function": function (parts, context) {
+	"fn": function (parts, context) {
 		context = context || {};
 		var type = (context.isDeclaration ? "FunctionDeclaration" : "FunctionExpression");
 		context.isDeclaration = false;
@@ -269,7 +310,7 @@ var converters = {
 		}
 		return {
 			type: type,
-			id: context.nameIdent || null,
+			id: context.nameIdent ? makeIdentifier(context.nameIdent.name) : null,
 			params: params.identifiers,
 			body: makeBlock(funcBody),
 			generator: false,
@@ -286,11 +327,11 @@ var converters = {
 		};
 	},
 	"=": function (parts) {
-		var identifier = parts[0];
+		var identifier = convertExp(parts[0]);
 		var value = parts[1];
-		if (isCallTo("function", value)) {
+		if (isCallTo("fn", value)) {
 			return makeAssignment(identifier, 
-				converters["function"](value.slice(1), {nameIdent: identifier}));
+				converters["fn"](value.slice(1), {nameIdent: identifier}));
 		}
 		else {
 			return makeAssignment(identifier, convertExp(value));
@@ -301,7 +342,7 @@ var converters = {
 			type: "MemberExpression",
 			computed: false,
 			object: convertExp(parts[0]),
-			property: parts[1]
+			property: convertExp(parts[1])
 		};
 	},
 	"get": function getMember (members) {
@@ -359,13 +400,16 @@ var converters = {
 	"object": function (parts) {
 		return {
 			type: "ObjectExpression",
-			properties: parts.map(function (pair) {
-				return {
-					type: "Property",
-					key: convertExp(pair[0]),
-					value: convertExp(pair[1]),
-					kind: "init"
-				};
+			properties: parts.map(function (assignment) {
+				if (isCallTo("=", assignment)) {
+					return {
+						type: "Property",
+						key: convertObjectKey(assignment[1]),
+						value: convertExp(assignment[2]),
+						kind: "init"
+					};
+				}
+				else throw "only property assignments allowed in an object literal";
 			})
 		};
 	},
@@ -406,7 +450,7 @@ converters["or"] = binaryExpressionMaker("LogicalExpression", "||");
 
 // proxies
 converters["def"] = converters["="];
-converters["fn"] = converters["function"];
+converters["function"] = converters["fn"];
 
 function macro (macroFunc) {
 	return function (parts) {
@@ -435,7 +479,7 @@ function makeFunctionCall (func, args) {
 	return {
 		type: "CallExpression",
 		callee: func,
-		arguments: args.map(convertExp)
+		arguments: args? args.map(convertExp) : []
 	};
 }
 
@@ -471,7 +515,7 @@ function makeUnary (operator, argument) {
 function makeIdentifier (name) {
 	return {
 		type: "Identifier",
-		name: name
+		name: normalizeIdentifier(name)
 	};
 }
 
@@ -541,10 +585,18 @@ function strictMode (statements) {
 	return statements;
 }
 
+function addMainCall (statements) {
+	statements.push(makeExpStatement(makeFunctionCall(
+		makeIdentifier("$sonata_startMain"))));
+	return statements;
+}
+
 function findAssignments (exp) {
 	var variables = Object.create(null);
 	function isFuncApplication (x) {
-		return x instanceof Array && x[0].name !== "function";
+		return x instanceof Array && 
+			x[0].name !== "fn" && 
+			x[0].name !== "object";
 	}
 	if (isFuncApplication(exp)) {
 		if (exp[0].name === "=" || exp[0].name === "def") {

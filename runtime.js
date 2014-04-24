@@ -80,3 +80,15 @@ var forIn = function (collection, func) {
 }
 
 var print = console.log.bind(console);
+
+var $sonata_startMain = function () {
+	if (typeof(main) === "function" && 
+			require &&
+			require.main &&
+			module &&
+			require.main === module &&
+			process &&
+			process.argv instanceof Array) {
+		main.apply(null, process.argv.slice(2));
+	}
+}

@@ -1,0 +1,39 @@
+
+people: [{
+	name: "Dave"
+	age: 21
+	gender: "male"
+},{
+	name: "Robin"
+	age: 48
+	gender: "male"
+},{
+	name: "Jane"
+	age: 37
+	gender: "female"
+}]
+
+def getManOlderThan(age) person where {
+	person in people
+	person.gender.toLowerCase() = "male"
+	person.age > age
+}
+
+def main(age) {
+	if man: getManOlderThan(age)
+		print(man.name)
+	else
+		print("Unable to find a man older than ${age}")
+}
+
+# Called like this: 
+# > node get-man-older-than 30
+# prints: "Robin"
+
+def sum(nums) {
+	nums.reduce(fn(a b) a + b)
+}
+
+def 2dSum(listOfLists) {
+	sum(listOfLists.lazyMap(sum))
+}

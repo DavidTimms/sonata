@@ -61,13 +61,12 @@
                 main.apply(null, process.argv.slice(2));
             }
         };
-    var x;
-    x = +(34 * 56 * 23.33) + +(45 - -2) <= sonata('hello' - 2) / list(1, list(2, 3), 34).map(function (x, y) {
-        return x * y;
-    });
-    return print({
-        'first-name': 'Dave',
-        'age': 21
-    });
+    var main;
+    function main(name, age) {
+        return print({
+            'name': name,
+            'age': age
+        });
+    }
     $sonata_startMain();
 }());

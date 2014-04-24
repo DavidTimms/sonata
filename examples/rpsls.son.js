@@ -61,13 +61,46 @@
                 main.apply(null, process.argv.slice(2));
             }
         };
-    var x;
-    x = +(34 * 56 * 23.33) + +(45 - -2) <= sonata('hello' - 2) / list(1, list(2, 3), 34).map(function (x, y) {
-        return x * y;
-    });
-    return print({
-        'first-name': 'Dave',
-        'age': 21
-    });
+    var main, randomMove, moves;
+    function main(playerMove) {
+        var playerBeats, cpuMove, verb;
+        playerBeats = moves[playerMove];
+        if (!playerBeats) {
+            return print('invalid move');
+        } else {
+            cpuMove = randomMove();
+            print('player picks: ' + playerMove);
+            print('computer picks: ' + cpuMove);
+            return print(playerMove === cpuMove ? ('it\'s a draw!') : ((verb = playerBeats[cpuMove]) ? ('' + playerMove + ('' + verb + (cpuMove + ', player wins!'))) : ('' + cpuMove + ('' + moves[cpuMove][playerMove] + (playerMove + ', computer wins!')))));
+        }
+    }
+    function randomMove() {
+        var options, index;
+        options = list.fromArray(Object.keys(moves));
+        index = Math.floor(Math.random() * options.count);
+        return options(index);
+    }
+    moves = {
+        'Rock': {
+            'Lizard': ' crushes ',
+            'Scissors': ' crushes '
+        },
+        'Paper': {
+            'Rock': ' covers ',
+            'Spock': ' disproves '
+        },
+        'Scissors': {
+            'Paper': ' cut ',
+            'Lizard': ' decapitate '
+        },
+        'Lizard': {
+            'Spock': ' poisons ',
+            'Paper': ' eats '
+        },
+        'Spock': {
+            'Scissors': ' smashes ',
+            'Rock': ' vaporizes '
+        }
+    };
     $sonata_startMain();
 }());
