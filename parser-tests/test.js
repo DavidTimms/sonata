@@ -8,7 +8,7 @@ var tests = {
 
 	"a + b":  "((+ a b))",
 
-	"name = 'Maria'":  "((= name 'Maria'))",
+	"name: 'Maria'":  "((: name 'Maria'))",
 
 	"a * b - 2":  "((- (* a b) 2))",
 
@@ -48,9 +48,13 @@ var tests = {
 
 	"fn () 45 - 2": "((fn () ((- 45 2))))",
 
+	"fn sum(h | t) t.append(h)": "((: sum (fn (h (| t)) (((. t append) h)))))",
+
+	"fn add(a b) {a + b}": "((: add (fn (a b) ((+ a b)))))",
+
 	"xs.reduce(fn (x y) x & y)": "(((. xs reduce) (fn (x y) ((& x y)))))",
 
-	"fn (name = 'Dave') name & '!'": "((fn ((= name 'Dave')) ((& name '!'))))",
+	"fn (name: 'Dave') name & '!'": "((fn ((: name 'Dave')) ((& name '!'))))",
 
 	"if (x < 2) print(x)": "((if (< x 2) ((print x))))",
 
@@ -60,25 +64,25 @@ var tests = {
 
 	"if y > z {y + 2}": "((if (> y z) ((+ y 2))))",
 
-	"exp1; exp2":  "(exp1 exp2)",
+	"exp1, exp2":  "(exp1 exp2)",
 
 	"variable\n(another + expression)":  "(variable (+ another expression))",
 
-	"{name = 'Dave' age = 21}":  "((object (= name 'Dave') (= age 21)))",
+	"{name: 'Dave' age: 21}":  "((object (: name 'Dave') (: age 21)))",
 
 	"{}":  "((object))",
 
-	"{nested = {inner = value}}":  "((object (= nested (object (= inner value)))))",
+	"{nested: {inner: value}}":  "((object (: nested (object (: inner value)))))",
 };
 
 multilineTest([
 	"if s.match(/\s/) {",
-	"	s2 = s & '?'",
+	"	s2: s & '?'",
 	"	print(s)",
 	"} else {",
 	"	print('no')",
 	"}"
-], "((if ((. s match) /\s/) ((= s2 (& s '?')) (print s)) ((print 'no'))))");
+], "((if ((. s match) /\s/) ((: s2 (& s '?')) (print s)) ((print 'no'))))");
 
 multilineTest([
 	"xs.map(fn (x) {",
@@ -89,10 +93,10 @@ multilineTest([
 
 multilineTest([
 	"print({",
-	"	x = 2,",
-	"	y = 5.5",
+	"	x: 2,",
+	"	y: 5.5",
 	"})"
-], "((print (object (= x 2) (= y 5.5))))");
+], "((print (object (: x 2) (: y 5.5))))");
 
 
 runTests(tests);

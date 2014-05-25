@@ -1,0 +1,37 @@
+
+
+async {
+	source: await(readFile("config.json"))
+	data: JSON.parse(source)
+	html: await(template.render(data))
+	res.send(html)
+} catch error {
+	res.send("There was an server error")
+}
+
+compile to:
+
+// async returns a promise
+async(function () {
+	var $sonata_asyncStep, source, data, html;
+	return function ($sonata_awaitedValue) {
+		switch ($sonata_asyncStep) {
+			case 0:
+				_state_ += 1;
+				return readFile("config.json");
+			case 1:
+				source = $sonata_awaitedValue;
+				data = JSON.parse(source);
+				_state_ += 1;
+				return template.render(data);
+			case 2:
+				html = $sonata_awaitedValue;
+				res.send(data);
+		}
+	}
+}
+}, function (error) {
+	// single error handling block called if 
+	// async function throws an error or promise fails
+	res.send("There was an server error");
+});

@@ -1,6 +1,6 @@
 (function () {
     'use strict';
-    var list = require('texo'), range = list.range, mix = function (parent, child) {
+    var list = require('texo'), range = list.range, eq = list.eq, mix = function (parent, child) {
             var key;
             var obj = {};
             for (key in parent) {

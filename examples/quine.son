@@ -1,1 +1,1 @@
-q = String.fromCharCode(34); s = "q = String.fromCharCode(34); s = %s; print(s, q & s & q)"; print(s, q & s & q)
+q: String.fromCharCode(34), s: "q: String.fromCharCode(34), s: %s, print(s, q & s & q)", print(s, q & s & q)

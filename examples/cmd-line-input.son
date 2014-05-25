@@ -1,7 +1,7 @@
 
-main = fn (name age) {
+fn main(name age) {
 	print({
-		name = name
-		age = age
+		name: name
+		age: age
 	})
 }

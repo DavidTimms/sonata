@@ -5,6 +5,8 @@ var identifierUtils = require("./utils/identifier-utils");
 var normalizeIdentifier = identifierUtils.normalizeIdentifier;
 var isValidJSIdentifier = identifierUtils.isValidJSIdentifier;
 
+var assignmentOp = ":";
+
 function printObj (obj) {
 	console.log(jsonpretty(obj));
 	return obj;
@@ -20,14 +22,17 @@ function convertAST (ast) {
 		declarations: [
 			makeRequire("list", "texo"),
 			makeDeclarator("range", convertMemberAccess(["list", "range"])),
+			makeDeclarator("eq", convertMemberAccess(["list", "eq"])),
 			runtimeImport("mix"),
+			runtimeImport("addKey"),
 			runtimeImport("type"),
 			runtimeImport("print"),
 			runtimeImport("forIn"),
 			runtimeImport("contains"),
 			runtimeImport("repeat"),
 			runtimeImport("$sonata_Continuation"),
-			runtimeImport("$sonata_startMain")
+			runtimeImport("$sonata_startMain"),
+			runtimeImport("$sonata_arraySlice")
 		],
 		kind: "var"
 	});
@@ -93,7 +98,7 @@ function convertStatements (expressions, context) {
 		// ignore comments
 		if (!isCallTo("#", exp)) {
 			if (isFuncBody &&
-				(isCallTo("def", exp) || isCallTo("=", exp)) && 
+				(isCallTo(assignmentOp, exp)) && 
 				isCallTo("fn", exp[2])) {
 				context.nameIdent = exp[1];
 				context.isDeclaration = true;
@@ -156,17 +161,28 @@ function convertTail (tail, context) {
 
 function createDefaultAssignments (defaults) {
 	return defaults.reduce(function (assignments, defaultAssign, index) {
-		if (defaultAssign) {
+		if (isCallTo(assignmentOp, defaultAssign)) {
 			assignments.push({
-			type: "IfStatement",
-			test: {
-				type: "BinaryExpression",
-				operator: "===",
-				left: defaultAssign[1],
-				right: makeIdentifier("undefined")
-			},
-			consequent: makeExpStatement(convertExp(defaultAssign)),
-			alternate: null
+				type: "IfStatement",
+				test: {
+					type: "BinaryExpression",
+					operator: "===",
+					left: defaultAssign[1],
+					right: makeIdentifier("undefined")
+				},
+				consequent: makeExpStatement(convertExp(defaultAssign)),
+				alternate: null
+			});
+		}
+		else if (isCallTo("|", defaultAssign)) {
+			assignments.push({
+			type: "VariableDeclaration",
+			declarations: [makeDeclarator(defaultAssign[1].name, {
+				type: "CallExpression",
+				callee: makeIdentifier("$sonata_arraySlice"),
+				arguments: [makeIdentifier("arguments"), makeLiteral(index)]
+			})],
+			kind: "var"
 		});
 		}
 		return assignments;
@@ -192,8 +208,11 @@ function createVarDeclarations (expressions) {
 
 function convertParameters (params) {
 	return params.reduce(function (output, node, index) {
-		if (isCallTo("=", node)) {
+		if (isCallTo(assignmentOp, node)) {
 			output.identifiers.push(node[1]);
+			output.defaults[index] = node;
+		}
+		else if (isCallTo("|", node)) {
 			output.defaults[index] = node;
 		}
 		else if (node.type === "Identifier") {
@@ -326,7 +345,7 @@ var converters = {
 			alternate: parts[2] ? convertSequence(parts[2]) : makeLiteral(false)
 		};
 	},
-	"=": function (parts) {
+	":": function (parts) {
 		var identifier = convertExp(parts[0]);
 		var value = parts[1];
 		if (isCallTo("fn", value)) {
@@ -397,11 +416,14 @@ var converters = {
 	"^": macro(function (left, right) {
 		return ["Math.pow", left, right];
 	}),
+	"=": macro(function (left, right) {
+		return ["eq", left, right];
+	}),
 	"object": function (parts) {
 		return {
 			type: "ObjectExpression",
 			properties: parts.map(function (assignment) {
-				if (isCallTo("=", assignment)) {
+				if (isCallTo(assignmentOp, assignment)) {
 					return {
 						type: "Property",
 						key: convertObjectKey(assignment[1]),
@@ -449,7 +471,6 @@ converters["and"] = binaryExpressionMaker("LogicalExpression", "&&");
 converters["or"] = binaryExpressionMaker("LogicalExpression", "||");
 
 // proxies
-converters["def"] = converters["="];
 converters["function"] = converters["fn"];
 
 function macro (macroFunc) {
@@ -591,35 +612,39 @@ function addMainCall (statements) {
 	return statements;
 }
 
+// create an object containing every identifier assigned to in the function
 function findAssignments (exp) {
 	var variables = Object.create(null);
-	function isFuncApplication (x) {
-		return x instanceof Array && 
-			x[0].name !== "fn" && 
-			x[0].name !== "object";
-	}
 	if (isFuncApplication(exp)) {
-		if (exp[0].name === "=" || exp[0].name === "def") {
-			addVariable(variables, exp[1].name);
+		if (isCallTo(assignmentOp, exp)) {
+			variables[exp[1].name] = true;
 		}
 
-		exp.filter(isFuncApplication).forEach(function (exp) {
-			var innerAssignments = findAssignments(exp);
-			for (var identifier in innerAssignments) {
-				addVariable(variables, identifier);
-			}
-		});
+		variables = exp
+			.filter(isFuncApplication)
+			.reduce(function (variables, innerExp) {
+				return combineObjects(variables, findAssignments(innerExp));
+			}, variables);
 	}
 	return variables;
 }
 
-function addVariable (vars, identifier) {
-	if (vars[identifier]) {
-		throw "Variable already declared in scope: " + identifier;
+function isFuncApplication (exp) {
+	return exp instanceof Array && 
+		exp[0].name !== "fn" && 
+		exp[0].name !== "object";
+}
+
+function combineObjects(x, y) {
+	var key;
+	var combined = Object.create(null);
+	for (key in x) {
+		combined[key] = x[key];
 	}
-	else {
-		vars[identifier] = true;
+	for (key in y) {
+		combined[key] = y[key];
 	}
+	return combined;
 }
 
 module.exports = convertAST;

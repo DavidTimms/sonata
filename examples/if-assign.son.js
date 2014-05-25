@@ -10,6 +10,13 @@
                 obj[key] = child[key];
             }
             return obj;
+        }, addKey = function (parent, newKey, newValue) {
+            var obj = {}, key;
+            for (key in parent) {
+                obj[key] = parent[key];
+            }
+            obj[newKey] = newValue;
+            return obj;
         }, type = function (val) {
             return val === null ? 'null' : typeof val;
         }, print = console.log.bind(console), forIn = function (collection, func) {
@@ -60,35 +67,18 @@
             if (typeof main === 'function' && require && require.main && module && require.main === module && process && process.argv instanceof Array) {
                 main.apply(null, process.argv.slice(2));
             }
-        };
-    var pascal, getCell;
-    function pascal(n, rowCount, prev) {
-        while (true) {
-            var next;
-            if (rowCount === undefined)
-                rowCount = 2;
-            if (prev === undefined)
-                prev = list(list(1));
-            if (rowCount > n) {
-                return prev;
-            } else {
-                next = range(rowCount).map(function (rowNum) {
-                    return range(+rowNum + +1).map(function (colNum) {
-                        return +getCell(prev, rowNum, colNum) + +(+getCell(prev, rowNum - 1, colNum) + +getCell(prev, rowNum - 1, colNum - 1));
-                    });
-                });
-                var $temp_n = n, $temp_rowCount = +rowCount + +1;
-                prev = next;
-                n = $temp_n;
-                rowCount = $temp_rowCount;
-            }
-        }
+        }, $sonata_arraySlice = function () {
+            var _slice = Array.prototype.slice;
+            return function (arrayLike, from, to) {
+                return list.fromArray(_slice.call(arrayLike, from, to));
+            };
+        }();
+    var main;
+    function main(name) {
+        var msg;
+        var rest = $sonata_arraySlice(arguments, 1);
+        eq(name, 'Dave') ? (msg = 'Hi Dave!') : (msg = 'Where\'s Dave?');
+        return print(rest);
     }
-    function getCell(pyramid, x, y) {
-        return x >= 0 && (y >= 0 && (pyramid(x) && pyramid(x)(y))) || 0;
-    }
-    print(pascal(14).map(function (row) {
-        return row.join('\t\t');
-    }).join('\n'));
     $sonata_startMain();
 }());

@@ -1,6 +1,6 @@
 (function () {
     'use strict';
-    var list = require('texo'), range = list.range, mix = function (parent, child) {
+    var list = require('texo'), range = list.range, eq = list.eq, mix = function (parent, child) {
             var key;
             var obj = {};
             for (key in parent) {
@@ -56,9 +56,19 @@
             return result;
         }, $sonata_Continuation = function () {
             this.args = arguments;
-        };
+        }, $sonata_startMain = function () {
+            if (typeof main === 'function' && require && require.main && module && require.main === module && process && process.argv instanceof Array) {
+                main.apply(null, process.argv.slice(2));
+            }
+        }, $sonata_arraySlice = function () {
+            var _slice = Array.prototype.slice;
+            return function (arrayLike, from, to) {
+                return list.fromArray(_slice.call(arrayLike, from, to));
+            };
+        }();
     var q, s;
     q = String.fromCharCode(34);
-    s = 'q = String.fromCharCode(34); s = %s; print(s, q & s & q)';
-    return print(s, '' + q + ('' + s + q));
+    s = 'q: String.fromCharCode(34), s: %s, print(s, q & s & q)';
+    print(s, '' + q + ('' + s + q));
+    $sonata_startMain();
 }());

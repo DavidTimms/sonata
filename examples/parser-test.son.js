@@ -1,6 +1,6 @@
 (function () {
     'use strict';
-    var list = require('texo'), range = list.range, mix = function (parent, child) {
+    var list = require('texo'), range = list.range, eq = list.eq, mix = function (parent, child) {
             var key;
             var obj = {};
             for (key in parent) {
@@ -61,13 +61,17 @@
                 main.apply(null, process.argv.slice(2));
             }
         };
-    var x;
+    var x, printTail;
     x = +(34 * 56 * 23.33) + +(45 - -2) <= sonata('hello' - 2) / list(1, list(2, 3), 34).map(function (x, y) {
         return x * y;
     });
-    return print({
+    print({
         'first-name': 'Dave',
         'age': 21
     });
+    function printTail(head) {
+        var tail = $sonata_arraySlice(arguments, 1);
+        return print(tail);
+    }
     $sonata_startMain();
 }());

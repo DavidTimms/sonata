@@ -1,9 +1,9 @@
 
-pascal = fn (n, rowCount = 2, prev = [[1]]) {
-	if rowCount > n
+fn pascal(n, rowCount: 2, prev: [[1]]) {
+	if rowCount > n {
 		prev
-	else {
-		next = range(rowCount).map(fn (rowNum) {
+	} else {
+		next: range(rowCount).map(fn (rowNum) {
 			range(rowNum + 1).map(fn (colNum) {
 				getCell(prev, rowNum, colNum)
 					 + getCell(prev, rowNum - 1, colNum)
@@ -14,7 +14,7 @@ pascal = fn (n, rowCount = 2, prev = [[1]]) {
 	}
 }
 
-getCell = fn (pyramid x y) {
+fn getCell(pyramid x y) {
 	(x >= 0 and y >= 0 and pyramid(x) and pyramid(x)(y)) or 0
 }
 

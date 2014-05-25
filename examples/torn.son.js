@@ -1,6 +1,6 @@
 (function () {
     'use strict';
-    var list = require('texo'), range = list.range, mix = function (parent, child) {
+    var list = require('texo'), range = list.range, eq = list.eq, mix = function (parent, child) {
             var key;
             var obj = {};
             for (key in parent) {
@@ -56,7 +56,16 @@
             return result;
         }, $sonata_Continuation = function () {
             this.args = arguments;
-        };
+        }, $sonata_startMain = function () {
+            if (typeof main === 'function' && require && require.main && module && require.main === module && process && process.argv instanceof Array) {
+                main.apply(null, process.argv.slice(2));
+            }
+        }, $sonata_arraySlice = function () {
+            var _slice = Array.prototype.slice;
+            return function (arrayLike, from, to) {
+                return list.fromArray(_slice.call(arrayLike, from, to));
+            };
+        }();
     var isTorn, findTornNumbers;
     function isTorn(x) {
         var s, slicePoint, left, right;
@@ -64,7 +73,7 @@
         slicePoint = Math.floor(s.length / 2);
         left = Number(s.slice(0, slicePoint));
         right = Number(s.slice(slicePoint));
-        return x === Math.pow(+left + +right, 2);
+        return eq(x, Math.pow(+left + +right, 2));
     }
     function findTornNumbers(n, x, found) {
         while (true) {
@@ -73,7 +82,7 @@
             if (found === undefined)
                 found = list();
             if (isTorn(x)) {
-                if (n === 1) {
+                if (eq(n, 1)) {
                     return found.append(x);
                 } else {
                     var $temp_n = n - 1, $temp_x = +x + +1;
@@ -89,5 +98,6 @@
             }
         }
     }
-    return print(findTornNumbers(5));
+    print(findTornNumbers(5));
+    $sonata_startMain();
 }());

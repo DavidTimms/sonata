@@ -1,14 +1,14 @@
-isTorn = fn (x) {
-	s = x.toString()
-	slicePoint = Math.floor(s.length / 2)
-	left = Number(s.slice(0 slicePoint))
-	right = Number(s.slice(slicePoint))
-	x == (left + right) ^ 2
+fn isTorn(x) {
+	s: x.toString()
+	slicePoint: Math.floor(s.length / 2)
+	left: Number(s.slice(0 slicePoint))
+	right: Number(s.slice(slicePoint))
+	x = (left + right) ^ 2
 }
 
-findTornNumbers = fn (n, x = 10, found = []) {
+fn findTornNumbers(n, x: 10, found: []) {
 	if isTorn(x)
-		if n == 1
+		if n = 1
 			found.append(x)
 		else 
 			findTornNumbers(n - 1, x + 1, found.append(x))

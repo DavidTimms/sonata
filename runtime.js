@@ -21,6 +21,15 @@ var mix = function (parent, child) {
 	return obj;
 }
 
+var addKey = function(parent, newKey, newValue) {
+	var obj = {}, key;
+	for (key in parent) {
+		obj[key] = parent[key];
+	}
+	obj[newKey] = newValue;
+	return obj;
+}
+
 var type = function (val) {
 	return (val === null ? "null" : typeof(val));
 }
@@ -92,3 +101,10 @@ var $sonata_startMain = function () {
 		main.apply(null, process.argv.slice(2));
 	}
 }
+
+var $sonata_arraySlice = (function () {
+	var _slice = Array.prototype.slice;
+	return function (arrayLike, from, to) {
+		return list.fromArray(_slice.call(arrayLike, from, to));
+	};
+})();

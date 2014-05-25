@@ -1,0 +1,53 @@
+
+tag: fn(tagName) {
+	fn(attrs) {
+		hasAttrs: type(attrs) = "object"
+		bodyParts: Array().slice
+			.call(arguments, if hasAttrs 1 else 0)
+			.join("\n")
+
+		attrString: if hasAttrs {
+			Object.keys(attrs).map(fn (attr) {
+				attr & "='" & get(attrs attr) & "'"
+			}).join(" ")
+		} else ""
+
+		"<" & tagName & " " & attrString & ">" & bodyParts & "</" & tagName & ">"
+	}
+}
+
+html: tag("html")
+head: tag("head")
+title: tag("title")
+link: tag("link")
+script: tag("script")
+body: tag("body")
+div: tag("div")
+h1: tag(h1)
+select: tag("select")
+option: tag("option")
+opt: fn (val) option({value: val} val)
+
+fn template(pageTitle) {
+	html(
+		head(
+			title("My Page")
+			link({rel: "stylesheet" href: "./style.css"})
+			script({src: "./client.js"})
+		)
+		body(
+			div({class: "container"}
+				if pageTitle 
+					h1(pageTitle) 
+				else ""
+				"Some body text here"
+			)
+			select({name: "gender"}
+				opt("male")
+				opt("female")
+			)
+		)
+	)
+}
+
+print(template("My Generated Page"))

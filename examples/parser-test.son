@@ -1,6 +1,8 @@
-x = (34 * 56) * 23.33 + 
+x: (34 * 56) * 23.33 + 
 	45 - -2 <= sonata("hello", - 2) / [1 [2, 3] 34].map(fn(x, y ) x * y)
 print({
-	first-name = "Dave"
-	age = 21
+	first-name: "Dave"
+	age: 21
 })
+
+fn printTail(head | tail) print(tail) 

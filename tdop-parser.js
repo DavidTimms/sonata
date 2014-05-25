@@ -9,7 +9,7 @@ module.exports = function (tokens) {
 	return parsed.exp;
 };
 
-var lambdaParamsNeedParens = true;
+var assignmentOp = ":";
 
 function parseBraceBlock (tokens, pointer) {
 	var parseExpResult, expressions = [];
@@ -169,37 +169,50 @@ function parseMemberAccess (tokens, pointer, precedence, parent) {
 }
 
 function parseLambda (tokens, pointer) {
-	var params = parseParams(tokens, pointer + 1);
+	var name = null;
+	pointer += 1;
+	// for function declarations, parse the function name
+	if (tokens[pointer].type === "Identifier") {
+		name = makeIdentifier(tokens[pointer].string);
+		pointer += 1;
+	}
+	var params = parseParams(tokens, pointer);
 	var body = parseBody(tokens, params.pointer);
 
+	var lambda = [makeIdentifier("fn"), params.exp, body.exp];
 	return {
-		exp: [makeIdentifier("fn"), params.exp, body.exp], 
+		// create assignment for function declarations
+		exp: (name ? [makeIdentifier(assignmentOp), name, lambda] : lambda), 
 		pointer: body.pointer
 	};
 }
 
 function parseParams (tokens, pointer) {
-	var params = [], endToken = ":";
-	if (lambdaParamsNeedParens) {
-		checkToken(tokens, pointer, "(");
-		pointer += 1;
-		endToken = ")";
-	}
+	var param, params = [], endToken = ")";
+	checkToken(tokens, pointer, "(");
+	pointer += 1;
 	while (tokens[pointer].string !== endToken) {
+		// rest parameter
+		if (tokens[pointer].string === "|") {
+			param = parseParam(tokens, pointer + 1);
+			params.push([makeIdentifier("|"), param.exp]);
+			pointer = advancePointer(tokens, param.pointer);
+			// check for closing parenthesis
+			checkToken(tokens, pointer, endToken);
+			break;
+		}
 		param = parseParam(tokens, pointer);
-		pointer = param.pointer;
 		params.push(param.exp);
-		pointer = advancePointer(tokens, pointer);
+		pointer = advancePointer(tokens, param.pointer);
 	}
 	return {exp: params, pointer: pointer + 1};
 }
 
 function parseParam (tokens, pointer) {
 	var param = parseExpression(tokens, pointer);
-	if ((param.exp instanceof Array && 
-		isIdentifier(param.exp[0], "=") && 
-		isIdentifier(param.exp[1])) || 
-		isIdentifier(param.exp)) {
+	if (isIdentifier(param.exp) ||
+		// check for default parameter assignment
+		(isCallTo(assignmentOp, param.exp) && isIdentifier(param.exp[1]))) {
 		return param;
 	}
 	else errorAt(tokens[pointer], 
@@ -259,7 +272,7 @@ var prefixOperators = {
 		return parseCall(tokens, pointer, precedence, makeIdentifier("object"));
 	},
 	"fn": parseLambda,
-	"if": parseIf,
+	"if": parseIf
 };
 
 var infixOperators = {
@@ -276,10 +289,11 @@ var infixOperators = {
 	"<=": binaryOp(30),
 	">=": binaryOp(30),
 	"==": binaryOp(25),
+	"=": binaryOp(25),
 	"!=": binaryOp(25),
 	"and": binaryOp(20),
 	"or": binaryOp(15),
-	"=": binaryOp(10),
+	":": binaryOp(10),
 	"(": withPrecedence(70, parseCall),
 	".": withPrecedence(80, parseMemberAccess),
 };
@@ -317,6 +331,10 @@ function makeIdentifier (name) {
 	};
 }
 
+function isCallTo(identifier, node) {
+	return node instanceof Array && node[0].name === identifier;
+}
+
 function advancePointer (tokens, pointer) {
 	while (tokens[pointer].type === "Indent" || tokens[pointer].string === ",") {
 		pointer += 1;
@@ -326,7 +344,7 @@ function advancePointer (tokens, pointer) {
 
 function advanceToNextExpression(tokens, pointer) {
 	var foundDivider = false;
-	while (tokens[pointer].type === "Indent" || tokens[pointer].string === ";") {
+	while (tokens[pointer].type === "Indent" || tokens[pointer].string === ",") {
 		pointer += 1;
 		foundDivider = true;
 	}
@@ -337,7 +355,7 @@ function advanceToNextExpression(tokens, pointer) {
 		tokens[pointer].string !== "}") {
 
 		errorAt(tokens[pointer], 
-			"Expressions must be separated by a newline or semicolon");
+			"Unexpected start of expression");
 	}
 	return pointer;
 }

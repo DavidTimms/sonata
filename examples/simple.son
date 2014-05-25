@@ -1,12 +1,16 @@
-square-num = fn (x) {
+fn square-num(x) {
 	x * x
 }
 
-abs = fn (x) {
+fn abs(x) {
 	if (x >= 0) x
 	else - x 
 }
 
-xs = [0 12 -4 8.3 -2]
+xs: [0 12 -4 8.3 -2]
 
 print(xs.map(abs).map(square-num))
+
+fn merge(|lists) lists.reduce(fn (a b) a ++ b)
+
+print(merge(xs, [56 34] [99 88 77]))

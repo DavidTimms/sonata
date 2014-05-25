@@ -1,6 +1,6 @@
 (function () {
     'use strict';
-    var list = require('texo'), range = list.range, mix = function (parent, child) {
+    var list = require('texo'), range = list.range, eq = list.eq, mix = function (parent, child) {
             var key;
             var obj = {};
             for (key in parent) {
@@ -9,6 +9,13 @@
             for (key in child) {
                 obj[key] = child[key];
             }
+            return obj;
+        }, addKey = function (parent, newKey, newValue) {
+            var obj = {}, key;
+            for (key in parent) {
+                obj[key] = parent[key];
+            }
+            obj[newKey] = newValue;
             return obj;
         }, type = function (val) {
             return val === null ? 'null' : typeof val;
@@ -60,7 +67,12 @@
             if (typeof main === 'function' && require && require.main && module && require.main === module && process && process.argv instanceof Array) {
                 main.apply(null, process.argv.slice(2));
             }
-        };
+        }, $sonata_arraySlice = function () {
+            var _slice = Array.prototype.slice;
+            return function (arrayLike, from, to) {
+                return list.fromArray(_slice.call(arrayLike, from, to));
+            };
+        }();
     var main, randomMove, moves;
     function main(playerMove) {
         var playerBeats, cpuMove, verb;
@@ -71,7 +83,7 @@
             cpuMove = randomMove();
             print('player picks: ' + playerMove);
             print('computer picks: ' + cpuMove);
-            return print(playerMove === cpuMove ? ('it\'s a draw!') : ((verb = playerBeats[cpuMove]) ? ('' + playerMove + ('' + verb + (cpuMove + ', player wins!'))) : ('' + cpuMove + ('' + moves[cpuMove][playerMove] + (playerMove + ', computer wins!')))));
+            return print(eq(playerMove, cpuMove) ? ('it\'s a draw!') : ((verb = playerBeats[cpuMove]) ? ('' + playerMove + ('' + verb + (cpuMove + ', player wins!'))) : ('' + cpuMove + ('' + moves[cpuMove][playerMove] + (playerMove + ', computer wins!')))));
         }
     }
     function randomMove() {
