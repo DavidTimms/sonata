@@ -10,6 +10,13 @@
                 obj[key] = child[key];
             }
             return obj;
+        }, addKey = function (parent, newKey, newValue) {
+            var obj = {}, key;
+            for (key in parent) {
+                obj[key] = parent[key];
+            }
+            obj[newKey] = newValue;
+            return obj;
         }, type = function (val) {
             return val === null ? 'null' : typeof val;
         }, print = console.log.bind(console), forIn = function (collection, func) {
@@ -60,7 +67,12 @@
             if (typeof main === 'function' && require && require.main && module && require.main === module && process && process.argv instanceof Array) {
                 main.apply(null, process.argv.slice(2));
             }
-        };
+        }, $sonata_arraySlice = function () {
+            var _slice = Array.prototype.slice;
+            return function (arrayLike, from, to) {
+                return list.fromArray(_slice.call(arrayLike, from, to));
+            };
+        }();
     var x, printTail;
     x = +(34 * 56 * 23.33) + +(45 - -2) <= sonata('hello' - 2) / list(1, list(2, 3), 34).map(function (x, y) {
         return x * y;
@@ -70,7 +82,11 @@
         'age': 21
     });
     function printTail(head) {
-        var tail = $sonata_arraySlice(arguments, 1);
+        var $sonata_arguments = [];
+        for (var $sonata_index = 1; $sonata_index < arguments.length; $sonata_index++) {
+            $sonata_arguments.push(arguments[$sonata_index]);
+        }
+        var tail = list.fromArray($sonata_arguments);
         return print(tail);
     }
     $sonata_startMain();

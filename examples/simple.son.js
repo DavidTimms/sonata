@@ -10,6 +10,13 @@
                 obj[key] = child[key];
             }
             return obj;
+        }, addKey = function (parent, newKey, newValue) {
+            var obj = {}, key;
+            for (key in parent) {
+                obj[key] = parent[key];
+            }
+            obj[newKey] = newValue;
+            return obj;
         }, type = function (val) {
             return val === null ? 'null' : typeof val;
         }, print = console.log.bind(console), forIn = function (collection, func) {
@@ -80,7 +87,11 @@
     xs = list(0, 12, -4, 8.3, -2);
     print(xs.map(abs).map(square_$U45_num));
     function merge() {
-        var lists = $sonata_arraySlice(arguments, 0);
+        var $sonata_arguments = [];
+        for (var $sonata_index = 0; $sonata_index < arguments.length; $sonata_index++) {
+            $sonata_arguments.push(arguments[$sonata_index]);
+        }
+        var lists = list.fromArray($sonata_arguments);
         return lists.reduce(function (a, b) {
             return a.concat(b);
         });

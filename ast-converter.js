@@ -174,16 +174,19 @@ function createDefaultAssignments (defaults) {
 				alternate: null
 			});
 		}
+		// rest parameters
 		else if (isCallTo("|", defaultAssign)) {
-			assignments.push({
-			type: "VariableDeclaration",
-			declarations: [makeDeclarator(defaultAssign[1].name, {
-				type: "CallExpression",
-				callee: makeIdentifier("$sonata_arraySlice"),
-				arguments: [makeIdentifier("arguments"), makeLiteral(index)]
-			})],
-			kind: "var"
-		});
+//			assignments.push({
+//				type: "VariableDeclaration",
+//				declarations: [makeDeclarator(defaultAssign[1].name, {
+//					type: "CallExpression",
+//					callee: makeIdentifier("$sonata_arraySlice"),
+//					arguments: [makeIdentifier("arguments"), makeLiteral(index)]
+//				})],
+//				kind: "var"
+//			});
+			return assignments.concat(
+				createRestParam(defaultAssign[1].name, index));
 		}
 		return assignments;
 	}, []);
@@ -204,6 +207,54 @@ function createVarDeclarations (expressions) {
 		declarations: declarations,
 		kind: "var"
 	};
+}
+
+function createRestParam(paramName, fromIndex) {
+	return [
+		makeDeclarations(makeDeclarator("$sonata_arguments", {
+			type: "ArrayExpression",
+			elements: []
+		})),
+		{
+			type: "ForStatement",
+			init: makeDeclarations(
+				makeDeclarator("$sonata_index", makeLiteral(fromIndex))),
+			test: makeBinary("<", makeIdentifier("$sonata_index"), {
+				type: "MemberExpression",
+				computed: false,
+				object: makeIdentifier("arguments"),
+				property: makeIdentifier("length")
+			}),
+			update: plusPlus(makeIdentifier("$sonata_index")),
+			body: makeBlock([makeExpStatement({
+				type: "CallExpression",
+				callee: {
+					type: "MemberExpression",
+					computed: false,
+					object: makeIdentifier("$sonata_arguments"),
+					property: makeIdentifier("push")
+				},
+				arguments: [{
+					type: "MemberExpression",
+					computed: true,
+					object: makeIdentifier("arguments"),
+					property: makeIdentifier("$sonata_index")
+				}]
+			})]),
+		},
+		makeDeclarations(
+			makeDeclarator(paramName, {
+				type: "CallExpression",
+				callee: {
+					type: "MemberExpression",
+					computed: false,
+					object: makeIdentifier("list"),
+					property: makeIdentifier("fromArray")
+				},
+				arguments: [makeIdentifier("$sonata_arguments")]
+			})
+		)
+	];
 }
 
 function convertParameters (params) {
@@ -576,6 +627,28 @@ function makeDeclarator (variable, init) {
 		id: makeIdentifier(variable),
 		init: init
 	};
+}
+
+
+function makeDeclarations() {
+	var args = [];
+	for (var i = 0; i < arguments.length; i++) {
+		args.push(arguments[i]);
+	}
+	return {
+		type: "VariableDeclaration",
+		declarations: args,
+		kind: "var"
+	};
+}
+
+function plusPlus(exp) {
+	return {
+		type: "UpdateExpression",
+		operator: "++",
+		argument: exp,
+		prefix: false
+	}
 }
 
 function makeRequire (variable, moduleName) {
