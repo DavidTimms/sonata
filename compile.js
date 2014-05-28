@@ -20,10 +20,11 @@ fs.readFile(inputFile, "utf8", function (err, source) {
 	});
 	var parsed = parse(tokenized);
 	//printObj(parsed);
-	var JsAst = convertAST(parsed);
-	var compiled = escodegen.generate(JsAst);
+	convertAST(parsed, function (jsAst) {
+		var compiled = escodegen.generate(jsAst);
 
-	var duration = Date.now() - start;
-	console.log("successfully compiled in " + duration + "ms");
-	fs.writeFile(outputFile, compiled);
+		var duration = Date.now() - start;
+		console.log("successfully compiled in " + duration + "ms");
+		fs.writeFile(outputFile, compiled);
+	});
 });

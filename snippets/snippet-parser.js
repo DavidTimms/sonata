@@ -41,10 +41,11 @@ var transforms = {
 		var renderedName = node.name;
 
 		if (firstChar === "$") {
-			if ((!context.data) || (!context.data[node.name.substring(1)])) {
-				throw Error("no value given for snippet data: " + node.name);
+			var paramName = node.name.substring(1);
+			if (!(context.data) || !(paramName in context.data)) {
+				throw Error("no value given for snippet data: " + paramName);
 			}
-			return context.data[node.name.substring(1)];
+			return context.data[paramName];
 		}
 
 		if (firstChar === "_") {

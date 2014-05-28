@@ -1,5 +1,5 @@
-fn square-num(x) {
-	x * x
+fn dbl-num(x) {
+	x + x
 }
 
 fn abs(x) {
@@ -9,7 +9,7 @@ fn abs(x) {
 
 xs: [0 12 -4 8.3 -2]
 
-print(xs.map(abs).map(square-num))
+print(xs.map(abs).map(dbl-num))
 
 fn merge(|lists) lists.reduce(fn (a b) a ++ b)
 

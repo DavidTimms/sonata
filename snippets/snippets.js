@@ -1,3 +1,117 @@
+prelude: {
+	"use strict";
+	var list = require("texo");
+	var range = list.range;
+	var eq = list.eq;
+
+//	var baseObject = Object.create(null, {
+//		type: {
+//			value: "Object"
+//		},
+//		toString: {
+//			value: function () {
+//				return "{" + this.type + "}";
+//			}
+//		}
+//	});
+
+	function mix(parent, child) {
+		var key;
+		var obj = {};
+		for (key in parent) {
+			obj[key] = parent[key];
+		}
+		for (key in child) {
+			obj[key] = child[key];
+		}
+		return obj;
+	}
+
+	function addKey(parent, newKey, newValue) {
+		var obj = {}, key;
+		for (key in parent) {
+			obj[key] = parent[key];
+		}
+		obj[newKey] = newValue;
+		return obj;
+	}
+
+	function type(val) {
+		return (val === null ? "null" : typeof(val));
+	}
+
+	function contains(collection, value) {
+		if (typeof(collection) === "function" && collection.count) {
+			for (var i = 0; i < collection.count; i++) {
+				if (list.eq(collection(i), value)) {
+					return true;
+				}
+			}
+		}
+		else {
+			for (var key in collection) {
+				if (list.eq(collection[key], value)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	function repeat(func) {
+		var result = {args: []};
+		do {
+			result = func.apply(null, result.args);
+		} while (result instanceof _Continuation);
+		return result;
+	}
+
+	function _Continuation() {
+		this.args = arguments;
+	}
+
+	var forIn = function (collection, func) {
+		var i, t = typeof(collection), resultArray = [];
+		switch (t) {
+			case "string":
+				for (i = 0; i < collection.length; i++) {
+					resultArray.push(func(collection.charAt(i), i));
+				}
+				return resultArray;
+			case "object":
+				if (typeof(collection.map) === "function") {
+					return collection.map(func);
+				}
+				else {
+					var keys = Object.keys(collection);
+					for (i = 0; i < keys.length; i++) {
+						resultArray.push(func(keys[i], collection[keys[i]]));
+					}
+					return resultArray;
+				}
+			case "function":
+				return collection.map(func);
+		}
+	}
+
+	var print = console.log.bind(console);
+
+	var _startMain = function () {
+		if (typeof(main) === "function" && 
+				require &&
+				require.main &&
+				module &&
+				require.main === module &&
+				process &&
+				process.argv instanceof Array) {
+			main.apply(null, process.argv.slice(2));
+		}
+	}
+}
+
+startMain: {
+	_startMain();
+}
 
 restParam: {
 	var _restArray = [];
@@ -5,4 +119,28 @@ restParam: {
 		_restArray.push(arguments[_i]);
 	}
 	var $paramName = list.fromArray(_restArray);
+}
+
+add: {
+	+$left + +$right;
+}
+
+concatString: {
+	$left + $right;
+}
+
+concat: {
+	$left.concat($right);
+}
+
+staticProperty: {
+	$object.$property;
+}
+
+dynamicProperty: {
+	$object[$property];
+}
+
+ifExpression: {
+	$test ? $consequent : $alternate;
 }

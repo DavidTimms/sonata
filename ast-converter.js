@@ -1,9 +1,13 @@
 var list = require("texo");
 var jsonpretty = require('jsonpretty');
 var runtimeImport = require("./compile-runtime").runtimeImport;
+var snippets = require("./snippets/snippet-parser.js");
+
 var identifierUtils = require("./utils/identifier-utils");
 var normalizeIdentifier = identifierUtils.normalizeIdentifier;
 var isValidJSIdentifier = identifierUtils.isValidJSIdentifier;
+
+var buildSnippet = null;
 
 var assignmentOp = ":";
 
@@ -12,46 +16,38 @@ function printObj (obj) {
 	return obj;
 }
 
-function convertAST (ast) {
-	//printObj(ast);
-	var context = {isFuncBody: true, noReturn: true};
-	var body = convertBody(ast, context);
+function convertAST (ast, callback) {
 
-	body.unshift({
-		type: "VariableDeclaration",
-		declarations: [
-			makeRequire("list", "texo"),
-			makeDeclarator("range", convertMemberAccess(["list", "range"])),
-			makeDeclarator("eq", convertMemberAccess(["list", "eq"])),
-			runtimeImport("mix"),
-			runtimeImport("addKey"),
-			runtimeImport("type"),
-			runtimeImport("print"),
-			runtimeImport("forIn"),
-			runtimeImport("contains"),
-			runtimeImport("repeat"),
-			runtimeImport("$sonata_Continuation"),
-			runtimeImport("$sonata_startMain"),
-			runtimeImport("$sonata_arraySlice")
-		],
-		kind: "var"
+	snippets.createSnippetBuilder(
+		"./snippets/snippets.js", function (snippetBuilder) {
+
+		// assign global snippet builder function
+		buildSnippet = snippetBuilder;
+
+		var context = {isFuncBody: true, noReturn: true};
+		var body = convertBody(ast, context);
+
+		body = buildSnippet("prelude")
+			.concat(body)
+			.concat(buildSnippet("startMain"));
+
+		// Define the program with an immediately invoked function wrapper
+		callback({
+			type: "Program",
+			body: [makeExpStatement({
+				type: "CallExpression",
+				callee: {
+					type: "FunctionExpression",
+					id: null,
+					params: [],
+					body: makeBlock(body),
+					generator: false,
+					expression: false
+				},
+				arguments: []
+			})]
+		});
 	});
-	// Define the program with an immediately invoked function wrapper
-	return {
-		type: "Program",
-		body: [makeExpStatement({
-			type: "CallExpression",
-			callee: {
-				type: "FunctionExpression",
-				id: null,
-				params: [],
-				body: makeBlock(strictMode(addMainCall(body))),
-				generator: false,
-				expression: false
-			},
-			arguments: []
-		})]
-	};
 }
 
 function convertBody (expressions, context) {
@@ -176,17 +172,10 @@ function createDefaultAssignments (defaults) {
 		}
 		// rest parameters
 		else if (isCallTo("|", defaultAssign)) {
-//			assignments.push({
-//				type: "VariableDeclaration",
-//				declarations: [makeDeclarator(defaultAssign[1].name, {
-//					type: "CallExpression",
-//					callee: makeIdentifier("$sonata_arraySlice"),
-//					arguments: [makeIdentifier("arguments"), makeLiteral(index)]
-//				})],
-//				kind: "var"
-//			});
-			return assignments.concat(
-				createRestParam(defaultAssign[1].name, index));
+			return assignments.concat(buildSnippet("restParam", {
+				paramName: makeIdentifier(defaultAssign[1].name), 
+				fromIndex: makeLiteral(index)
+			}));
 		}
 		return assignments;
 	}, []);
@@ -207,54 +196,6 @@ function createVarDeclarations (expressions) {
 		declarations: declarations,
 		kind: "var"
 	};
-}
-
-function createRestParam(paramName, fromIndex) {
-	return [
-		makeDeclarations(makeDeclarator("$sonata_arguments", {
-			type: "ArrayExpression",
-			elements: []
-		})),
-		{
-			type: "ForStatement",
-			init: makeDeclarations(
-				makeDeclarator("$sonata_index", makeLiteral(fromIndex))),
-			test: makeBinary("<", makeIdentifier("$sonata_index"), {
-				type: "MemberExpression",
-				computed: false,
-				object: makeIdentifier("arguments"),
-				property: makeIdentifier("length")
-			}),
-			update: plusPlus(makeIdentifier("$sonata_index")),
-			body: makeBlock([makeExpStatement({
-				type: "CallExpression",
-				callee: {
-					type: "MemberExpression",
-					computed: false,
-					object: makeIdentifier("$sonata_arguments"),
-					property: makeIdentifier("push")
-				},
-				arguments: [{
-					type: "MemberExpression",
-					computed: true,
-					object: makeIdentifier("arguments"),
-					property: makeIdentifier("$sonata_index")
-				}]
-			})]),
-		},
-		makeDeclarations(
-			makeDeclarator(paramName, {
-				type: "CallExpression",
-				callee: {
-					type: "MemberExpression",
-					computed: false,
-					object: makeIdentifier("list"),
-					property: makeIdentifier("fromArray")
-				},
-				arguments: [makeIdentifier("$sonata_arguments")]
-			})
-		)
-	];
 }
 
 function convertParameters (params) {
@@ -287,9 +228,9 @@ function convertExp (node) {
 		}
 	}
 	// Should now never occur
-	else if (node.type === "Member") {
-		return convertMemberAccess(node.names.slice());
-	}
+//	else if (node.type === "Member") {
+//		return convertMemberAccess(node.names.slice());
+//	}
 	else if (node.type === "Literal" && 
 		typeof(node.value) === "number" && 
 		node.value < 0) {
@@ -303,21 +244,21 @@ function convertExp (node) {
 	}
 }
 
-// shouldn't be needed any more. "." is now just a normal function
-function convertMemberAccess (names) {
-	names = names.slice();
-	var identifier = makeIdentifier(names.pop());
-	if (names.length < 1) {
-		return identifier;
-	}
-	return {
-		type: "MemberExpression",
-		computed: false,
-		object: convertMemberAccess(names),
-		property: identifier
-	};
-}
-
+// shouldn't be needed any more now "." is just a normal function
+//function convertMemberAccess (names) {
+//	names = names.slice();
+//	var identifier = makeIdentifier(names.pop());
+//	if (names.length < 1) {
+//		return identifier;
+//	}
+//	return {
+//		type: "MemberExpression",
+//		computed: false,
+//		object: convertMemberAccess(names),
+//		property: identifier
+//	};
+//}
+//
 
 function convertSequence (expressions) {
 	if (expressions instanceof Array) {
@@ -362,7 +303,8 @@ function convertObjectKey (node) {
 var converters = {
 	"fn": function (parts, context) {
 		context = context || {};
-		var type = (context.isDeclaration ? "FunctionDeclaration" : "FunctionExpression");
+		var type = (context.isDeclaration ? 
+			"FunctionDeclaration" : "FunctionExpression");
 		context.isDeclaration = false;
 		var params = convertParameters(parts[0]);
 		var bodyExpressions = parts[1];
@@ -389,12 +331,11 @@ var converters = {
 	},
 	"if": function (parts, context) {
 		context = context || {};
-		return {
-			type: "ConditionalExpression",
+		return snippetExp("ifExpression", {
 			test: convertExp(parts[0]),
 			consequent: convertSequence(parts[1]),
 			alternate: parts[2] ? convertSequence(parts[2]) : makeLiteral(false)
-		};
+		});
 	},
 	":": function (parts) {
 		var identifier = convertExp(parts[0]);
@@ -408,30 +349,26 @@ var converters = {
 		}
 	},
 	".": function (parts) {
-		return {
-			type: "MemberExpression",
-			computed: false,
+		return snippetExp("staticProperty", {
 			object: convertExp(parts[0]),
 			property: convertExp(parts[1])
-		};
+		});
 	},
 	"get": function getMember (members) {
 		var member = convertExp(members[members.length - 1]);
 		if (members.length  < 2) {
 			return member;
 		}
-		return {
-			type: "MemberExpression",
-			computed: true,
+		return snippetExp("dynamicProperty", {
 			object: getMember(members.slice(0, -1)),
 			property: member
-		};
+		});
 	},
 	"+": function (parts) {
-		return makeBinary(
-			"+", 
-			makeUnary("+", convertExp(parts[0])), 
-			makeUnary("+", convertExp(parts[1])));
+		return snippetExp("add", {
+			left: convertExp(parts[0]),
+			right: convertExp(parts[1])
+		});
 	},
 	"-": function (parts) {
 		if (parts[1]) {
@@ -443,29 +380,31 @@ var converters = {
 		}
 	},
 	"++": function (parts) {
-		return {
-			type: "CallExpression",
-			callee: {
-				type: "MemberExpression",
-				computed: false,
-				object: convertExp(parts[0]),
-				property: makeIdentifier("concat")
-			},
-			arguments: [convertExp(parts[1])]
-		};
+		return snippetExp("concat", {
+			left: convertExp(parts[0]),
+			right: convertExp(parts[1])
+		})
 	},
 	"&": function (parts) {
-		if ((parts[0].type === "Literal" && typeof(parts[0].value) === "string") ||
-			(parts[1].type === "Literal" && typeof(parts[1].value) === "string")) {
-			return makeBinary("+", convertExp(parts[0]), convertExp(parts[1]));
+		var left =  convertExp(parts[0]);
+		var right = convertExp(parts[1]);
+
+		// add a concatenation to the empty string to
+		// convert the value to a string
+		if (!(isStringNode(parts[0]) || isStringNode(parts[1]))) {
+			left = snippetExp("concatString", {
+				left: makeLiteral(""), 
+				right: left
+			});
 		}
-		return makeBinary(
-			"+", 
-			makeBinary("+", makeLiteral(""), convertExp(parts[0])), 
-			convertExp(parts[1]));
+
+		return snippetExp("concatString", {
+			left: left, 
+			right: right
+		});
 	},
 	"^": macro(function (left, right) {
-		return ["Math.pow", left, right];
+		return [[".", "Math", "pow"], left, right];
 	}),
 	"=": macro(function (left, right) {
 		return ["eq", left, right];
@@ -524,6 +463,7 @@ converters["or"] = binaryExpressionMaker("LogicalExpression", "||");
 // proxies
 converters["function"] = converters["fn"];
 
+
 function macro (macroFunc) {
 	return function (parts) {
 		var fragment = macroFunc.apply(null, parts);
@@ -540,11 +480,21 @@ function wrapToken (token) {
 			case "number":
 				return makeLiteral(token);
 			case "string":
-				return convertMemberAccess(token.split("."));
+				return makeIdentifier(token);
 			default:
 				return token;
 		}
 	}
+}
+
+
+function isStringNode(node) {
+	return node && (isCallTo("&", node) ||
+		(node.type === "Literal" && typeof(node.value) === "string"));
+}
+
+function snippetExp(name, data) {
+	return buildSnippet(name, data)[0].expression;
 }
 
 function makeFunctionCall (func, args) {
@@ -672,17 +622,6 @@ function walkNode (node, callback) {
 
 function isCallTo(identifier, node) {
 	return node instanceof Array && node[0].name === identifier;
-}
-
-function strictMode (statements) {
-	statements.unshift(makeExpStatement(makeLiteral("use strict")));
-	return statements;
-}
-
-function addMainCall (statements) {
-	statements.push(makeExpStatement(makeFunctionCall(
-		makeIdentifier("$sonata_startMain"))));
-	return statements;
 }
 
 // create an object containing every identifier assigned to in the function

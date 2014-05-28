@@ -73,9 +73,9 @@
                 return list.fromArray(_slice.call(arrayLike, from, to));
             };
         }();
-    var square_$U45_num, abs, xs, merge;
-    function square_$U45_num(x) {
-        return x * x;
+    var dbl_$U45_num, abs, xs, merge;
+    function dbl_$U45_num(x) {
+        return +x + +x;
     }
     function abs(x) {
         if (x >= 0) {
@@ -85,13 +85,13 @@
         }
     }
     xs = list(0, 12, -4, 8.3, -2);
-    print(xs.map(abs).map(square_$U45_num));
+    print(xs.map(abs).map(dbl_$U45_num));
     function merge() {
-        var $sonata_arguments = [];
-        for (var $sonata_index = 0; $sonata_index < arguments.length; $sonata_index++) {
-            $sonata_arguments.push(arguments[$sonata_index]);
+        var $sonata_restArray = [];
+        for (var $sonata_i = 0; $sonata_i < arguments.length; $sonata_i++) {
+            $sonata_restArray.push(arguments[$sonata_i]);
         }
-        var lists = list.fromArray($sonata_arguments);
+        var lists = list.fromArray($sonata_restArray);
         return lists.reduce(function (a, b) {
             return a.concat(b);
         });
