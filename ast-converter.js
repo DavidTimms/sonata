@@ -25,27 +25,19 @@ function convertAST (ast, callback) {
 		buildSnippet = snippetBuilder;
 
 		var context = {isFuncBody: true, noReturn: true};
-		var body = convertBody(ast, context);
 
-		body = buildSnippet("prelude")
-			.concat(body)
+		var body = buildSnippet("prelude")
+			.concat(convertBody(ast, context))
 			.concat(buildSnippet("startMain"));
 
 		// Define the program with an immediately invoked function wrapper
 		callback({
 			type: "Program",
-			body: [makeExpStatement({
-				type: "CallExpression",
-				callee: {
-					type: "FunctionExpression",
-					id: null,
-					params: [],
-					body: makeBlock(body),
-					generator: false,
-					expression: false
-				},
+			body: buildSnippet("functionWrapper", {
+				statements: body,
+				parameters: [],
 				arguments: []
-			})]
+			})
 		});
 	});
 }

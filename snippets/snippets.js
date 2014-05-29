@@ -144,3 +144,9 @@ dynamicProperty: {
 ifExpression: {
 	$test ? $consequent : $alternate;
 }
+
+functionWrapper: {
+	(function ($each_parameters) {
+		$each_statements;
+	}($each_arguments));
+}

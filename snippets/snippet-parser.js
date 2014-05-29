@@ -41,11 +41,7 @@ var transforms = {
 		var renderedName = node.name;
 
 		if (firstChar === "$") {
-			var paramName = node.name.substring(1);
-			if (!(context.data) || !(paramName in context.data)) {
-				throw Error("no value given for snippet data: " + paramName);
-			}
-			return context.data[paramName];
+			return getDataParam(node.name.substring(1), context.data);
 		}
 
 		if (firstChar === "_") {
@@ -66,6 +62,19 @@ function mapTree(node, context) {
 function mapChildren(node, context) {
 	var mapped;
 	if (node instanceof Array) {
+
+		// if present, get the name of the data parameter
+		// for an each command
+		var eachParam = extractEachParam(node[0]) || 
+			(node[0] && extractEachParam(node[0].expression));
+
+		// return the data parameter unmodified if an each
+		// command is present in the array
+		if (eachParam) {
+			return getDataParam(eachParam, context.data);
+		}
+
+		// otherwise, map over each item in the array normally
 		mapped = node.map(function (item) {
 			return mapTree(item, context);
 		});
@@ -77,6 +86,21 @@ function mapChildren(node, context) {
 		}
 	}
 	return mapped;
+}
+
+function getDataParam(name, data) {
+		if (!data || !(name in data)) {
+			throw Error("no value given for snippet data: " + name);
+		}
+		return data[name];
+}
+
+function extractEachParam(node) {
+	var prefix =  "$each_";
+	return node && 
+		node.name && 
+		node.name.substring(0, prefix.length) === prefix &&
+		node.name.substring(prefix.length);
 }
 
 function mix(obj1, obj2) {
