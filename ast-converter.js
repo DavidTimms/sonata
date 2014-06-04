@@ -1,13 +1,15 @@
 var list = require("texo");
 var jsonpretty = require('jsonpretty');
-var runtimeImport = require("./compile-runtime").runtimeImport;
 var snippets = require("./snippets/snippet-parser.js");
+//var tailCallElim = require("tail-call-eliminator");
 
 var identifierUtils = require("./utils/identifier-utils");
 var normalizeIdentifier = identifierUtils.normalizeIdentifier;
 var isValidJSIdentifier = identifierUtils.isValidJSIdentifier;
 
-var buildSnippet = null;
+var buildSnippet = function () {
+	throw Error("Attempted to call snippet builder before it was initialised.");
+};
 
 var assignmentOp = ":";
 
@@ -33,7 +35,7 @@ function convertAST (ast, callback) {
 		// Define the program with an immediately invoked function wrapper
 		callback({
 			type: "Program",
-			body: buildSnippet("functionWrapper", {
+			body:buildSnippet("functionWrapper", {
 				statements: body,
 				parameters: [],
 				arguments: []
@@ -63,7 +65,8 @@ function convertBody (expressions, context) {
 			convertStatements(expressions.slice(0, -1), context));
 
 		context.isFuncBody = false;
-		var tailStatements = convertTail(expressions[expressions.length - 1], context);
+		var tailStatements = convertTail(
+			expressions[expressions.length - 1], context);
 		statements = statements.concat(tailStatements);
 	}
 
@@ -257,7 +260,7 @@ function convertSequence (expressions) {
 		return {
 			type: "SequenceExpression",
 			expressions: expressions.map(convertExp)
-		};	
+		};
 	}
 	else {
 		return convertExp(expressions);
@@ -435,7 +438,25 @@ var converters = {
 	}),
 	"for": macro(function (key, inKeyword, collection, body) {
 		return ["forIn", collection, ["fn", [key], body]];
-	})
+	}),
+	"type": function (parts) {
+		var properties = parts.slice(1);
+		return snippetExp("typeDeclaration", {
+			typeName: parts[0],
+			properties: properties,
+			assignments: properties.map(function (property) {
+				return buildSnippet("typePropertyAssignment", {
+					property: property
+				});
+			}).reduce(concatArrays)
+		});
+	},
+	"set!": function (parts) {
+		return snippetExp("assign", {
+			left: convertExp(parts[0]), 
+			right: convertExp(parts[1])
+		});
+	}
 };
 
 (["*", "/", "%"]).forEach(function (op) {
@@ -571,7 +592,6 @@ function makeDeclarator (variable, init) {
 	};
 }
 
-
 function makeDeclarations() {
 	var args = [];
 	for (var i = 0; i < arguments.length; i++) {
@@ -581,27 +601,6 @@ function makeDeclarations() {
 		type: "VariableDeclaration",
 		declarations: args,
 		kind: "var"
-	};
-}
-
-function plusPlus(exp) {
-	return {
-		type: "UpdateExpression",
-		operator: "++",
-		argument: exp,
-		prefix: false
-	}
-}
-
-function makeRequire (variable, moduleName) {
-	return {
-		type: "VariableDeclarator",
-		id: makeIdentifier(variable),
-		init: {
-			type: "CallExpression",
-			callee: makeIdentifier("require"),
-			arguments: [makeLiteral(moduleName)]
-		}
 	};
 }
 
@@ -637,6 +636,10 @@ function isFuncApplication (exp) {
 	return exp instanceof Array && 
 		exp[0].name !== "fn" && 
 		exp[0].name !== "object";
+}
+
+function concatArrays(a, b) {
+	return a.concat(b);
 }
 
 function combineObjects(x, y) {

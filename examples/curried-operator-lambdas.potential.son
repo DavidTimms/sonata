@@ -1,0 +1,15 @@
+fn main() {
+	people = ["Dave" "Jane" "Lucy"]
+
+	people
+		.map(.name)
+		.map(.toUpperCase())
+		.map(& " IS HERE!")
+		.join("\n")
+		.forEach(print)
+}
+
+# prints:
+# DAVE IS HERE!
+# JANE IS HERE!
+# LUCY IS HERE!

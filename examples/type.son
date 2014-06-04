@@ -1,0 +1,7 @@
+Person: type(Person name age gender)
+
+dave: Person("Dave" 21 "male")
+
+print(dave.name "is a" dave.age "year old" dave.gender)
+
+set!(dave.age 22)

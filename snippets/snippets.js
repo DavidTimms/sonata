@@ -36,20 +36,17 @@ prelude: {
 		return obj;
 	}
 
-	function type(val) {
-		return (val === null ? "null" : typeof(val));
-	}
-
 	function contains(collection, value) {
+		var i, key;
 		if (typeof(collection) === "function" && collection.count) {
-			for (var i = 0; i < collection.count; i++) {
+			for (i = 0; i < collection.count; i++) {
 				if (list.eq(collection(i), value)) {
 					return true;
 				}
 			}
 		}
 		else {
-			for (var key in collection) {
+			for (key in collection) {
 				if (list.eq(collection[key], value)) {
 					return true;
 				}
@@ -70,7 +67,7 @@ prelude: {
 		this.args = arguments;
 	}
 
-	var forIn = function (collection, func) {
+	function forIn(collection, func) {
 		var i, t = typeof(collection), resultArray = [];
 		switch (t) {
 			case "string":
@@ -96,7 +93,7 @@ prelude: {
 
 	var print = console.log.bind(console);
 
-	var _startMain = function () {
+	function _startMain() {
 		if (typeof(main) === "function" && 
 				require &&
 				require.main &&
@@ -114,8 +111,8 @@ startMain: {
 }
 
 restParam: {
-	var _restArray = [];
-	for (var _i = $fromIndex; _i < arguments.length; _i++) {
+	var _i, _restArray = [];
+	for (_i = $fromIndex; _i < arguments.length; _i++) {
 		_restArray.push(arguments[_i]);
 	}
 	var $paramName = list.fromArray(_restArray);
@@ -149,4 +146,22 @@ functionWrapper: {
 	(function ($each_parameters) {
 		$each_statements;
 	}($each_arguments));
+}
+
+typeDeclaration: {
+	(function $typeName($each_properties) {
+		if (!(this instanceof $typeName))
+			return new $typeName($each_properties);
+		{
+			$each_assignments;
+		}
+	})
+}
+
+typePropertyAssignment: {
+	this.$property = $property;
+}
+
+assign: {
+	$left = $right;
 }

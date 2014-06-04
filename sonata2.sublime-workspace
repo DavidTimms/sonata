@@ -4,6 +4,174 @@
 		"selected_items":
 		[
 			[
+				"js",
+				"jsAst"
+			],
+			[
+				"par",
+				"parameters"
+			],
+			[
+				"sn",
+				"snippetExp"
+			],
+			[
+				"sni",
+				"snippetExp"
+			],
+			[
+				"bui",
+				"buildSnippet"
+			],
+			[
+				"call",
+				"callback"
+			],
+			[
+				"ren",
+				"renderedName"
+			],
+			[
+				"ma",
+				"mapChildren"
+			],
+			[
+				"es",
+				"esprima"
+			],
+			[
+				"make",
+				"makeIdentifier"
+			],
+			[
+				"arg",
+				"arguments"
+			],
+			[
+				"fro",
+				"fromIndex"
+			],
+			[
+				"tes",
+				"testFunction"
+			],
+			[
+				"num",
+				"numOdds"
+			],
+			[
+				"mult",
+				"multiTail"
+			],
+			[
+				"op",
+				"optimisedAST"
+			],
+			[
+				"type",
+				"typeof"
+			],
+			[
+				"temp",
+				"tempNames"
+			],
+			[
+				"cons",
+				"console"
+			],
+			[
+				"ar",
+				"array1"
+			],
+			[
+				"decl",
+				"declaredVars"
+			],
+			[
+				"loca",
+				"localVars"
+			],
+			[
+				"expre",
+				"expressions"
+			],
+			[
+				"exp",
+				"expressions"
+			],
+			[
+				"bo",
+				"blockBody"
+			],
+			[
+				"map",
+				"mapTree"
+			],
+			[
+				"fun",
+				"functionBody"
+			],
+			[
+				"te",
+				"tempVarNames"
+			],
+			[
+				"con",
+				"context"
+			],
+			[
+				"fu",
+				"functionBody"
+			],
+			[
+				"id",
+				"identifier"
+			],
+			[
+				"sub",
+				"subContext"
+			],
+			[
+				"obj",
+				"object"
+			],
+			[
+				"re",
+				"recursivelyMapped"
+			],
+			[
+				"tran",
+				"transform"
+			],
+			[
+				"func",
+				"funcName"
+			],
+			[
+				"Funct",
+				"FunctionExpression"
+			],
+			[
+				"tra",
+				"transform"
+			],
+			[
+				"trans",
+				"transforms"
+			],
+			[
+				"var",
+				"variables"
+			],
+			[
+				"comb",
+				"combineObjects"
+			],
+			[
+				"co",
+				"combined"
+			],
+			[
 				"_",
 				"_keys"
 			],
@@ -14,10 +182,6 @@
 			[
 				"array",
 				"arrayFrom"
-			],
-			[
-				"make",
-				"makeLiteral"
 			],
 			[
 				"convert",
@@ -74,10 +238,6 @@
 			[
 				"adv",
 				"advancePointer"
-			],
-			[
-				"par",
-				"parseExpression"
 			],
 			[
 				"pars",
@@ -192,10 +352,6 @@
 				"resultArray"
 			],
 			[
-				"co",
-				"collection"
-			],
-			[
 				"member",
 				"member-access"
 			],
@@ -214,14 +370,6 @@
 			[
 				"pri",
 				"printObj"
-			],
-			[
-				"ma",
-				"makeLiteral"
-			],
-			[
-				"con",
-				"converters"
 			],
 			[
 				"S",
@@ -260,20 +408,8 @@
 				"statementLevel"
 			],
 			[
-				"op",
-				"operator"
-			],
-			[
-				"js",
-				"jsonpretty"
-			],
-			[
 				"conver",
 				"convertExp"
-			],
-			[
-				"cons",
-				"console"
 			],
 			[
 				"las",
@@ -288,14 +424,6 @@
 				"defaultAssign"
 			],
 			[
-				"arg",
-				"argNum"
-			],
-			[
-				"id",
-				"identifiers"
-			],
-			[
 				"para",
 				"paramDefaults"
 			],
@@ -306,10 +434,6 @@
 			[
 				"e",
 				"expressions"
-			],
-			[
-				"func",
-				"funcName"
 			],
 			[
 				"mu",
@@ -372,24 +496,12 @@
 				"beatPattern"
 			],
 			[
-				"map",
-				"mapTest"
-			],
-			[
-				"tes",
-				"testList"
-			],
-			[
 				"appe",
 				"append"
 			],
 			[
 				"slc",
 				"sliced"
-			],
-			[
-				"re",
-				"replace"
 			],
 			[
 				"reve",
@@ -402,118 +514,6 @@
 			[
 				"list",
 				"listFunc"
-			],
-			[
-				"ls",
-				"listFunc"
-			],
-			[
-				"a",
-				"appended"
-			],
-			[
-				"sq",
-				"squared"
-			],
-			[
-				"li",
-				"listFunc"
-			],
-			[
-				"compose_bar",
-				"compose_bar_seq"
-			],
-			[
-				"Tic",
-				"Tick_list"
-			],
-			[
-				"note",
-				"note_rating"
-			],
-			[
-				"seq",
-				"seq2"
-			],
-			[
-				"se",
-				"seq1"
-			],
-			[
-				"inst",
-				"instruments"
-			],
-			[
-				"curr",
-				"current_key"
-			],
-			[
-				"Curre",
-				"current_key"
-			],
-			[
-				"In",
-				"Interval"
-			],
-			[
-				"Inte",
-				"interval"
-			],
-			[
-				"key",
-				"key_notes"
-			],
-			[
-				"Noe",
-				"Notes"
-			],
-			[
-				"Tai",
-				"Tail_rating"
-			],
-			[
-				"dumm",
-				"dummy_notes"
-			],
-			[
-				"played",
-				"played_note"
-			],
-			[
-				"Merged",
-				"Merged_tail"
-			],
-			[
-				"appen",
-				"append_shallow"
-			],
-			[
-				"com",
-				"compose_section_seq"
-			],
-			[
-				"Pat",
-				"Patterns"
-			],
-			[
-				"pat",
-				"Pat_H"
-			],
-			[
-				"JS",
-				"JSON_Seqs"
-			],
-			[
-				"json",
-				"jsonify"
-			],
-			[
-				"Arg",
-				"Arg_names"
-			],
-			[
-				"Me",
-				"Mel_T"
 			]
 		]
 	},
@@ -523,7 +523,7 @@
 			"file": "compile.js",
 			"settings":
 			{
-				"buffer_size": 847,
+				"buffer_size": 902,
 				"line_ending": "Windows"
 			}
 		},
@@ -539,7 +539,40 @@
 			"file": "tdop-parser.js",
 			"settings":
 			{
-				"buffer_size": 10543,
+				"buffer_size": 10552,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "examples/curried-operator-lambdas.potential.son",
+			"settings":
+			{
+				"buffer_size": 205,
+				"line_ending": "Windows",
+				"name": "fn main() {"
+			}
+		},
+		{
+			"file": "ast-converter.js",
+			"settings":
+			{
+				"buffer_size": 15373,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "snippets/snippet-parser.js",
+			"settings":
+			{
+				"buffer_size": 2781,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "snippets/snippets.js",
+			"settings":
+			{
+				"buffer_size": 2740,
 				"line_ending": "Windows"
 			}
 		},
@@ -552,10 +585,10 @@
 			}
 		},
 		{
-			"file": "ast-converter.js",
+			"file": "todo.md",
 			"settings":
 			{
-				"buffer_size": 15907,
+				"buffer_size": 311,
 				"line_ending": "Windows"
 			}
 		},
@@ -571,57 +604,45 @@
 			"file": "examples/rpsls.son.js",
 			"settings":
 			{
-				"buffer_size": 3921,
+				"buffer_size": 4052,
 				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "examples/parser-test.son",
-			"settings":
-			{
-				"buffer_size": 173,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "examples/parser-test.son.js",
-			"settings":
-			{
-				"buffer_size": 2908,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "examples/pascals-pyramid.son",
-			"settings":
-			{
-				"buffer_size": 478,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "runtime.js",
-			"settings":
-			{
-				"buffer_size": 2237,
-				"line_ending": "Windows"
 			}
 		},
 		{
 			"file": "examples/simple.son",
 			"settings":
 			{
-				"buffer_size": 212,
+				"buffer_size": 206,
 				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "examples/simple.son.js",
+			"settings":
+			{
+				"buffer_size": 3739,
+				"line_ending": "Unix"
 			}
 		}
 	],
 	"build_system": "Packages/JSHint/JSHint.sublime-build",
 	"command_palette":
 	{
-		"height": 392.0,
+		"height": 242.0,
 		"selected_items":
 		[
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: inst",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			],
 			[
 				"shell",
 				"SublimeREPL: Shell"
@@ -632,10 +653,6 @@
 			],
 			[
 				"Package Control: ins",
-				"Package Control: Install Package"
-			],
-			[
-				"Package Control: ",
 				"Package Control: Install Package"
 			],
 			[
@@ -668,6 +685,33 @@
 	},
 	"file_history":
 	[
+		"/C/Users/Dave/Web/tco/tail-call-op.js",
+		"/C/Users/Dave/Web/tco/test-tco.js",
+		"/C/Users/Dave/Web/compile-to-js/ast_good.json",
+		"/C/Users/Dave/Web/compile-to-js/ast.json",
+		"/C/Users/Dave/Web/compile-to-js/node_modules/tail-call-eliminator/tail-call-op.js",
+		"/C/Users/Dave/Web/compile-to-js/ast-converter.js",
+		"/C/Users/Dave/AppData/Roaming/Sublime Text 2/Packages/Pretty JSON/Pretty JSON.sublime-settings",
+		"/C/Users/Dave/AppData/Roaming/Sublime Text 2/Packages/User/Pretty JSON.sublime-settings",
+		"/C/Users/Dave/Web/compile-to-js/.gitignore",
+		"/C/Users/Dave/Web/compile-to-js/parse-engine.js",
+		"/C/Users/Dave/Web/compile-to-js/snippets/test-snippets.js",
+		"/C/Users/Dave/Web/compile-to-js/runtime.js",
+		"/C/Users/Dave/Uni/C/ruby-ish.c",
+		"/C/Users/Dave/Web/compile-to-js/examples/pascals-pyramid.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/parser-test.son.js",
+		"/C/Users/Dave/Web/compile-to-js/examples/parser-test.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/simple.son.js",
+		"/C/Users/Dave/Web/compile-to-js/examples/simple.son",
+		"/C/Users/Dave/Web/tco/readme.md",
+		"/C/Users/Dave/Web/tco/package.json",
+		"/C/Users/Dave/Web/compile-to-js/examples/if-assign.son",
+		"/C/Users/Dave/Web/tco/LICENSE",
+		"/C/Users/Dave/Web/tco/.gitignore",
+		"/C/Users/Dave/Web/compile-to-js/JS-AST-transforms/out",
+		"/C/Users/Dave/Web/compile-to-js/JS-AST-transforms/test-tco.js",
+		"/C/Users/Dave/Web/compile-to-js/JS-AST-transforms/tail-call-op.js",
+		"/C/Users/Dave/Web/compile-to-js/JS-AST-transforms/tail-call-opt.js",
 		"/C/Users/Dave/Web/compile-to-js/utils/dict.js",
 		"/C/Users/Dave/Web/useful-JS-bits/moori/node_modules/mori/mori.js",
 		"/C/Users/Dave/Web/compile-to-js/examples/templating.son",
@@ -676,15 +720,11 @@
 		"/C/Users/Dave/Web/compile-to-js/examples/quine2.son",
 		"/C/Users/Dave/Web/compile-to-js/compile-runtime.js",
 		"/C/Users/Dave/Web/compile-to-js/examples/cmd-line-input.son",
-		"/C/Users/Dave/Web/compile-to-js/examples/simple.son.js",
-		"/C/Users/Dave/Web/compile-to-js/examples/simple.son",
 		"/C/Users/Dave/Web/compile-to-js/comp-run.cmd",
 		"/C/Users/Dave/Web/compile-to-js/examples/cmd-line-input.son.js",
 		"/C/Users/Dave/Web/compile-to-js/examples/node_modules/mod.js",
 		"/C/Users/Dave/Web/compile-to-js/examples/node_modules/yo.js",
 		"/C/Users/Dave/Web/compile-to-js/utils/normalize-identifier.js",
-		"/C/Users/Dave/Web/compile-to-js/examples/parser-test.son.js",
-		"/C/Users/Dave/Web/compile-to-js/examples/parser-test.son",
 		"/C/Users/Dave/new language examples/class april 2014.txt",
 		"/C/Users/Dave/Documents/job-applications/give-me-a-job.md",
 		"/C/Users/Dave/Documents/job-applications/netsight.md",
@@ -716,9 +756,7 @@
 		"/C/Users/Dave/Web/useful-JS-bits/texo/README.md",
 		"/C/Users/Dave/Web/compile-to-js/lisp-tokenizer.js",
 		"/C/Users/Dave/Web/compile-to-js/lisp-parser.js",
-		"/C/Users/Dave/Web/compile-to-js/ast-converter.js",
 		"/C/Users/Dave/Web/compile-to-js/print.js",
-		"/C/Users/Dave/Web/compile-to-js/parse-engine.js",
 		"/C/Users/Dave/Web/useful-JS-bits/texo/test/browser-test.html",
 		"/C/Users/Dave/Web/useful-JS-bits/texo/test/texo-bench.js",
 		"/C/Users/Dave/Web/useful-JS-bits/texo/texo-test.js",
@@ -774,28 +812,7 @@
 		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/prolog.coffee",
 		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/test.js",
 		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node_modules/swipl/swipl.js",
-		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node_modules/swipl/src/libswipl.cc",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/prolog-thread.coffee",
-		"/C/Users/Dave/Web/type-checked-functional-lang-design.txt",
-		"/C/Users/Dave/Uni/improv-project/node-swipl-windows-build-hack.txt",
-		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node-prolog-swi/src/SWI-Prolog.h",
-		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node-prolog-swi/build/libswipl.vcxproj",
-		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node-prolog-swi/swipl.js",
-		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node-prolog-swi/src/libswipl.cc",
-		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node-prolog-swi/binding.gyp",
-		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node-prolog-swi/src/libswipl.h",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/pl_json.pl",
-		"/C/Users/Dave/Uni/improv-project/pengines/web/pengine.html",
-		"/C/Users/Dave/Uni/improv-project/pengines/web/simple.html",
-		"/C/Users/Dave/Uni/improv-project/AILP-assignment-1/readme.txt",
-		"/C/Users/Dave/Uni/improv-project/AILP-assignment-1/ailp/command_channel.pl",
-		"/C/Users/Dave/Uni/improv-project/pengine/server.pl",
-		"/C/Program Files/swipl/doc/packages/examples/pengines/server.pl",
-		"/C/Users/Dave/Uni/improv-project/pengines/web/mine.html",
-		"/C/Users/Dave/Uni/improv-project/pengines/client.js",
-		"/C/Users/Dave/Uni/improv-project/pengines/pengine.js",
-		"/C/Users/Dave/Uni/improv-project/pengines/client.py",
-		"/C/Users/Dave/Uni/improv-project/pengines/web/dummy.json"
+		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node_modules/swipl/src/libswipl.cc"
 	],
 	"find":
 	{
@@ -813,6 +830,29 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"for (",
+			"for (va",
+			"ExpressionStatement",
+			"runtimeImport",
+			"identifier",
+			"plusPlus",
+			"_",
+			"macro",
+			"wrapToken",
+			"isCallTo",
+			"}\n",
+			"makeExpStatement",
+			"    ",
+			"\":",
+			"    ",
+			"createDefaultAssignments",
+			"convertBody",
+			"convertParameters",
+			"addVariable",
+			"variable",
+			"\":\"",
+			"assignmentOp",
+			"\":\"",
 			"==",
 			" = ",
 			"makeCal",
@@ -917,30 +957,7 @@
 			"]).\n",
 			"print",
 			"prolog",
-			"inputProcess",
-			"swipl",
-			"swipl.",
-			"scr",
-			"$.",
-			"$",
-			"  ",
-			"pushToken",
-			"key(",
-			"key_",
-			"),\n",
-			"print",
-			"].",
-			"print",
-			"playNote",
-			"out",
-			"];\n",
-			"<= ",
-			"ns",
-			"deref",
-			"ns",
-			"let",
-			"item",
-			"midi"
+			"inputProcess"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -948,6 +965,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"	",
 			"=",
 			": ",
 			"	",
@@ -1030,7 +1048,7 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -1038,15 +1056,15 @@
 					"file": "compile.js",
 					"settings":
 					{
-						"buffer_size": 847,
+						"buffer_size": 902,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								847,
-								847
+								676,
+								676
 							]
 						],
 						"settings":
@@ -1055,7 +1073,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 180.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1072,8 +1090,8 @@
 						"selection":
 						[
 							[
-								3871,
-								3871
+								510,
+								510
 							]
 						],
 						"settings":
@@ -1082,7 +1100,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1560.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1092,15 +1110,15 @@
 					"file": "tdop-parser.js",
 					"settings":
 					{
-						"buffer_size": 10543,
+						"buffer_size": 10552,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4402,
-								4402
+								6638,
+								6638
 							]
 						],
 						"settings":
@@ -1109,13 +1127,121 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3100.0,
+						"translation.y": 4500.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 3,
+					"file": "examples/curried-operator-lambdas.potential.son",
+					"settings":
+					{
+						"buffer_size": 205,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								205,
+								205
+							]
+						],
+						"settings":
+						{
+							"auto_name": "fn main() {",
+							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "ast-converter.js",
+					"settings":
+					{
+						"buffer_size": 15373,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1167,
+								1167
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 420.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "snippets/snippet-parser.js",
+					"settings":
+					{
+						"buffer_size": 2781,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1831,
+								1831
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1020.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "snippets/snippets.js",
+					"settings":
+					{
+						"buffer_size": 2740,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								322,
+								322
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 66.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
 					"file": "parser-tests/test.js",
 					"settings":
 					{
@@ -1126,8 +1252,8 @@
 						"selection":
 						[
 							[
-								3095,
-								3095
+								244,
+								244
 							]
 						],
 						"settings":
@@ -1136,40 +1262,39 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2300.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "ast-converter.js",
+					"buffer": 8,
+					"file": "todo.md",
 					"settings":
 					{
-						"buffer_size": 15907,
+						"buffer_size": 311,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								832,
-								832
+								311,
+								311
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/Markdown/Markdown.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 240.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 9,
 					"file": "examples/rpsls.son",
 					"settings":
 					{
@@ -1180,8 +1305,8 @@
 						"selection":
 						[
 							[
-								470,
-								470
+								534,
+								534
 							]
 						],
 						"settings":
@@ -1191,143 +1316,35 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 60.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "examples/rpsls.son.js",
-					"settings":
-					{
-						"buffer_size": 3921,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1260.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "examples/parser-test.son",
-					"settings":
-					{
-						"buffer_size": 173,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								173,
-								173
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "examples/parser-test.son.js",
-					"settings":
-					{
-						"buffer_size": 2908,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2810,
-								2810
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 960.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "examples/pascals-pyramid.son",
-					"settings":
-					{
-						"buffer_size": 478,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								323,
-								323
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 120.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 10,
-					"file": "runtime.js",
+					"file": "examples/rpsls.son.js",
 					"settings":
 					{
-						"buffer_size": 2237,
+						"buffer_size": 4052,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1416,
-								1416
+								2579,
+								2579
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1080.0,
+						"translation.y": 1560.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1337,15 +1354,15 @@
 					"file": "examples/simple.son",
 					"settings":
 					{
-						"buffer_size": 212,
+						"buffer_size": 206,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								212,
-								212
+								206,
+								206
 							]
 						],
 						"settings":
@@ -1354,6 +1371,34 @@
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "examples/simple.son.js",
+					"settings":
+					{
+						"buffer_size": 3739,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2988,
+								2988
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1140.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
