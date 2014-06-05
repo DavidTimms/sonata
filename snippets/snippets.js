@@ -148,7 +148,7 @@ functionWrapper: {
 	}($each_arguments));
 }
 
-typeDeclaration: {
+typeExpression: {
 	(function $typeName($each_properties) {
 		if (!(this instanceof $typeName))
 			return new $typeName($each_properties);
@@ -156,6 +156,16 @@ typeDeclaration: {
 			$each_assignments;
 		}
 	})
+}
+
+typeDeclaration: {
+	function $typeName($each_properties) {
+		if (!(this instanceof $typeName))
+			return new $typeName($each_properties);
+		{
+			$each_assignments;
+		}
+	}
 }
 
 typePropertyAssignment: {

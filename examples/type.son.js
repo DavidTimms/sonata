@@ -77,8 +77,8 @@
             main.apply(null, process.argv.slice(2));
         }
     }
-    var Person, dave;
-    Person = function Person(name, age, gender) {
+    var dave, origin;
+    dave = function Person(name, age, gender) {
         if (!(this instanceof Person))
             return new Person(name, age, gender);
         {
@@ -86,9 +86,18 @@
             this.age = age;
             this.gender = gender;
         }
-    };
-    dave = Person('Dave', 21, 'male');
+    }('Dave', 21, 'male');
     print(dave.name, 'is a', dave.age, 'year old', dave.gender);
     dave.age = 22;
+    function Point(x, y) {
+        if (!(this instanceof Point))
+            return new Point(x, y);
+        {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    origin = Point(0, 0);
+    print('origin:', origin);
     $sonata_startMain();
 }());

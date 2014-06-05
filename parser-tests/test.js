@@ -73,6 +73,12 @@ var tests = {
 	"{}":  "((object))",
 
 	"{nested: {inner: value}}":  "((object (: nested (object (: inner value)))))",
+
+	"type Point(x y)": "((type Point x y))",
+
+	"type Person(name age)('Dave' 21)": "(((type Person name age) 'Dave' 21))",
+
+	"type Maybe(value).call(34)": "(((. (type Maybe value) call) 34))",
 };
 
 multilineTest([

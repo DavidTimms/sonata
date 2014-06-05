@@ -1,7 +1,13 @@
-Person: type(Person name age gender)
 
-dave: Person("Dave" 21 "male")
+
+dave: type Person(name age gender)("Dave" 21 "male")
 
 print(dave.name "is a" dave.age "year old" dave.gender)
 
 set!(dave.age 22)
+
+type Point(x y)
+
+origin: Point(0 0)
+
+print("origin:" origin)

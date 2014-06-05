@@ -82,10 +82,13 @@ function convertBody (expressions, context) {
 
 function convertStatements (expressions, context) {
 	context = context || {};
-	var statements = [];
-	var isFuncBody = context.isFuncBody;
+	//var statements = [];
+	//var isFuncBody = context.isFuncBody;
+	//var isFuncBody = false;
 	context.isFuncBody = false;
+	/*
 	expressions.forEach(function (exp) {
+
 		// ignore comments
 		if (!isCallTo("#", exp)) {
 			if (isFuncBody &&
@@ -101,7 +104,31 @@ function convertStatements (expressions, context) {
 		}
 	});
 	return statements;
+	*/
+	return expressions.map(function (exp) {
+		return convertStatement(exp, context);
+	}).reduce(concatArrays, []);
 }
+
+function convertStatement (exp, context) {
+	var converter = exp instanceof Array && exp[0] ? 
+		statementConverters[exp[0].name] : null;
+	return converter ?
+		converter(exp.slice(1), context) : makeExpStatement(convertExp(exp));
+}
+
+// For functions which need special behaviour when in statement position
+var statementConverters = {
+	"#": function () { return [] },
+	"type": function (parts) {
+		var properties = parts.slice(1);
+		return buildSnippet("typeDeclaration", {
+			typeName: parts[0],
+			properties: properties,
+			assignments: makeTypePropAssignments(properties)
+		});
+	}
+};
 
 function convertTail (tail, context) {
 	if (isCallTo("if", tail)) {
@@ -215,12 +242,9 @@ function convertExp (node) {
 	// Array represents a function application
 	if (node instanceof Array) {
 		var converter = converters[node[0].name];
-		if (converter) {
-			return converter(node.slice(1));
-		}
-		else {
-			return makeFunctionCall(convertExp(node[0]), node.slice(1));
-		}
+		return converter ?
+			converter(node.slice(1)) :
+			makeFunctionCall(convertExp(node[0]), node.slice(1));
 	}
 	// Should now never occur
 //	else if (node.type === "Member") {
@@ -320,16 +344,22 @@ var converters = {
 			id: context.nameIdent ? makeIdentifier(context.nameIdent.name) : null,
 			params: params.identifiers,
 			body: makeBlock(funcBody),
+			defaults: [],
 			generator: false,
 			expression: false
 		};
 	},
 	"if": function (parts, context) {
 		context = context || {};
+		if (parts[1].length < 1) {
+			throw Error("empty if statement body");
+		}
 		return snippetExp("ifExpression", {
 			test: convertExp(parts[0]),
 			consequent: convertSequence(parts[1]),
-			alternate: parts[2] ? convertSequence(parts[2]) : makeLiteral(false)
+			alternate: parts[2] && parts[2].length > 0 ? 
+				convertSequence(parts[2]) : 
+				makeLiteral(false)
 		});
 	},
 	":": function (parts) {
@@ -441,14 +471,10 @@ var converters = {
 	}),
 	"type": function (parts) {
 		var properties = parts.slice(1);
-		return snippetExp("typeDeclaration", {
+		return snippetExp("typeExpression", {
 			typeName: parts[0],
 			properties: properties,
-			assignments: properties.map(function (property) {
-				return buildSnippet("typePropertyAssignment", {
-					property: property
-				});
-			}).reduce(concatArrays)
+			assignments: makeTypePropAssignments(properties)
 		});
 	},
 	"set!": function (parts) {
@@ -500,7 +526,13 @@ function wrapToken (token) {
 	}
 }
 
-
+function makeTypePropAssignments(properties) {
+	return properties.map(function (property) {
+		return buildSnippet("typePropertyAssignment", {
+			property: property
+		});
+	}).reduce(concatArrays);
+}
 function isStringNode(node) {
 	return node && (isCallTo("&", node) ||
 		(node.type === "Literal" && typeof(node.value) === "string"));
@@ -634,6 +666,7 @@ function findAssignments (exp) {
 
 function isFuncApplication (exp) {
 	return exp instanceof Array && 
+		exp[0] &&
 		exp[0].name !== "fn" && 
 		exp[0].name !== "object";
 }

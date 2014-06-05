@@ -100,7 +100,7 @@ function ignoreToken (tokens, pointer, precedence) {
 	return parseExpression(tokens, pointer + 1, precedence);
 }
 
-function parseIdentifier (tokens, pointer, precedence) {
+function parseIdentifier (tokens, pointer) {
 	return {exp: makeIdentifier(tokens[pointer].string), pointer: pointer + 1};
 }
 
@@ -256,6 +256,20 @@ function parseBody (tokens, pointer) {
 	}
 }
 
+function parseType (tokens, pointer) {
+	var token = tokens[pointer + 1];
+	if (!isIdentifier(token)) errorAt(token, 
+			"Expected a type name, but found " + token.string);
+
+	var typeName = parseIdentifier(tokens, pointer + 1).exp;
+	var properties = parseParams(tokens, pointer + 2);
+
+	return {
+		exp: [makeIdentifier("type"), typeName].concat(properties.exp), 
+		pointer: properties.pointer
+	};
+}
+
 var prefixOperators = {
 	"-": unaryOp(60),
 	"not": unaryOp(30),
@@ -272,7 +286,8 @@ var prefixOperators = {
 		return parseCall(tokens, pointer, precedence, makeIdentifier("object"));
 	},
 	"fn": parseLambda,
-	"if": parseIf
+	"if": parseIf,
+	"type": parseType
 };
 
 var infixOperators = {

@@ -14,3 +14,9 @@ print(xs.map(abs).map(dbl-num))
 fn merge(|lists) lists.reduce(fn (a b) a ++ b)
 
 print(merge(xs, [56 34] [99 88 77]))
+
+if true {
+	fn yo() {
+		huh
+	}
+}
