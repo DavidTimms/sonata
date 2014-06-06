@@ -1,0 +1,29 @@
+
+type Point(x, y) {
+	fn self.distanceTo(other) {
+		Math.sqrt(((self.x - other.x) ^ 2) + ((self.y - other.y) ^ 2))
+	}
+}
+
+compiles to:
+
+var Point = (function () {
+	function Point(x, y) {
+		this.x = x;
+		this.y = y;
+	}
+	Point.prototype = Object.create($sonata_baseObject, {
+		constructor: {
+			value: Point,
+		},
+		distanceTo: {
+			value: function distanceTo(other) {
+				var self = this;
+				return Math.sqrt(
+					Math.pow(self.x - other.x, 2) + 
+					Math.pow(self.y - other.y, 2));
+			}
+		}
+	});
+	return Point;
+})();

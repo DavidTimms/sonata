@@ -152,19 +152,32 @@ typeExpression: {
 	(function $typeName($each_properties) {
 		if (!(this instanceof $typeName))
 			return new $typeName($each_properties);
-		{
+		$each_assignments;
+	})
+}
+
+fullTypeExpression: {
+	(function () {
+		function $typeName($each_properties) {
+			if (!(this instanceof $typeName))
+				return new $typeName($each_properties);
 			$each_assignments;
 		}
-	})
+		$typeName.prototype = Object.create(_baseObject, {
+			constructor: {
+				value: $typeName,
+			},
+			$each: $methods
+		});
+		return $typeName;
+	})();
 }
 
 typeDeclaration: {
 	function $typeName($each_properties) {
 		if (!(this instanceof $typeName))
 			return new $typeName($each_properties);
-		{
-			$each_assignments;
-		}
+		$each_assignments;
 	}
 }
 

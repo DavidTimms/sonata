@@ -81,21 +81,17 @@
     dave = function Person(name, age, gender) {
         if (!(this instanceof Person))
             return new Person(name, age, gender);
-        {
-            this.name = name;
-            this.age = age;
-            this.gender = gender;
-        }
+        this.name = name;
+        this.age = age;
+        this.gender = gender;
     }('Dave', 21, 'male');
-    print(dave.name, 'is a', dave.age, 'year old', dave.gender);
     dave.age = 22;
+    print(dave.name, 'is a', dave.age, 'year old', dave.gender);
     function Point(x, y) {
         if (!(this instanceof Point))
             return new Point(x, y);
-        {
-            this.x = x;
-            this.y = y;
-        }
+        this.x = x;
+        this.y = y;
     }
     origin = Point(0, 0);
     print('origin:', origin);

@@ -63,21 +63,21 @@ function mapChildren(node, context) {
 	var mapped;
 	if (node instanceof Array) {
 
-		// if present, get the name of the data parameter
-		// for an each command
-		var eachParam = extractEachParam(node[0]) || 
-			(node[0] && extractEachParam(node[0].expression));
-
-		// return the data parameter unmodified if an each
-		// command is present in the array
-		if (eachParam) {
-			return getDataParam(eachParam, context.data);
-		}
-
 		// otherwise, map over each item in the array normally
 		mapped = node.map(function (item) {
-			return mapTree(item, context);
-		});
+			// if present, get the name of the data parameter
+			// for an each command
+			var eachParam = extractEachParam(item) || 
+				(item && extractEachParam(item.expression));
+
+			// return the data parameter unmodified if an each
+			// command is present in the array
+			return eachParam ?
+				getDataParam(eachParam, context.data) :
+				mapTree(item, context);
+		}).reduce(function (a, b) {
+			return a.concat(b);
+		}, []);
 	}
 	else {
 		mapped = {};
