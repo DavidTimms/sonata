@@ -1,7 +1,7 @@
 var list = require("texo");
 var jsonpretty = require('jsonpretty');
 var snippets = require("./snippets/snippet-parser.js");
-//var tailCallElim = require("tail-call-eliminator");
+var tailCallElim = require("tail-call-eliminator");
 
 var identifierUtils = require("./utils/identifier-utils");
 var normalizeIdentifier = identifierUtils.normalizeIdentifier;
@@ -13,12 +13,12 @@ var buildSnippet = function () {
 
 var assignmentOp = ":";
 
-function printObj (obj) {
+function printObj(obj) {
 	console.log(jsonpretty(obj));
 	return obj;
 }
 
-function convertAST (ast, callback) {
+function convertAST(ast, callback) {
 
 	snippets.createSnippetBuilder(
 		"./snippets/snippets.js", function (snippetBuilder) {
@@ -33,18 +33,18 @@ function convertAST (ast, callback) {
 			.concat(buildSnippet("startMain"));
 
 		// Define the program with an immediately invoked function wrapper
-		callback({
+		callback(tailCallElim({
 			type: "Program",
-			body:buildSnippet("functionWrapper", {
+			body: buildSnippet("functionWrapper", {
 				statements: body,
 				parameters: [],
 				arguments: []
 			})
-		});
+		}));
 	});
 }
 
-function convertBody (expressions, context) {
+function convertBody(expressions, context) {
 	context = context || {};
 	var statements = [];
 	var noReturn = context.noReturn;
@@ -65,9 +65,11 @@ function convertBody (expressions, context) {
 			convertStatements(expressions.slice(0, -1), context));
 
 		context.isFuncBody = false;
-		var tailStatements = convertTail(
-			expressions[expressions.length - 1], context);
-		statements = statements.concat(tailStatements);
+
+		statements.push({
+			type: "ReturnStatement",
+			argument: convertExp(expressions[expressions.length - 1])
+		});
 	}
 
 	if (isFuncBody) {
@@ -80,37 +82,18 @@ function convertBody (expressions, context) {
 	return statements;
 }
 
-function convertStatements (expressions, context) {
+function convertStatements(expressions, context) {
 	context = context || {};
-	//var statements = [];
 	//var isFuncBody = context.isFuncBody;
 	//var isFuncBody = false;
 	context.isFuncBody = false;
-	/*
-	expressions.forEach(function (exp) {
 
-		// ignore comments
-		if (!isCallTo("#", exp)) {
-			if (isFuncBody &&
-				(isCallTo(assignmentOp, exp)) && 
-				isCallTo("fn", exp[2])) {
-				context.nameIdent = exp[1];
-				context.isDeclaration = true;
-				statements.push(converters["fn"](exp[2].slice(1), context));
-			}
-			else {
-				statements.push(makeExpStatement(convertExp(exp)));
-			}
-		}
-	});
-	return statements;
-	*/
 	return expressions.map(function (exp) {
 		return convertStatement(exp, context);
 	}).reduce(concatArrays, []);
 }
 
-function convertStatement (exp, context) {
+function convertStatement(exp, context) {
 	var converter = exp instanceof Array && exp[0] ? 
 		statementConverters[exp[0].name] : null;
 	return converter ?
@@ -130,80 +113,31 @@ var statementConverters = {
 	}
 };
 
-function convertTail (tail, context) {
-	if (isCallTo("if", tail)) {
-		return [{
-			type: "IfStatement",
-			test: convertExp(tail[1]),
-			consequent: makeBlock(convertBody(tail[2], context)),
-			alternate: makeBlock(tail[3] ? convertBody(tail[3], context) : [{
-				type: "ReturnStatement",
-				argument: makeLiteral(false)
-			}])
-		}];
-	}
-	else if (isCallTo("$sonata_tailCall", tail)) {
-		var params = context.params.identifiers.slice();
-		var lastParam = params.pop();
-		var lastArg = tail[tail.length - 1];
-		var tempDeclarations = params.map(function (param, i) {
-			return {
-				type: "VariableDeclarator",
-				id: makeIdentifier("$temp_" + param.name),
-				init: (tail[i + 1] ? convertExp(tail[i + 1]) : makeIdentifier("undefined"))
-			}
-		});
-		var lastAssignment = makeExpStatement(makeAssignment(lastParam, 
-				(lastArg ? convertExp(lastArg) : makeIdentifier("undefined"))));
-		var tempAssignments = {
-			type: "VariableDeclaration",
-			declarations: tempDeclarations,
-			kind: "var"
-		};
-		var reassignments = params.map(function (param) {
-			return makeExpStatement(makeAssignment(param, 
-				makeIdentifier("$temp_" + param.name)));
-		});
-		if (tempDeclarations.length < 1) {
-			return [lastAssignment].concat(reassignments);
-		}
-		else return [tempAssignments, lastAssignment].concat(reassignments);
-	}
-	else {
-		return [{
-			type: "ReturnStatement",
-			argument: convertExp(tail)
-		}];
-	}
-}
+function createDefaultAssignments(defaults) {
+	return flatmap(defaults, function (defaultAssign, index) {
 
-function createDefaultAssignments (defaults) {
-	return defaults.reduce(function (assignments, defaultAssign, index) {
 		if (isCallTo(assignmentOp, defaultAssign)) {
-			assignments.push({
-				type: "IfStatement",
-				test: {
-					type: "BinaryExpression",
-					operator: "===",
-					left: defaultAssign[1],
-					right: makeIdentifier("undefined")
-				},
-				consequent: makeExpStatement(convertExp(defaultAssign)),
-				alternate: null
+			return buildSnippet("defaultArgument", {
+				argument: defaultAssign[1],
+				expression: convertExp(defaultAssign)
 			});
 		}
+
 		// rest parameters
-		else if (isCallTo("|", defaultAssign)) {
-			return assignments.concat(buildSnippet("restParam", {
+		if (isCallTo("|", defaultAssign)) {
+			return buildSnippet("restParam", {
 				paramName: makeIdentifier(defaultAssign[1].name), 
 				fromIndex: makeLiteral(index)
-			}));
+			});
 		}
-		return assignments;
-	}, []);
+
+		return [];
+
+	});
+
 }
 
-function createVarDeclarations (expressions) {
+function createVarDeclarations(expressions) {
 	var variables = findAssignments(expressions);
 	var declarations = [];
 	for (var identifier in variables) {
@@ -220,7 +154,7 @@ function createVarDeclarations (expressions) {
 	};
 }
 
-function convertParameters (params) {
+function convertParameters(params) {
 	return params.reduce(function (output, node, index) {
 		if (isCallTo(assignmentOp, node)) {
 			output.identifiers.push(node[1]);
@@ -236,9 +170,7 @@ function convertParameters (params) {
 	}, {identifiers: [], defaults: []});
 }
 
-function convertExp (node) {
-	//console.log(node);
-	//printObj(node);
+function convertExp(node) {
 	// Array represents a function application
 	if (node instanceof Array) {
 		var converter = converters[node[0].name];
@@ -246,10 +178,6 @@ function convertExp (node) {
 			converter(node.slice(1)) :
 			makeFunctionCall(convertExp(node[0]), node.slice(1));
 	}
-	// Should now never occur
-//	else if (node.type === "Member") {
-//		return convertMemberAccess(node.names.slice());
-//	}
 	else if (node.type === "Literal" && 
 		typeof(node.value) === "number" && 
 		node.value < 0) {
@@ -263,53 +191,21 @@ function convertExp (node) {
 	}
 }
 
-// shouldn't be needed any more now "." is just a normal function
-//function convertMemberAccess (names) {
-//	names = names.slice();
-//	var identifier = makeIdentifier(names.pop());
-//	if (names.length < 1) {
-//		return identifier;
-//	}
-//	return {
-//		type: "MemberExpression",
-//		computed: false,
-//		object: convertMemberAccess(names),
-//		property: identifier
-//	};
-//}
-//
-
-function convertSequence (expressions) {
+function convertSequence(expressions) {
+	var singleExpression = expressions;
 	if (expressions instanceof Array) {
-		return {
+		if (expressions.length === 1) {
+			singleExpression = expressions[0];
+		}
+		else return {
 			type: "SequenceExpression",
 			expressions: expressions.map(convertExp)
 		};
 	}
-	else {
-		return convertExp(expressions);
-	}
+	return convertExp(singleExpression);
 }
 
-function markTailRecursion (expressions, context) {
-	var foundTCR = false;
-	if (!(expressions instanceof Array)) {
-		return false;
-	}
-	var tail = expressions[expressions.length - 1];
-	if (isCallTo(context.nameIdent.name, tail)) {
-		tail[0] = makeIdentifier("$sonata_tailCall");
-		foundTCR = true;
-	}
-	else if (isCallTo("if", tail)) {
-		var inIfBody = markTailRecursion(tail[2], context);
-		var inElseBody = markTailRecursion(tail[3], context);
-		foundTCR = foundTCR || inIfBody || inElseBody;
-	}
-	return foundTCR;
-}
-
-function convertObjectKey (node) {
+function convertObjectKey(node) {
 	if (node && node.type === "Identifier") {
 		return makeLiteral(node.name);
 	}
@@ -325,24 +221,16 @@ var converters = {
 		var type = (context.isDeclaration ? 
 			"FunctionDeclaration" : "FunctionExpression");
 		context.isDeclaration = false;
-		var params = convertParameters(parts[0]);
+		context.params = convertParameters(parts[0]);
 		var bodyExpressions = parts[1];
-		var isTailRecursive = context.nameIdent && 
-			markTailRecursion(bodyExpressions, context);
-		context.params = params;
+
 		context.isFuncBody = true;
 		var funcBody = convertBody(bodyExpressions, context);
-		if (isTailRecursive) {
-			funcBody = [{
-				type: "WhileStatement",
-				test: makeLiteral(true),
-				body: makeBlock(funcBody)
-			}];
-		}
+
 		return {
 			type: type,
 			id: context.nameIdent ? makeIdentifier(context.nameIdent.name) : null,
-			params: params.identifiers,
+			params: context.params.identifiers,
 			body: makeBlock(funcBody),
 			defaults: [],
 			generator: false,
@@ -379,7 +267,7 @@ var converters = {
 			property: convertExp(parts[1])
 		});
 	},
-	"get": function getMember (members) {
+	"get": function getMember(members) {
 		var member = convertExp(members[members.length - 1]);
 		if (members.length  < 2) {
 			return member;
@@ -493,9 +381,7 @@ var converters = {
 });
 converters["=="] = binaryExpressionMaker("BinaryExpression", "===");
 converters["!="] = binaryExpressionMaker("BinaryExpression", "!==");
-//(["&&", "||"]).forEach(function (op) {
-//	converters[op] = binaryExpressionMaker("LogicalExpression", op);
-//});
+
 converters["and"] = binaryExpressionMaker("LogicalExpression", "&&");
 converters["or"] = binaryExpressionMaker("LogicalExpression", "||");
 
@@ -503,14 +389,14 @@ converters["or"] = binaryExpressionMaker("LogicalExpression", "||");
 converters["function"] = converters["fn"];
 
 
-function macro (macroFunc) {
+function macro(macroFunc) {
 	return function (parts) {
 		var fragment = macroFunc.apply(null, parts);
 		return convertExp(wrapToken(fragment));
 	}
 }
 
-function wrapToken (token) {
+function wrapToken(token) {
 	if (token instanceof Array) {
 		return token.map(wrapToken);
 	}
@@ -519,7 +405,7 @@ function wrapToken (token) {
 			case "number":
 				return makeLiteral(token);
 			case "string":
-				return makeIdentifier(token);
+				return makeIdentifier(token, {escape: false});
 			default:
 				return token;
 		}
@@ -542,7 +428,7 @@ function snippetExp(name, data) {
 	return buildSnippet(name, data)[0].expression;
 }
 
-function makeFunctionCall (func, args) {
+function makeFunctionCall(func, args) {
 	return {
 		type: "CallExpression",
 		callee: func,
@@ -550,7 +436,7 @@ function makeFunctionCall (func, args) {
 	};
 }
 
-function binaryExpressionMaker (type, op) {
+function binaryExpressionMaker(type, op) {
 	return function (args) {
 		return {
 			type: type,
@@ -561,7 +447,7 @@ function binaryExpressionMaker (type, op) {
 	};
 }
 
-function makeBinary (operator, left, right) {
+function makeBinary(operator, left, right) {
 	return {
 		type: "BinaryExpression",
 		operator: operator,
@@ -570,7 +456,7 @@ function makeBinary (operator, left, right) {
 	}
 }
 
-function makeUnary (operator, argument) {
+function makeUnary(operator, argument) {
 	return {
 		type: "UnaryExpression",
 		operator: operator,
@@ -579,28 +465,29 @@ function makeUnary (operator, argument) {
 	}
 }
 
-function makeIdentifier (name) {
+function makeIdentifier(name, options) {
+	var escape = options ? options.escape : true;
 	return {
 		type: "Identifier",
-		name: normalizeIdentifier(name)
+		name: escape ? normalizeIdentifier(name) : name
 	};
 }
 
-function makeLiteral (value) {
+function makeLiteral(value) {
 	return {
 		type: "Literal",
 		value: value
 	};
 }
 
-function makeBlock (body) {
+function makeBlock(body) {
 	return {
 		type: "BlockStatement",
 		body: body
 	};
 }
 
-function makeAssignment (left, right) {
+function makeAssignment(left, right) {
 	return {
 		type: "AssignmentExpression",
 		operator: "=",
@@ -609,14 +496,14 @@ function makeAssignment (left, right) {
 	};
 }
 
-function makeExpStatement (expression) {
+function makeExpStatement(expression) {
 	return {
 		type: "ExpressionStatement",
 		expression: expression
 	}
 }
 
-function makeDeclarator (variable, init) {
+function makeDeclarator(variable, init) {
 	return {
 		type: "VariableDeclarator",
 		id: makeIdentifier(variable),
@@ -636,7 +523,7 @@ function makeDeclarations() {
 	};
 }
 
-function walkNode (node, callback) {
+function walkNode(node, callback) {
 	if (node instanceof Array) {
 		callback(node);
 		node.forEach(function (child) { walkNode(child, callback); });
@@ -648,7 +535,7 @@ function isCallTo(identifier, node) {
 }
 
 // create an object containing every identifier assigned to in the function
-function findAssignments (exp) {
+function findAssignments(exp) {
 	var variables = Object.create(null);
 	if (isFuncApplication(exp)) {
 		if (isCallTo(assignmentOp, exp)) {
@@ -664,7 +551,7 @@ function findAssignments (exp) {
 	return variables;
 }
 
-function isFuncApplication (exp) {
+function isFuncApplication(exp) {
 	return exp instanceof Array && 
 		exp[0] &&
 		exp[0].name !== "fn" && 
@@ -685,6 +572,12 @@ function combineObjects(x, y) {
 		combined[key] = y[key];
 	}
 	return combined;
+}
+
+function flatmap(arr, func) {
+	return arr.map(func).reduce(function (a, b) {
+		return a.concat(b);
+	}, []);
 }
 
 module.exports = convertAST;

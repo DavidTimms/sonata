@@ -1,11 +1,19 @@
 (function () {
     'use strict';
-    var list = require('texo');
-    var range = list.range;
-    var eq = list.eq;
+    var list;
+    var range;
+    var eq;
+    var print;
+    var main;
+    var randomMove;
+    var moves;
+    list = require('texo');
+    range = list.range;
+    eq = list.eq;
     function mix(parent, child) {
         var key;
-        var obj = {};
+        var obj;
+        obj = {};
         for (key in parent) {
             obj[key] = parent[key];
         }
@@ -15,7 +23,9 @@
         return obj;
     }
     function addKey(parent, newKey, newValue) {
-        var obj = {}, key;
+        var obj;
+        var key;
+        obj = {}, key = undefined;
         for (key in parent) {
             obj[key] = parent[key];
         }
@@ -23,7 +33,8 @@
         return obj;
     }
     function contains(collection, value) {
-        var i, key;
+        var i;
+        var key;
         if (typeof collection === 'function' && collection.count) {
             for (i = 0; i < collection.count; i++) {
                 if (list.eq(collection(i), value)) {
@@ -40,7 +51,8 @@
         return false;
     }
     function repeat(func) {
-        var result = { args: [] };
+        var result;
+        result = { args: [] };
         do {
             result = func.apply(null, result.args);
         } while (result instanceof $sonata_Continuation);
@@ -50,7 +62,11 @@
         this.args = arguments;
     }
     function forIn(collection, func) {
-        var i, t = typeof collection, resultArray = [];
+        var i;
+        var t;
+        var resultArray;
+        var keys;
+        i = undefined, t = typeof collection, resultArray = [];
         switch (t) {
         case 'string':
             for (i = 0; i < collection.length; i++) {
@@ -61,7 +77,7 @@
             if (typeof collection.map === 'function') {
                 return collection.map(func);
             } else {
-                var keys = Object.keys(collection);
+                keys = Object.keys(collection);
                 for (i = 0; i < keys.length; i++) {
                     resultArray.push(func(keys[i], collection[keys[i]]));
                 }
@@ -71,27 +87,26 @@
             return collection.map(func);
         }
     }
-    var print = console.log.bind(console);
+    print = console.log.bind(console);
     function $sonata_startMain() {
         if (typeof main === 'function' && require && require.main && module && require.main === module && process && process.argv instanceof Array) {
             main.apply(null, process.argv.slice(2));
         }
     }
-    var main, randomMove, moves;
+    main = undefined, randomMove = undefined, moves = undefined;
     main = function main(playerMove) {
-        var playerBeats, cpuMove, verb;
+        var playerBeats;
+        var cpuMove;
+        var verb;
         playerBeats = moves[playerMove];
-        if (!playerBeats) {
+        if (!playerBeats)
             return print('invalid move');
-        } else {
-            cpuMove = randomMove();
-            print('player picks: ' + playerMove);
-            print('computer picks: ' + cpuMove);
-            return print(eq(playerMove, cpuMove) ? ('it\'s a draw!') : ((verb = playerBeats[cpuMove]) ? (playerMove + (verb + (cpuMove + ', player wins!'))) : (cpuMove + (moves[cpuMove][playerMove] + (playerMove + ', computer wins!')))));
-        }
+        else
+            return cpuMove = randomMove(), print('player picks: ' + playerMove), print('computer picks: ' + cpuMove), print(eq(playerMove, cpuMove) ? 'it\'s a draw!' : (verb = playerBeats[cpuMove]) ? playerMove + (verb + (cpuMove + ', player wins!')) : cpuMove + (moves[cpuMove][playerMove] + (playerMove + ', computer wins!')));
     };
     randomMove = function randomMove() {
-        var options, index;
+        var options;
+        var index;
         options = list.fromArray(Object.keys(moves));
         index = Math.floor(Math.random() * options.count);
         return options(index);

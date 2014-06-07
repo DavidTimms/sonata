@@ -1,11 +1,18 @@
 (function () {
     'use strict';
-    var list = require('texo');
-    var range = list.range;
-    var eq = list.eq;
+    var list;
+    var range;
+    var eq;
+    var print;
+    var dave;
+    var origin;
+    list = require('texo');
+    range = list.range;
+    eq = list.eq;
     function mix(parent, child) {
         var key;
-        var obj = {};
+        var obj;
+        obj = {};
         for (key in parent) {
             obj[key] = parent[key];
         }
@@ -15,7 +22,9 @@
         return obj;
     }
     function addKey(parent, newKey, newValue) {
-        var obj = {}, key;
+        var obj;
+        var key;
+        obj = {}, key = undefined;
         for (key in parent) {
             obj[key] = parent[key];
         }
@@ -23,7 +32,8 @@
         return obj;
     }
     function contains(collection, value) {
-        var i, key;
+        var i;
+        var key;
         if (typeof collection === 'function' && collection.count) {
             for (i = 0; i < collection.count; i++) {
                 if (list.eq(collection(i), value)) {
@@ -40,7 +50,8 @@
         return false;
     }
     function repeat(func) {
-        var result = { args: [] };
+        var result;
+        result = { args: [] };
         do {
             result = func.apply(null, result.args);
         } while (result instanceof $sonata_Continuation);
@@ -50,7 +61,11 @@
         this.args = arguments;
     }
     function forIn(collection, func) {
-        var i, t = typeof collection, resultArray = [];
+        var i;
+        var t;
+        var resultArray;
+        var keys;
+        i = undefined, t = typeof collection, resultArray = [];
         switch (t) {
         case 'string':
             for (i = 0; i < collection.length; i++) {
@@ -61,7 +76,7 @@
             if (typeof collection.map === 'function') {
                 return collection.map(func);
             } else {
-                var keys = Object.keys(collection);
+                keys = Object.keys(collection);
                 for (i = 0; i < keys.length; i++) {
                     resultArray.push(func(keys[i], collection[keys[i]]));
                 }
@@ -71,13 +86,13 @@
             return collection.map(func);
         }
     }
-    var print = console.log.bind(console);
+    print = console.log.bind(console);
     function $sonata_startMain() {
         if (typeof main === 'function' && require && require.main && module && require.main === module && process && process.argv instanceof Array) {
             main.apply(null, process.argv.slice(2));
         }
     }
-    var dave, origin;
+    dave = undefined, origin = undefined;
     dave = function Person(name, age, gender) {
         if (!(this instanceof Person))
             return new Person(name, age, gender);

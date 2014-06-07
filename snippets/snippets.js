@@ -118,6 +118,10 @@ restParam: {
 	var $paramName = list.fromArray(_restArray);
 }
 
+defaultArgument: {
+	if ($argument === undefined) $expression;
+}
+
 add: {
 	+$left + +$right;
 }
