@@ -21,7 +21,14 @@ function tokenize (source) {
 		}
 		// punctuation symbols
 		else if (isPunctuation(chr)) {
-			tokens.add(chr);
+			// "of type" operator
+			var lastNonEmpty = lastNonEmptyToken(tokens);
+			if (lastNonEmpty && lastNonEmpty.string === ":" && chr === ":") {
+				lastNonEmpty.string = "::";
+			}
+			else {
+				tokens.add(chr);
+			}
 			tokens.colNumber += 1;
 			// EARLY RETURN
 			return tokens.add("");
@@ -97,6 +104,13 @@ function emptyTokenArray () {
 	tokens.colNumber = 0;
 	tokens.add("\n");
 	return tokens;
+}
+
+function lastNonEmptyToken(tokens) {
+	for (var i = tokens.length - 1; i >= 0; i--) {
+		if (tokens[i].string !== "") return tokens[i];
+	}
+	return null;
 }
 
 function isLiteralDelimiter (chr) {

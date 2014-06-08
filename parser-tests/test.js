@@ -84,7 +84,11 @@ var tests = {
 
 	"run(do {})": "((run (do ())))",
 
-	"with applied 45": "((with applied (45)))"
+	"with applied 45": "((with applied (45)))",
+
+	"x::Object": "((:: x Object))",
+
+	"if (x::y.type) x": "((if (:: x (. y type)) (x)))"
 };
 
 multilineTest([

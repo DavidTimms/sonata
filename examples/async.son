@@ -3,7 +3,7 @@ request: Promise.promisifyAll(require("request"))
 fs: Promise.promisifyAll(require("fs"))
 
 fn async(value, rest) {
-	if value and js.typeof(value.then) == "function"
+	if value and value.then :: Function
 		value.then(rest)
 	else
 		rest(value)

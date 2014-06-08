@@ -220,6 +220,10 @@ dynamicProperty: {
 	$object[$property];
 }
 
+ofType: {
+	_ofType($left, $right);
+}
+
 ifExpression: {
 	$test ? $consequent : $alternate;
 }

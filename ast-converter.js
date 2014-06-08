@@ -230,7 +230,7 @@ function convertWithBlock(convertedController, expressions, context) {
 		var head = convertExp(headExp);
 		var parameters = [];
 	}
-	
+
 	var tail = (expressions.length > 2) ?
 		convertWithBlock(convertedController, expressions.slice(1), context) :
 		convertExp(expressions[1]);
@@ -391,6 +391,12 @@ var converters = {
 			typeName: parts[0],
 			properties: properties,
 			assignments: makeTypePropAssignments(properties)
+		});
+	},
+	"::": function (parts) {
+		return snippetExp("ofType", {
+			left: convertExp(parts[0]),
+			right: convertExp(parts[1])
 		});
 	},
 	"set!": function (parts) {

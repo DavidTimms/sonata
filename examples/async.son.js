@@ -137,6 +137,22 @@
             return collection.map(func);
         }
     }
+    function $sonata_ofType(x, type) {
+        switch (typeof x) {
+        case 'number':
+            return type === Number;
+        case 'string':
+            return type === String;
+        case 'boolean':
+            return type === Boolean;
+        case 'undefined':
+            return type === undefined;
+        default:
+            if (x === null && type === null)
+                return true;
+            return typeof type === 'function' && x instanceof type;
+        }
+    }
     js = {
         'typeof': function (value) {
             return typeof value;
@@ -156,7 +172,7 @@
     request = Promise.promisifyAll(require('request'));
     fs = Promise.promisifyAll(require('fs'));
     async = function async(value, rest) {
-        if (value && js.typeof(value.then) === 'function')
+        if (value && $sonata_ofType(value.then, Function))
             return value.then(rest);
         else
             return rest(value);

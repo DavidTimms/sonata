@@ -324,6 +324,7 @@ var infixOperators = {
 	">": binaryOp(30),
 	"<=": binaryOp(30),
 	">=": binaryOp(30),
+	"::": binaryOp(30),
 	"==": binaryOp(25),
 	"=": binaryOp(25),
 	"!=": binaryOp(25),
