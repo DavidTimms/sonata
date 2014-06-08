@@ -164,8 +164,11 @@ function parseMemberAccess(tokens, pointer, precedence, parent) {
 		errorAt(tokens[pointer], 
 			"the property of an object must be an identifier");
 	}
-	var child = makeIdentifier(tokens[pointer + 1].string);
-	return {exp: [makeIdentifier("."), parent, child], pointer: pointer + 2};
+	var property = makeIdentifier(tokens[pointer + 1].string);
+	return {
+		exp: [makeIdentifier("."), parent, property], 
+		pointer: pointer + 2
+	};
 }
 
 function parseLambda(tokens, pointer) {
@@ -332,7 +335,7 @@ var infixOperators = {
 	"or": binaryOp(15),
 	":": binaryOp(10),
 	"(": withPrecedence(70, parseCall),
-	".": withPrecedence(80, parseMemberAccess),
+	".": withPrecedence(80, parseMemberAccess)
 };
 
 var tokenTypeParsers = {
@@ -341,6 +344,7 @@ var tokenTypeParsers = {
 	"Regex": parseLiteral,
 	"Boolean": parseLiteral,
 	"Indent": ignoreToken,
+	"Comment": ignoreToken,
 	"Identifier": parseIdentifier,
 	"Punctuation": parsePunctuation,
 };
@@ -373,7 +377,7 @@ function isCallTo(identifier, node) {
 }
 
 function advancePointer (tokens, pointer) {
-	while (tokens[pointer].type === "Indent" || tokens[pointer].string === ",") {
+	while (isSkippable(tokens[pointer])) {
 		pointer += 1;
 	}
 	return pointer;
@@ -381,7 +385,7 @@ function advancePointer (tokens, pointer) {
 
 function advanceToNextExpression(tokens, pointer) {
 	var foundDivider = false;
-	while (tokens[pointer].type === "Indent" || tokens[pointer].string === ",") {
+	while (isSkippable(tokens[pointer])) {
 		pointer += 1;
 		foundDivider = true;
 	}
@@ -395,6 +399,12 @@ function advanceToNextExpression(tokens, pointer) {
 			"Unexpected start of expression");
 	}
 	return pointer;
+}
+
+function isSkippable(token) {
+	return token.type === "Indent" || 
+		token.string === "," ||
+		token.type === "Comment";
 }
 
 function checkToken (tokens, pointer, expected) {

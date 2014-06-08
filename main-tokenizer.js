@@ -8,14 +8,21 @@ function tokenize (source) {
 
 	function reduceInput (tokens, chr) {
 		var last = tokens.last();
+		var lastFirstChar = last.at(0);
 
 		// inside string literals
-		if (isLiteralDelimiter(last.at(0)) && 
-			!(last.at(0) === "/" && chr.match(/\s/))) {
+		if (isLiteralDelimiter(lastFirstChar) && 
+			!(lastFirstChar === "/" && chr.match(/\s/))) {
+
+			// end of comment line
+			if (lastFirstChar === "#" && chr === "\n") {
+				tokens.add("");
+				return reduceInput(tokens, chr);
+			}
+
 			last.string += chr;
 			// end string literal
-			if (last.at(0) === chr && 
-				last.at(-2) !== "\\") {
+			if (lastFirstChar === chr && last.at(-2) !== "\\") {
 				tokens.add("");
 			}
 		}
@@ -114,7 +121,7 @@ function lastNonEmptyToken(tokens) {
 }
 
 function isLiteralDelimiter (chr) {
-	return chr !== "" && ("[\"'/]").indexOf(chr) >= 0;
+	return chr !== "" && ("[\"'/#]").indexOf(chr) >= 0;
 }
 
 function isPunctuation (chr) {
@@ -144,6 +151,9 @@ function Token (tokenString, position) {
 	else if (tokenString.match(/^\n.*/)) {
 		this.type = "Indent";
 		this.width = tokenString.length - 1;
+	}
+	else if (tokenString.charAt(0) === "#") {
+		this.type = "Comment";
 	}
 	else if (Number(tokenString).toString() !== "NaN") {
 

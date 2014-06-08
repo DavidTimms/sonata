@@ -20,6 +20,10 @@ var tests = {
 
 	"(23 * 2) - 3":  "((- (* 23 2) 3))",
 
+	"x + y # add x to y": "((+ x y))",
+
+	"if true # always # { print('hi') }": "((if true ((print 'hi'))))",
+
 	"func()":  "((func))",
 
 	"func( arg\n)":  "((func arg))",
@@ -88,7 +92,7 @@ var tests = {
 
 	"x::Object": "((:: x Object))",
 
-	"if (x::y.type) x": "((if (:: x (. y type)) (x)))"
+	"if (x::y.type) x": "((if (:: x (. y type)) (x)))",
 };
 
 multilineTest([
@@ -132,7 +136,12 @@ multilineTest([
 runTests(tests);
 
 function test(input, output) {
-	var parsed = lispString(parse(tokenize(input)));
+	try {
+		var parsed = lispString(parse(tokenize(input)));
+	}
+	catch (e) {
+		var parsed = e.message;
+	}
 	if (parsed !== output) {
 		console.log("Test failed: ");
 		console.log("	Expected " + output + ", but received " + parsed);
