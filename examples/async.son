@@ -3,7 +3,8 @@ Promise: require("bluebird")
 request: Promise.promisifyAll(require("request"))
 fs: Promise.promisifyAll(require("fs"))
 
-# define the async controller function
+# define the async controller function.
+# This is a simplified version without error handling
 fn async(value, rest) {
 	if value and (value.then :: Function)
 		value.then(rest)
