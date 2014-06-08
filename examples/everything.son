@@ -1,0 +1,65 @@
+
+type Person(name, age, gender)
+
+fn main() {
+	ensure(doScoping(2) = doScoping(18))
+
+	ensure(withBlock(5) = 21)
+
+	dave: Person("Dave", 21, "male")
+	ensure(withPredicate(dave))
+	jane: Person("Jane", 25, "female")
+	ensure(withPredicate(jane) = false)
+
+	names: ["John", "Dan", "David", "Dave", "James", "Derrick"]
+	parentDict: {
+		John: ["Lisa", "Rick"]
+		Dan: ["Sarah", "Jim"]
+		David: ["Tina", "Les"]
+		Derrick: ["Lucy", "Matt"]
+	}
+	ensure(withFind(names) = "David")
+	validParents: ["Tina", "Les", "Lucy", "Matt"]
+	ensure(withFindAll(names, parentDict) = validParents)
+
+	print("All tests passed")
+}
+
+fn doScoping(x) {
+	y: true
+	if x > 10 do {
+		y: false
+	}
+	y
+}
+
+fn withBlock(x) {
+	with applied {
+		y: x + 2
+		z: y * 2
+		z + y
+	}
+}
+
+fn withPredicate(person) {
+	with predicate {
+		person.age > 18
+		person.gender = "male"
+		person.name = "Dave"
+	}
+}
+
+fn withFind(items) with find {
+    item: from(items)
+    item.length > 4
+    item.charAt(0) = "D"
+    item
+}
+
+
+fn withFindAll(names, parents) with findAll {
+	name: from(names)
+	name.length > 4
+	name.charAt(0) = "D"
+	get(parents, name)
+}

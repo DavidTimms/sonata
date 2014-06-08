@@ -1,0 +1,16 @@
+Promise: require("bluebird")
+request: Promise.promisifyAll(require("request"))
+fs: Promise.promisifyAll(require("fs"))
+
+fn async(value, rest) {
+	if value and js.typeof(value.then) == "function"
+		value.then(rest)
+	else
+		rest(value)
+}
+
+fn main(url: "http://google.com") with async {
+	html: request.getAsync(url)
+	fs.writeFileAsync("content.html", get(html, 1))
+	print("written to contents.html")
+}

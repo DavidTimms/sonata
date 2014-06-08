@@ -57,6 +57,10 @@ function convertBody(expressions, context) {
 		context.params.defaults = false;
 	}
 
+	if ((!expressions) || expressions.length === 0) {
+		return statements;
+	}
+
 	if (noReturn) {
 		statements = statements.concat(convertStatements(expressions, context));
 	}
@@ -215,6 +219,30 @@ function convertObjectKey(node) {
 	else throw "Invalid key in object literal: " + node;
 }
 
+function convertWithBlock(convertedController, expressions, context) {
+	var head, tail, parameters;
+	var headExp = expressions[0];
+	if (isCallTo(assignmentOp, headExp)) {
+		var head = convertExp(headExp[2]);
+		var parameters = [headExp[1]];
+	}
+	else {
+		var head = convertExp(headExp);
+		var parameters = [];
+	}
+	
+	var tail = (expressions.length > 2) ?
+		convertWithBlock(convertedController, expressions.slice(1), context) :
+		convertExp(expressions[1]);
+
+	return snippetExp("withBlock", {
+		controller: convertedController,
+		expression: head,
+		parameters: parameters,
+		rest: tail
+	});
+}
+
 var converters = {
 	"fn": function (parts, context) {
 		context = context || {};
@@ -370,6 +398,23 @@ var converters = {
 			left: convertExp(parts[0]), 
 			right: convertExp(parts[1])
 		});
+	},
+	"do": function (parts, context) {
+		context = context || {};
+		context.isFuncBody = true;
+		var funcBody = convertBody(parts[0], context);
+
+
+		return snippetExp("functionWrapper", {
+			statements: funcBody,
+			parameters: [],
+			arguments: []
+		});
+	},
+	"with": function (parts, context) {
+		var convertedController = convertExp(parts[0]);
+		var expressions = parts[1];
+		return convertWithBlock(convertedController, expressions, context);
 	}
 };
 

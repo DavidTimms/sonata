@@ -55,16 +55,69 @@ prelude: {
 		return false;
 	}
 
-	function repeat(func) {
-		var result = {args: []};
-		do {
-			result = func.apply(null, result.args);
-		} while (result instanceof _Continuation);
-		return result;
+	// WITH CONTROLLERS
+
+	// The simplest possible "with" controller
+	function applied(value, rest) {
+		return rest(value);
 	}
 
-	function _Continuation() {
-		this.args = arguments;
+	// logical with controller
+	function predicate(value, next) {
+		return value ? next(value) : false;
+	}
+
+	function find(value, rest) {
+		var res;
+		if (!value) return false;
+		if (value instanceof Iterator) {
+			while (value.hasNext()) {
+				if (res = rest(value.next())) {
+					return res;
+				}
+			}
+			return false;
+		}
+		return rest(value);
+	}
+
+	function findAll(value, rest) {
+		var all = list(), res;
+		if (!value) return all;
+		if (value instanceof Iterator) {
+			while (value.hasNext()) {
+				if (res = rest(value.next())) {
+					all = all.concat(res);
+				}
+			}
+			return all;
+		}
+		return rest(value);
+	}
+
+
+	function Iterator(l) {
+		this.items = l;
+		this.pointer = 0;
+	}
+	Iterator.prototype.hasNext = function () {
+		return this.items && (this.pointer < this.items.count);
+	}
+	Iterator.prototype.next = function () {
+		return this.items && this.items(this.pointer++);
+	}
+
+	function from(a) {
+		return new Iterator(a);
+	}
+
+	// ------------------------------------------------------
+
+	function ensure(predicateResult, msg) {
+		if (!predicateResult) {
+			throw Error(msg || "ensure failed");
+		}
+		return true;
 	}
 
 	function forIn(collection, func) {
@@ -90,6 +143,31 @@ prelude: {
 				return collection.map(func);
 		}
 	}
+
+	function _ofType(x, type) {
+		switch (typeof x) {
+			case "number":
+				return type === Number;
+			case "string":
+				return type === String;
+			case "boolean":
+				return type === Boolean;
+			case "undefined":
+				return type === undefined;
+			default:
+				if (x === null && type === null) return true;
+				return typeof(type) === "function" && x instanceof type;
+		}
+	}
+
+	var js = {
+		"typeof": function (value) {
+			return typeof(value);
+		},
+		"instanceof": function (value, constructor) {
+			return value instanceof constructor;
+		}
+	};
 
 	var print = console.log.bind(console);
 
@@ -191,4 +269,10 @@ typePropertyAssignment: {
 
 assign: {
 	$left = $right;
+}
+
+withBlock: {
+	$controller($expression, function ($each_parameters) {
+		return $rest;
+	});
 }

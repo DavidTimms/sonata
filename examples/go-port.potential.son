@@ -1,0 +1,55 @@
+
+with forever {
+	
+}
+
+fn makeCakeAndSend(cs, flavor, count) {
+    for i in range(count) {
+        cakeName = flavor & " Cake " & i
+        cs.send(cakeName)
+    }
+    cs.close()
+}
+
+fn receiveCakeAndPack(strbry_cs, choco_cs) {
+    strbry_closed = false
+    choco_closed = false
+
+    with forever {
+        if (strbry_closed and choco_closed) {
+        	forever.stop()
+        }
+
+        print("Waiting for a new cake ...")
+
+        select({
+        	(strbry_cs): (cakeName, strbry_ok) -> {
+	            if not strbry_ok {
+	                strbry_closed = true
+	                print(" ... Strawberry channel closed!")
+	            }
+	            else {
+	                print("Received from Strawberry channel.  Now packing", cakeName)
+	            }
+        	}
+       		(choco_cs): (cakeName, choco_ok) -> {
+	            if not choco_ok {
+	                choco_closed = true
+	                print(" ... Chocolate channel closed!")
+	            } else {
+	                print("Received from Chocolate channel.  Now packing", cakeName)
+	            }
+	        }
+        })
+    }   
+}
+
+fn main() {
+    strbry_cs = Channel()
+    choco_cs = Channel()
+
+    makeCakeAndSend(choco_cs, "Chocolate", 3)
+    makeCakeAndSend(strbry_cs, "Strawberry", 3)
+
+    receiveCakeAndPack(strbry_cs, choco_cs)
+}

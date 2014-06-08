@@ -79,6 +79,12 @@ var tests = {
 	"type Person(name age)('Dave' 21)": "(((type Person name age) 'Dave' 21))",
 
 	"type Maybe(value).call(34)": "(((. (type Maybe value) call) 34))",
+
+	"do print(x)": "((do ((print x))))",
+
+	"run(do {})": "((run (do ())))",
+
+	"with applied 45": "((with applied (45)))"
 };
 
 multilineTest([
@@ -103,6 +109,20 @@ multilineTest([
 	"	y: 5.5",
 	"})"
 ], "((print (object (: x 2) (: y 5.5))))");
+
+multilineTest([
+	"do {",
+	"	x: 2",
+	"	y: x + 3",
+	"}"
+], "((do ((: x 2) (: y (+ x 3)))))");
+
+multilineTest([
+	"with async {",
+	"	x: read('file.txt')",
+	"	print(x)",
+	"}"
+], "((with async ((: x (read 'file.txt')) (print x))))");
 
 
 runTests(tests);

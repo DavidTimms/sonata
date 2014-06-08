@@ -11,7 +11,7 @@ module.exports = function (tokens) {
 
 var assignmentOp = ":";
 
-function parseBraceBlock (tokens, pointer) {
+function parseBraceBlock(tokens, pointer) {
 	var parseExpResult, expressions = [];
 	pointer = advancePointer(tokens, pointer || 0);
 
@@ -26,7 +26,7 @@ function parseBraceBlock (tokens, pointer) {
 	return {exp: expressions, pointer: pointer};
 }
 
-function parseExpression (tokens, pointer, precedence) {
+function parseExpression(tokens, pointer, precedence) {
 	pointer = pointer || 0;
 	precedence = precedence || 0;
 	var parseResult;
@@ -69,7 +69,7 @@ function parseExpression (tokens, pointer, precedence) {
 	return parseResult;
 }
 
-function parseLiteral (tokens, pointer, precedence) {
+function parseLiteral(tokens, pointer, precedence) {
 	return {
 		exp: {
 			type: "Literal",
@@ -79,7 +79,7 @@ function parseLiteral (tokens, pointer, precedence) {
 	};
 }
 
-function parseNumber (tokens, pointer, precedence) {
+function parseNumber(tokens, pointer, precedence) {
 	// lookahead to detect decimals
 	if (tokens[pointer + 1].string === "." && 
 		tokens[pointer + 2].type === "Number") {
@@ -96,19 +96,19 @@ function parseNumber (tokens, pointer, precedence) {
 	}
 }
 
-function ignoreToken (tokens, pointer, precedence) {
+function ignoreToken(tokens, pointer, precedence) {
 	return parseExpression(tokens, pointer + 1, precedence);
 }
 
-function parseIdentifier (tokens, pointer) {
+function parseIdentifier(tokens, pointer) {
 	return {exp: makeIdentifier(tokens[pointer].string), pointer: pointer + 1};
 }
 
-function parsePunctuation (tokens, pointer) {
+function parsePunctuation(tokens, pointer) {
 	throw SyntaxError("Unknown punctuation token: " + tokens[pointer]);
 }
 
-function unaryOp (unaryOpPrecedence) {
+function unaryOp(unaryOpPrecedence) {
 	function parseUnary (tokens, pointer, precedence) {
 		var operandResult = parseExpression(
 			tokens, 
@@ -122,7 +122,7 @@ function unaryOp (unaryOpPrecedence) {
 	return parseUnary;
 }
 
-function binaryOp (binaryOpPrecedence) {
+function binaryOp(binaryOpPrecedence) {
 	function parseBinary (tokens, pointer, precedence, left) {
 		var rightResult = parseExpression(
 			tokens, 
@@ -145,7 +145,7 @@ var matchToken = {
 	"{": "}"
 };
 
-function parseCall (tokens, pointer, precedence, callee) {
+function parseCall(tokens, pointer, precedence, callee) {
 	var functionCall = [callee];
 	var endToken = matchToken[tokens[pointer].string];
 	// advance pointer to start of first argument
@@ -159,7 +159,7 @@ function parseCall (tokens, pointer, precedence, callee) {
 	return {exp: functionCall, pointer: pointer + 1};
 }
 
-function parseMemberAccess (tokens, pointer, precedence, parent) {
+function parseMemberAccess(tokens, pointer, precedence, parent) {
 	if (tokens[pointer + 1].type !== "Identifier") {
 		errorAt(tokens[pointer], 
 			"the property of an object must be an identifier");
@@ -168,7 +168,7 @@ function parseMemberAccess (tokens, pointer, precedence, parent) {
 	return {exp: [makeIdentifier("."), parent, child], pointer: pointer + 2};
 }
 
-function parseLambda (tokens, pointer) {
+function parseLambda(tokens, pointer) {
 	var name = null;
 	pointer += 1;
 	// for function declarations, parse the function name
@@ -187,7 +187,7 @@ function parseLambda (tokens, pointer) {
 	};
 }
 
-function parseParams (tokens, pointer) {
+function parseParams(tokens, pointer) {
 	var param, params = [], endToken = ")";
 	checkToken(tokens, pointer, "(");
 	pointer += 1;
@@ -208,7 +208,7 @@ function parseParams (tokens, pointer) {
 	return {exp: params, pointer: pointer + 1};
 }
 
-function parseParam (tokens, pointer) {
+function parseParam(tokens, pointer) {
 	var param = parseExpression(tokens, pointer);
 	if (isIdentifier(param.exp) ||
 		// check for default parameter assignment
@@ -219,7 +219,7 @@ function parseParam (tokens, pointer) {
 		"invalid parameter name in function");
 }
 
-function parseIf (tokens, pointer) {
+function parseIf(tokens, pointer) {
 	var test = parseExpression(tokens, pointer + 1);
 
 	var ifBody = parseBody(tokens, test.pointer);
@@ -231,7 +231,7 @@ function parseIf (tokens, pointer) {
 	};
 }
 
-function parseElse (tokens, pointer) {
+function parseElse(tokens, pointer) {
 	advPointer = advancePointer(tokens, pointer);
 	if (tokens[advPointer].string === "else") {
 		var elseBody = parseBody(tokens, advPointer + 1);
@@ -243,7 +243,7 @@ function parseElse (tokens, pointer) {
 	else return {exp: [], pointer: pointer};
 }
 
-function parseBody (tokens, pointer) {
+function parseBody(tokens, pointer) {
 	pointer = advancePointer(tokens, pointer);
 	if (tokens[pointer].string === "{") {
 		var blockResult = parseBraceBlock(tokens, pointer + 1);
@@ -256,7 +256,7 @@ function parseBody (tokens, pointer) {
 	}
 }
 
-function parseType (tokens, pointer) {
+function parseType(tokens, pointer) {
 	var token = tokens[pointer + 1];
 	if (!isIdentifier(token)) errorAt(token, 
 			"Expected a type name, but found " + token.string);
@@ -267,6 +267,25 @@ function parseType (tokens, pointer) {
 	return {
 		exp: [makeIdentifier("type"), typeName].concat(properties.exp), 
 		pointer: properties.pointer
+	};
+}
+
+function parseDoBlock(tokens, pointer) {
+	var blockBody = parseBody(tokens, pointer + 1);
+	return {
+		exp: [makeIdentifier("do"), blockBody.exp], 
+		pointer: blockBody.pointer
+	};
+}
+
+function parseWithBlock(tokens, pointer) {
+	var controller = parseExpression(tokens, pointer + 1);
+
+	var blockBody = parseBody(tokens, controller.pointer);
+
+	return {
+		exp: [makeIdentifier("with"), controller.exp, blockBody.exp], 
+		pointer: blockBody.pointer
 	};
 }
 
@@ -287,7 +306,9 @@ var prefixOperators = {
 	},
 	"fn": parseLambda,
 	"if": parseIf,
-	"type": parseType
+	"type": parseType,
+	"do": parseDoBlock,
+	"with": parseWithBlock
 };
 
 var infixOperators = {
