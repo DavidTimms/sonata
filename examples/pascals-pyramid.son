@@ -1,9 +1,9 @@
 
-fn pascal(n, rowCount: 2, prev: [[1]]) {
+fn pascal(n, rowCount = 2, prev = [[1]]) {
 	if rowCount > n {
 		prev
 	} else {
-		next: range(rowCount).map(fn (rowNum) {
+		next = range(rowCount).map(fn (rowNum) {
 			range(rowNum + 1).map(fn (colNum) {
 				getCell(prev, rowNum, colNum)
 					 + getCell(prev, rowNum - 1, colNum)

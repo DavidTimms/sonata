@@ -6,7 +6,7 @@ module.exports = function (tokens) {
 	return parsed.exp;
 };
 
-var assignmentOp = ":";
+var assignmentOp = "=";
 
 /*
 function parseBraceBlock(tokens, pointer) {
@@ -432,12 +432,12 @@ var infixOperators = {
 	"<=": binaryOp(30),
 	">=": binaryOp(30),
 	"::": binaryOp(30),
+	"===": binaryOp(25),
 	"==": binaryOp(25),
-	"=": binaryOp(25),
 	"!=": binaryOp(25),
 	"and": binaryOp(20),
 	"or": binaryOp(15),
-	":": binaryOp(10),
+	"=": binaryOp(10),
 	"(": withPrecedence(70, parseCall),
 	".": withPrecedence(80, parseMemberAccess)
 };

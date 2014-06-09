@@ -1,7 +1,7 @@
 # set up libraries to use promises
-Promise: require("bluebird")
-request: Promise.promisifyAll(require("request"))
-fs: Promise.promisifyAll(require("fs"))
+Promise = require("bluebird")
+request = Promise.promisifyAll(require("request"))
+fs = Promise.promisifyAll(require("fs"))
 
 # define the async controller function.
 # This is a simplified version without error handling
@@ -14,8 +14,8 @@ fn async(value, rest) {
 
 # fetch the URL passed as an argument (default is google)
 # then write the result to content.html
-fn main(url: "http://google.com") with async {
-	html: request.getAsync(url)
+fn main(url = "http://google.com") with async {
+	html = request.getAsync(url)
 	fs.writeFileAsync("content.html", get(html, 1))
 	print("written to contents.html")
 }

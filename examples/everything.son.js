@@ -12,7 +12,6 @@
     var withFind;
     var withFindAll;
     var maths;
-    var undefined;
     var country;
     list = require('texo');
     range = list.range;
@@ -171,7 +170,7 @@
             main.apply(null, process.argv.slice(2));
         }
     }
-    main = undefined, doScoping = undefined, withBlock = undefined, withPredicate = undefined, withFind = undefined, withFindAll = undefined, maths = undefined, undefined = undefined, country = undefined;
+    main = undefined, doScoping = undefined, withBlock = undefined, withPredicate = undefined, withFind = undefined, withFindAll = undefined, maths = undefined, country = undefined;
     function Person(name, age, gender) {
         if (!(this instanceof Person))
             return new Person(name, age, gender);
@@ -184,10 +183,6 @@
         var jane;
         var names;
         var parentDict;
-        var John;
-        var Dan;
-        var David;
-        var Derrick;
         var validParents;
         ensure(eq(doScoping(2), doScoping(18)));
         ensure(eq(withBlock(5), 21));
@@ -263,7 +258,6 @@
         45: 32
     };
     country = function country(name, continent) {
-        var name;
         return {
             'name': name,
             'describe': function () {

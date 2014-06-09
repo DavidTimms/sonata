@@ -169,12 +169,13 @@
     main = function main(playerMove) {
         var playerBeats;
         var cpuMove;
+        var playerMove;
         var verb;
         playerBeats = moves[playerMove];
         if (!playerBeats)
             return print('invalid move');
         else
-            return cpuMove = randomMove(), print('player picks: ' + playerMove), print('computer picks: ' + cpuMove), print(eq(playerMove, cpuMove) ? 'it\'s a draw!' : (verb = playerBeats[cpuMove]) ? playerMove + (verb + (cpuMove + ', player wins!')) : cpuMove + (moves[cpuMove][playerMove] + (playerMove + ', computer wins!')));
+            return cpuMove = randomMove(), print('player picks: ' + playerMove), print('computer picks: ' + cpuMove), print((playerMove = cpuMove) ? 'it\'s a draw!' : (verb = playerBeats[cpuMove]) ? playerMove + (verb + (cpuMove + ', player wins!')) : cpuMove + (moves[cpuMove][playerMove] + (playerMove + ', computer wins!')));
     };
     randomMove = function randomMove() {
         var options;

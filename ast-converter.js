@@ -11,7 +11,7 @@ var buildSnippet = function () {
 	throw Error("Attempted to call snippet builder before it was initialised.");
 };
 
-var assignmentOp = ":";
+var assignmentOp = "=";
 
 function printObj(obj) {
 	console.log(jsonpretty(obj));
@@ -305,7 +305,7 @@ var converters = {
 				makeLiteral(false)
 		});
 	},
-	":": function (parts) {
+	"=": function (parts) {
 		var identifier = convertExp(parts[0]);
 		var value = parts[1];
 		if (isCallTo("fn", value)) {
@@ -374,8 +374,12 @@ var converters = {
 	"^": macro(function (left, right) {
 		return [[".", "Math", "pow"], left, right];
 	}),
-	"=": macro(function (left, right) {
+	"==": macro(function (left, right) {
 		return ["eq", left, right];
+	}),
+	// This is inefficient and should be replaced:
+	"!=": macro(function (left, right) {
+		return ["not", ["eq", left, right]];
 	}),
 	":object": function (parts) {
 		return {
@@ -447,8 +451,8 @@ var converters = {
 (["<", ">", "<=", ">="]).forEach(function (op) {
 	converters[op] = binaryExpressionMaker("BinaryExpression", op);
 });
-converters["=="] = binaryExpressionMaker("BinaryExpression", "===");
-converters["!="] = binaryExpressionMaker("BinaryExpression", "!==");
+converters["==="] = binaryExpressionMaker("BinaryExpression", "===");
+converters["!=="] = binaryExpressionMaker("BinaryExpression", "!==");
 
 converters["and"] = binaryExpressionMaker("LogicalExpression", "&&");
 converters["or"] = binaryExpressionMaker("LogicalExpression", "||");

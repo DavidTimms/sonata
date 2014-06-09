@@ -8,7 +8,7 @@ var tests = {
 
 	"a + b":  "((+ a b))",
 
-	"name: 'Maria'":  "((: name 'Maria'))",
+	"name = 'Maria'":  "((= name 'Maria'))",
 
 	"a * b - 2":  "((- (* a b) 2))",
 
@@ -52,13 +52,13 @@ var tests = {
 
 	"fn () 45 - 2": "((fn () ((- 45 2))))",
 
-	"fn sum(h | t) t.append(h)": "((: sum (fn (h (| t)) (((. t append) h)))))",
+	"fn sum(h | t) t.append(h)": "((= sum (fn (h (| t)) (((. t append) h)))))",
 
-	"fn add(a b) {a + b}": "((: add (fn (a b) ((+ a b)))))",
+	"fn add(a b) {a + b}": "((= add (fn (a b) ((+ a b)))))",
 
 	"xs.reduce(fn (x, y) x & y)": "(((. xs reduce) (fn (x y) ((& x y)))))",
 
-	"fn (name: 'Dave') name & '!'": "((fn ((: name 'Dave')) ((& name '!'))))",
+	"fn (name = 'Dave') name & '!'": "((fn ((= name 'Dave')) ((& name '!'))))",
 
 	"if (x < 2) print(x)": "((if (< x 2) ((print x))))",
 
@@ -97,12 +97,12 @@ var tests = {
 
 multilineTest([
 	"if s.match(/\s/) {",
-	"	s2: s & '?'",
+	"	s2 = s & '?'",
 	"	print(s)",
 	"} else {",
 	"	print('no')",
 	"}"
-], "((if ((. s match) /\s/) ((: s2 (& s '?')) (print s)) ((print 'no'))))");
+], "((if ((. s match) /\s/) ((= s2 (& s '?')) (print s)) ((print 'no'))))");
 
 multilineTest([
 	"xs.map(fn (x) {",
@@ -129,17 +129,17 @@ multilineTest([
 
 multilineTest([
 	"do {",
-	"	x: 2",
-	"	y: x + 3",
+	"	x = 2",
+	"	y = x + 3",
 	"}"
-], "((do ((: x 2) (: y (+ x 3)))))");
+], "((do ((= x 2) (= y (+ x 3)))))");
 
 multilineTest([
 	"with async {",
-	"	x: read('file.txt')",
+	"	x = read('file.txt')",
 	"	print(x)",
 	"}"
-], "((with async ((: x (read 'file.txt')) (print x))))");
+], "((with async ((= x (read 'file.txt')) (print x))))");
 
 
 runTests(tests);

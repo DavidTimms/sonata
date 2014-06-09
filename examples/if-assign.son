@@ -1,9 +1,0 @@
-
-fn main(name | rest) {
-	if name = "Dave"
-		msg: "Hi Dave!"
-	else
-		msg: "Where's Dave?"
-
-	print(msg & rest)
-}

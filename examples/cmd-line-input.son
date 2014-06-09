@@ -1,5 +1,5 @@
 
-fn main(name age) {
+fn main(name, age) {
 	print({
 		name: name
 		age: age

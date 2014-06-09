@@ -3,6 +3,7 @@
     var list;
     var range;
     var eq;
+    var js;
     var print;
     var isTorn;
     var findTornNumbers;
@@ -49,16 +50,63 @@
         }
         return false;
     }
-    function repeat(func) {
-        var result;
-        result = { args: [] };
-        do {
-            result = func.apply(null, result.args);
-        } while (result instanceof $sonata_Continuation);
-        return result;
+    function applied(value, rest) {
+        return rest(value);
     }
-    function $sonata_Continuation() {
-        this.args = arguments;
+    function predicate(value, next) {
+        if (value)
+            return next(value);
+        else
+            return false;
+    }
+    function find(value, rest) {
+        var res;
+        if (!value)
+            return false;
+        if (value instanceof Iterator) {
+            while (value.hasNext()) {
+                if (res = rest(value.next())) {
+                    return res;
+                }
+            }
+            return false;
+        }
+        return rest(value);
+    }
+    function findAll(value, rest) {
+        var all;
+        var res;
+        all = list(), res = undefined;
+        if (!value)
+            return all;
+        if (value instanceof Iterator) {
+            while (value.hasNext()) {
+                if (res = rest(value.next())) {
+                    all = all.concat(res);
+                }
+            }
+            return all;
+        }
+        return rest(value);
+    }
+    function Iterator(l) {
+        this.items = l;
+        this.pointer = 0;
+    }
+    Iterator.prototype.hasNext = function () {
+        return this.items && this.pointer < this.items.count;
+    };
+    Iterator.prototype.next = function () {
+        return this.items && this.items(this.pointer++);
+    };
+    function from(a) {
+        return new Iterator(a);
+    }
+    function ensure(predicateResult, msg) {
+        if (!predicateResult) {
+            throw Error(msg || 'ensure failed');
+        }
+        return true;
     }
     function forIn(collection, func) {
         var i;
@@ -86,6 +134,30 @@
             return collection.map(func);
         }
     }
+    function $sonata_ofType(x, type) {
+        switch (typeof x) {
+        case 'number':
+            return type === Number;
+        case 'string':
+            return type === String;
+        case 'boolean':
+            return type === Boolean;
+        case 'undefined':
+            return type === undefined;
+        default:
+            if (x === null && type === null)
+                return true;
+            return typeof type === 'function' && x instanceof type;
+        }
+    }
+    js = {
+        'typeof': function (value) {
+            return typeof value;
+        },
+        'instanceof': function (value, constructor) {
+            return value instanceof constructor;
+        }
+    };
     print = console.log.bind(console);
     function $sonata_startMain() {
         if (typeof main === 'function' && require && require.main && module && require.main === module && process && process.argv instanceof Array) {

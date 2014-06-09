@@ -1,16 +1,16 @@
 
 fn main(playerMove) {
-	playerBeats: get(moves, playerMove)
+	playerBeats = get(moves, playerMove)
 	if not playerBeats {
 		print("invalid move")
 	} else {
-		cpuMove: randomMove()
+		cpuMove = randomMove()
 		print("player picks: " & playerMove)
 		print("computer picks: " & cpuMove)
 		print(
 			if playerMove = cpuMove
 				"it's a draw!"
-			else if verb: get(playerBeats, cpuMove)
+			else if verb = get(playerBeats, cpuMove)
 				playerMove & verb & cpuMove & ", player wins!"
 			else
 				cpuMove & get(get(moves, cpuMove), playerMove) & 
@@ -20,12 +20,12 @@ fn main(playerMove) {
 }
 
 fn randomMove() {
-	options: list.fromArray(Object.keys(moves))
-	index: Math.floor(Math.random() * options.count)
+	options = list.fromArray(Object.keys(moves))
+	index = Math.floor(Math.random() * options.count)
 	options(index)
 }
 
-moves: {
+moves = {
 	Rock: {Lizard: " crushes ", Scissors: " crushes "}
 	Paper: {Rock: " covers ", Spock: " disproves "}
 	Scissors: {Paper: " cut ", Lizard: " decapitate "}

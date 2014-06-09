@@ -1,24 +1,24 @@
 
-subjects: ["Dave", "Phil", "Ved", "Rob", "Craig", "Alistair"]
+subjects = ["Dave", "Phil", "Ved", "Rob", "Craig", "Alistair"]
 
-qualifiers: ["really", "kinda", "probably"]
+qualifiers = ["really", "kinda", "probably"]
 
-opinions: ["likes", "enjoys", "hates", "doesn't mind"]
+opinions = ["likes", "enjoys", "hates", "doesn't mind"]
 
-verbs: ["playing", "eating", "watching", "making"]
+verbs = ["playing", "eating", "watching", "making"]
 
-targets: ["cake", "football", "video games", "guitar", "piano", "pizza"]
+targets = ["cake", "football", "video games", "guitar", "piano", "pizza"]
 
 fn main() {
 	sentences()
 }
 
 fn sentences() with findAll {
-	subject: from(subjects)
-	qualifier: from(qualifiers)
-	opinion: from(opinions)
-	verb: from(verbs)
-	target: from(targets)
+	subject = from(subjects)
+	qualifier = from(qualifiers)
+	opinion = from(opinions)
+	verb = from(verbs)
+	target = from(targets)
 	Math.random() < 0.03
 	print(subject, qualifier, opinion, verb, target)
 }
