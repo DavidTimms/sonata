@@ -72,11 +72,11 @@ var tests = {
 
 	"variable\n(another + expression)":  "(variable (+ another expression))",
 
-	"{name: 'Dave', age: 21}":  "((object (: name 'Dave') (: age 21)))",
+	"{name: 'Dave', age: 21}":  "((:object (: name 'Dave') (: age 21)))",
 
-	"{}":  "((object))",
+	"{}":  "((:object))",
 
-	"{nested: {inner: value}}":  "((object (: nested (object (: inner value)))))",
+	"{nested: {inner: value}}":  "((:object (: nested (:object (: inner value)))))",
 
 	"type Point(x, y)": "((type Point x y))",
 
@@ -114,9 +114,10 @@ multilineTest([
 multilineTest([
 	"print({",
 	"	x: 2,",
-	"	y: 5.5",
+	"	'y': 5.5",
+	"	2: 'hello' & ' world'",
 	"})"
-], "((print (object (: x 2) (: y 5.5))))");
+], "((print (:object (: x 2) (: 'y' 5.5) (: 2 (& 'hello' ' world')))))");
 
 multilineTest([
 	"{",
@@ -124,7 +125,7 @@ multilineTest([
 	"		print('Hi' & name)",
 	"	}",
 	"}"
-], "((object (:fn self greet (name) ((print (& 'Hi' name))))))");
+], "((:object (:fn self greet (name) ((print (& 'Hi' name))))))");
 
 multilineTest([
 	"do {",
@@ -181,5 +182,5 @@ function runTests(tests) {
 }
 
 function multilineTest(lines, expectedOutput) {
-	test[lines.join("\n")] = expectedOutput;
+	tests[lines.join("\n")] = expectedOutput;
 }

@@ -280,3 +280,7 @@ withBlock: {
 		return $rest;
 	});
 }
+
+selfNameAssignment: {
+	var $selfName = this;
+}

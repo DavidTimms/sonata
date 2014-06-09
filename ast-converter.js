@@ -57,6 +57,13 @@ function convertBody(expressions, context) {
 		context.params.defaults = false;
 	}
 
+	if (context.selfName) {
+		statements = statements.concat(
+			buildSnippet("selfNameAssignment", {
+				selfName: context.selfName
+			}));
+	}
+
 	if ((!expressions) || expressions.length === 0) {
 		return statements;
 	}
@@ -209,16 +216,6 @@ function convertSequence(expressions) {
 	return convertExp(singleExpression);
 }
 
-function convertObjectKey(node) {
-	if (node && node.type === "Identifier") {
-		return makeLiteral(node.name);
-	}
-	else if (node && node.type === "Literal" && typeof(node.value) === "string") {
-		return node;
-	}
-	else throw "Invalid key in object literal: " + node;
-}
-
 function convertWithBlock(convertedController, expressions, context) {
 	var head, tail, parameters;
 	var headExp = expressions[0];
@@ -241,6 +238,36 @@ function convertWithBlock(convertedController, expressions, context) {
 		parameters: parameters,
 		rest: tail
 	});
+}
+
+function convertObjProperty(property) {
+	var key, value;
+	if (isCallTo(":", property)) {
+		key = convertObjKey(property[1]);
+		value = convertExp(property[2]);
+	}
+	else if (isCallTo(":fn", property)) {
+		// property format: [fn, self, methodName, params, body]
+		key = convertObjKey(property[2]);
+
+		var context = {
+			selfName: convertExp(property[1])
+		};
+
+		value = converters.fn([property[3], property[4]], context);
+	}
+	else throw "only property assignments allowed in an object literal";
+
+	return {
+		type: "Property",
+		key: key,
+		value: value,
+		kind: "init"
+	};
+}
+
+function convertObjKey(node) {
+	return node.type === "Identifier" ? makeLiteral(node.name) : node;
 }
 
 var converters = {
@@ -350,20 +377,10 @@ var converters = {
 	"=": macro(function (left, right) {
 		return ["eq", left, right];
 	}),
-	"object": function (parts) {
+	":object": function (parts) {
 		return {
 			type: "ObjectExpression",
-			properties: parts.map(function (assignment) {
-				if (isCallTo(assignmentOp, assignment)) {
-					return {
-						type: "Property",
-						key: convertObjectKey(assignment[1]),
-						value: convertExp(assignment[2]),
-						kind: "init"
-					};
-				}
-				else throw "only property assignments allowed in an object literal";
-			})
+			properties: parts.map(convertObjProperty)
 		};
 	},
 	"not": function (parts) {

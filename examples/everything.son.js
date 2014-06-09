@@ -3,6 +3,7 @@
     var list;
     var range;
     var eq;
+    var js;
     var print;
     var main;
     var doScoping;
@@ -10,6 +11,9 @@
     var withPredicate;
     var withFind;
     var withFindAll;
+    var maths;
+    var undefined;
+    var country;
     list = require('texo');
     range = list.range;
     eq = list.eq;
@@ -137,13 +141,37 @@
             return collection.map(func);
         }
     }
+    function $sonata_ofType(x, type) {
+        switch (typeof x) {
+        case 'number':
+            return type === Number;
+        case 'string':
+            return type === String;
+        case 'boolean':
+            return type === Boolean;
+        case 'undefined':
+            return type === undefined;
+        default:
+            if (x === null && type === null)
+                return true;
+            return typeof type === 'function' && x instanceof type;
+        }
+    }
+    js = {
+        'typeof': function (value) {
+            return typeof value;
+        },
+        'instanceof': function (value, constructor) {
+            return value instanceof constructor;
+        }
+    };
     print = console.log.bind(console);
     function $sonata_startMain() {
         if (typeof main === 'function' && require && require.main && module && require.main === module && process && process.argv instanceof Array) {
             main.apply(null, process.argv.slice(2));
         }
     }
-    main = undefined, doScoping = undefined, withBlock = undefined, withPredicate = undefined, withFind = undefined, withFindAll = undefined;
+    main = undefined, doScoping = undefined, withBlock = undefined, withPredicate = undefined, withFind = undefined, withFindAll = undefined, maths = undefined, undefined = undefined, country = undefined;
     function Person(name, age, gender) {
         if (!(this instanceof Person))
             return new Person(name, age, gender);
@@ -156,6 +184,10 @@
         var jane;
         var names;
         var parentDict;
+        var John;
+        var Dan;
+        var David;
+        var Derrick;
         var validParents;
         ensure(eq(doScoping(2), doScoping(18)));
         ensure(eq(withBlock(5), 21));
@@ -173,6 +205,8 @@
         ensure(eq(withFind(names), 'David'));
         validParents = list('Tina', 'Les', 'Lucy', 'Matt');
         ensure(eq(withFindAll(names, parentDict), validParents));
+        ensure(eq(maths.add(maths[45], 2), 34));
+        ensure(eq(country('China', 'Asia').describe(), 'China is a country in Asia'));
         return print('All tests passed');
     };
     doScoping = function doScoping(x) {
@@ -219,6 +253,25 @@
                 });
             });
         });
+    };
+    maths = {
+        'add': function (a, b) {
+            var self;
+            self = this;
+            return +a + +b;
+        },
+        45: 32
+    };
+    country = function country(name, continent) {
+        var name;
+        return {
+            'name': name,
+            'describe': function () {
+                var self;
+                self = this;
+                return name + (' is a country in ' + continent);
+            }
+        };
     };
     $sonata_startMain();
 }());

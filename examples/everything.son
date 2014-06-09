@@ -22,6 +22,10 @@ fn main() {
 	validParents: ["Tina", "Les", "Lucy", "Matt"]
 	ensure(withFindAll(names, parentDict) = validParents)
 
+	ensure(maths.add(get(maths, 45), 2) = 34)
+
+	ensure(country("China", "Asia").describe() = "China is a country in Asia")
+
 	print("All tests passed")
 }
 
@@ -62,4 +66,21 @@ fn withFindAll(names, parents) with findAll {
 	name.length > 4
 	name.charAt(0) = "D"
 	get(parents, name)
+}
+
+maths: {
+	fn self.add(a, b) {
+		a + b
+	}
+	45: 32
+}
+
+# example of using a plain function to simulate a class
+fn country(name, continent) {
+	{
+		name: name
+		fn self.describe() {
+			name & " is a country in " & continent
+		}
+	}
 }

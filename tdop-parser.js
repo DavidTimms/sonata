@@ -337,42 +337,60 @@ var parseObjLiteral = parseSequence({
 
 function parseObjProperty(tokens, pointer) {
 	var key, value;
-	if (isIdentifier(tokens[pointer])) {
-		if (tokens[pointer].string === "fn") {
-			return parseMethod(tokens, pointer);
-		}
+	var token = tokens[pointer];
+
+	if (token.string === "fn") {
+		return parseMethod(tokens, pointer);
+	}
+	else if (token.type === "Identifier") {
 		key = parseIdentifier(tokens, pointer);
-		checkToken(tokens, key.pointer, ":");
-		value = parseExpression(tokens, key.pointer + 1);
-		return {
-			exp: [makeIdentifier(":"), key.exp, value.exp],
-			pointer: value.pointer
-		};
+	}
+	else if (token.type === "String" || token.type === "Number") {
+		key = parseLiteral(tokens, pointer);
 	}
 	else errorAt(tokens[pointer], "Invalid object property key");
+
+	checkToken(tokens, key.pointer, ":");
+	value = parseExpression(tokens, key.pointer + 1);
+
+	return {
+		exp: [makeIdentifier(":"), key.exp, value.exp],
+		pointer: value.pointer
+	};
 }
 
 function parseMethod(tokens, pointer) {
-	var selfName;
+	var errorToken;
 	pointer += 1; // skip "fn"
 
-	// method signature:
+	// method signature example:
 	// fn self.methodName(params) { body }
 
 	if (isIdentifier(tokens[pointer])) {
-		selfName = makeIdentifier(tokens[pointer].string);
+		var selfName = makeIdentifier(tokens[pointer].string);
 		pointer += 1;
 		checkToken(tokens, pointer, ".");
-		var params = parseParams(tokens, pointer + 1);
-		var body = parseBody(tokens, params.pointer);
+		if (isIdentifier(tokens[pointer + 1])) {
+			var methodName = makeIdentifier(tokens[pointer + 1].string);
+			var params = parseParams(tokens, pointer + 2);
+			var body = parseBody(tokens, params.pointer);
 
-		return {
-			exp: [makeIdentifier(":fn"), selfName, params.exp, body.exp],
-			pointer: body.pointer
-		};
+			return {
+				exp: [
+					makeIdentifier(":fn"), 
+					selfName,
+					methodName, 
+					params.exp, 
+					body.exp
+				],
+				pointer: body.pointer
+			};
+		}
+		else errorToken = tokens[pointer + 1];
 	}
-	else errorAt(tokens[pointer], "Invalid method signature");
+	else errorToken = tokens[pointer];
 
+	errorAt(errorToken, "Invalid method signature");
 }
 
 var prefixOperators = {
@@ -390,7 +408,7 @@ var prefixOperators = {
 			parseArguments(tokens, pointer + 1, onToken("]")));
 	},
 	"{": function (tokens, pointer, precedence) {
-		return prependCallee("object", parseObjLiteral(tokens, pointer + 1));
+		return prependCallee(":object", parseObjLiteral(tokens, pointer + 1));
 		//return parseCall(tokens, pointer, precedence, makeIdentifier("object"));
 	},
 	"fn": parseLambda,
