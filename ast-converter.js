@@ -124,6 +124,22 @@ var statementConverters = {
 	}
 };
 
+function convertParameters(params) {
+	return params.reduce(function (output, node, index) {
+		if (isCallTo(assignmentOp, node)) {
+			output.identifiers.push(node[1]);
+			output.defaults[index] = node;
+		}
+		else if (isCallTo("|", node)) {
+			output.defaults[index] = node;
+		}
+		else if (node.type === "Identifier") {
+			output.identifiers.push(node);
+		}
+		return output;
+	}, {identifiers: [], defaults: []});
+}
+
 function createDefaultAssignments(defaults) {
 	return flatmap(defaults, function (defaultAssign, index) {
 
@@ -165,22 +181,6 @@ function createVarDeclarations(expressions) {
 	};
 }
 
-function convertParameters(params) {
-	return params.reduce(function (output, node, index) {
-		if (isCallTo(assignmentOp, node)) {
-			output.identifiers.push(node[1]);
-			output.defaults[index] = node;
-		}
-		else if (isCallTo("|", node)) {
-			output.defaults[index] = node;
-		}
-		else if (node.type === "Identifier") {
-			output.identifiers.push(node);
-		}
-		return output;
-	}, {identifiers: [], defaults: []});
-}
-
 function convertExp(node) {
 	// Array represents a function application
 	if (node instanceof Array) {
@@ -219,6 +219,7 @@ function convertSequence(expressions) {
 function convertWithBlock(convertedController, expressions, context) {
 	var head, tail, parameters;
 	var headExp = expressions[0];
+
 	if (isCallTo(assignmentOp, headExp)) {
 		var head = convertExp(headExp[2]);
 		var parameters = [headExp[1]];
@@ -228,9 +229,11 @@ function convertWithBlock(convertedController, expressions, context) {
 		var parameters = [];
 	}
 
-	var tail = (expressions.length > 2) ?
+	var tail = expressions.length > 2 ?
 		convertWithBlock(convertedController, expressions.slice(1), context) :
-		convertExp(expressions[1]);
+		(expressions.length > 1 ?
+			convertExp(expressions[1]) :
+			makeIdentifier("undefined"));
 
 	return snippetExp("withBlock", {
 		controller: convertedController,
@@ -407,11 +410,13 @@ var converters = {
 		return ["forIn", collection, ["fn", [key], body]];
 	}),
 	"type": function (parts) {
-		var properties = parts.slice(1);
+		var params = convertParameters(parts.slice(1));
+		var defaultAssignments = createDefaultAssignments(params.defaults);
+		var propAssignments = makeTypePropAssignments(params.identifiers);
 		return snippetExp("typeExpression", {
 			typeName: parts[0],
-			properties: properties,
-			assignments: makeTypePropAssignments(properties)
+			properties: params.identifiers,
+			assignments: defaultAssignments.concat(propAssignments)
 		});
 	},
 	"::": function (parts) {

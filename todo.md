@@ -1,7 +1,6 @@
 TODO
 ====
 
- - traditional assignment syntax.
  - List and object property access syntax.
  - whitespace syntax.
  - Texo modifications - function to object and add more methods, lazy filtering.

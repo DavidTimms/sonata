@@ -6,6 +6,7 @@
     var js;
     var print;
     var dave;
+    var gender;
     var origin;
     list = require('texo');
     range = list.range;
@@ -164,15 +165,16 @@
             main.apply(null, process.argv.slice(2));
         }
     }
-    dave = undefined, origin = undefined;
+    dave = undefined, gender = undefined, origin = undefined;
     dave = function Person(name, age, gender) {
         if (!(this instanceof Person))
             return new Person(name, age, gender);
+        if (gender === undefined)
+            gender = 'unknown';
         this.name = name;
         this.age = age;
         this.gender = gender;
-    }('Dave', 21, 'male');
-    dave.age = 22;
+    }('Dave', 21);
     print(dave.name, 'is a', dave.age, 'year old', dave.gender);
     function Point(x, y) {
         if (!(this instanceof Point))
