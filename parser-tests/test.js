@@ -32,7 +32,7 @@ var tests = {
 
 	"func(arg) % 4 == 2":  "((== (% (func arg) 4) 2))",
 
-	"[a b c d]":  "((list a b c d))",
+	"[a, b, c, d]":  "((list a b c d))",
 
 	"[a, [b + 3, c], d]":  "((list a (list (+ b 3) c) d))",
 
@@ -48,7 +48,7 @@ var tests = {
 
 	"(5 + 4).toString()":  "(((. (+ 5 4) toString)))",
 
-	"[1 2] ++ [3 4 5]":  "((++ (list 1 2) (list 3 4 5)))",
+	"[1, 2] ++ [3, 4, 5]":  "((++ (list 1 2) (list 3 4 5)))",
 
 	"fn () 45 - 2": "((fn () ((- 45 2))))",
 
@@ -56,7 +56,7 @@ var tests = {
 
 	"fn add(a b) {a + b}": "((: add (fn (a b) ((+ a b)))))",
 
-	"xs.reduce(fn (x y) x & y)": "(((. xs reduce) (fn (x y) ((& x y)))))",
+	"xs.reduce(fn (x, y) x & y)": "(((. xs reduce) (fn (x y) ((& x y)))))",
 
 	"fn (name: 'Dave') name & '!'": "((fn ((: name 'Dave')) ((& name '!'))))",
 
@@ -72,15 +72,15 @@ var tests = {
 
 	"variable\n(another + expression)":  "(variable (+ another expression))",
 
-	"{name: 'Dave' age: 21}":  "((object (: name 'Dave') (: age 21)))",
+	"{name: 'Dave', age: 21}":  "((object (: name 'Dave') (: age 21)))",
 
 	"{}":  "((object))",
 
 	"{nested: {inner: value}}":  "((object (: nested (object (: inner value)))))",
 
-	"type Point(x y)": "((type Point x y))",
+	"type Point(x, y)": "((type Point x y))",
 
-	"type Person(name age)('Dave' 21)": "(((type Person name age) 'Dave' 21))",
+	"type Person(name, age)('Dave', 21)": "(((type Person name age) 'Dave' 21))",
 
 	"type Maybe(value).call(34)": "(((. (type Maybe value) call) 34))",
 
@@ -119,6 +119,14 @@ multilineTest([
 ], "((print (object (: x 2) (: y 5.5))))");
 
 multilineTest([
+	"{",
+	"	fn self.greet(name) {",
+	"		print('Hi' & name)",
+	"	}",
+	"}"
+], "((object (:fn self greet (name) ((print (& 'Hi' name))))))");
+
+multilineTest([
 	"do {",
 	"	x: 2",
 	"	y: x + 3",
@@ -136,6 +144,7 @@ multilineTest([
 runTests(tests);
 
 function test(input, output) {
+	//console.log("testing: " + input);
 	try {
 		var parsed = lispString(parse(tokenize(input)));
 	}

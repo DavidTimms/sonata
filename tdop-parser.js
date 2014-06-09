@@ -3,14 +3,12 @@ var printObj = require('./utils/print-object.js');
 
 module.exports = function (tokens) {
 	var parsed = parseBraceBlock(tokens);
-
-	//console.log(lispString(parsed.exp), parsed.exp.length);
-	//console.log(lispString(parsed.exp));
 	return parsed.exp;
 };
 
 var assignmentOp = ":";
 
+/*
 function parseBraceBlock(tokens, pointer) {
 	var parseExpResult, expressions = [];
 	pointer = advancePointer(tokens, pointer || 0);
@@ -24,6 +22,31 @@ function parseBraceBlock(tokens, pointer) {
 	}
 
 	return {exp: expressions, pointer: pointer};
+}
+*/
+
+var parseBraceBlock = parseSequence({
+	of: parseExpression, 
+	stopWhen: onToken("}")
+});
+
+function parseSequence(options) {
+	var parseFunction = options.of;
+	return function (tokens, pointer, altIsEnd) {
+		var isEnd = altIsEnd || options.stopWhen;
+		var parseResult;
+		var expressions = [];
+		pointer = advancePointer(tokens, pointer || 0);
+
+		while (!isEnd(tokens[pointer])) {
+			parseResult = parseFunction(tokens, pointer);
+			expressions.push(parseResult.exp);
+			pointer = advanceToNextExpression(
+				tokens, parseResult.pointer, isEnd);
+		}
+
+		return {exp: expressions, pointer: pointer + 1};
+	}
 }
 
 function parseExpression(tokens, pointer, precedence) {
@@ -83,10 +106,18 @@ function parseNumber(tokens, pointer, precedence) {
 	// lookahead to detect decimals
 	if (tokens[pointer + 1].string === "." && 
 		tokens[pointer + 2].type === "Number") {
+
+		var value = Number(tokens[pointer].value + 
+			"." + tokens[pointer + 2].string);
+
+		if ("" + value === "NaN") {
+			errorAt(tokens[pointer], "Invalid number");
+		}
+
 		return {
 			exp: {
 				type: "Literal",
-				value: Number(tokens[pointer].value + "." + tokens[pointer + 2].value)
+				value: value
 			},
 			pointer: pointer + 3
 		};
@@ -151,13 +182,22 @@ function parseCall(tokens, pointer, precedence, callee) {
 	// advance pointer to start of first argument
 	pointer += 1;
 	while (tokens[pointer].string !== endToken) {
-		parseResult = parseExpression(tokens, pointer, 0);
+		parseResult = parseExpression(tokens, pointer);
 		pointer = parseResult.pointer;
 		functionCall.push(parseResult.exp);
 		pointer = advancePointer(tokens, pointer);
 	}
 	return {exp: functionCall, pointer: pointer + 1};
 }
+
+function parseCall(tokens, pointer, precedence, callee) {
+	return prependCallee(callee, parseArguments(tokens, pointer + 1));
+}
+
+var parseArguments = parseSequence({
+	of: parseExpression, 
+	stopWhen: onToken(")")
+});
 
 function parseMemberAccess(tokens, pointer, precedence, parent) {
 	if (tokens[pointer + 1].type !== "Identifier") {
@@ -249,9 +289,7 @@ function parseElse(tokens, pointer) {
 function parseBody(tokens, pointer) {
 	pointer = advancePointer(tokens, pointer);
 	if (tokens[pointer].string === "{") {
-		var blockResult = parseBraceBlock(tokens, pointer + 1);
-		checkToken(tokens, blockResult.pointer, "}");
-		return {exp: blockResult.exp, pointer: blockResult.pointer + 1};
+		return parseBraceBlock(tokens, pointer + 1);
 	}
 	else {
 		var expResult = parseExpression(tokens, pointer);
@@ -292,6 +330,51 @@ function parseWithBlock(tokens, pointer) {
 	};
 }
 
+var parseObjLiteral = parseSequence({
+	of: parseObjProperty, 
+	stopWhen: onToken("}")
+});
+
+function parseObjProperty(tokens, pointer) {
+	var key, value;
+	if (isIdentifier(tokens[pointer])) {
+		if (tokens[pointer].string === "fn") {
+			return parseMethod(tokens, pointer);
+		}
+		key = parseIdentifier(tokens, pointer);
+		checkToken(tokens, key.pointer, ":");
+		value = parseExpression(tokens, key.pointer + 1);
+		return {
+			exp: [makeIdentifier(":"), key.exp, value.exp],
+			pointer: value.pointer
+		};
+	}
+	else errorAt(tokens[pointer], "Invalid object property key");
+}
+
+function parseMethod(tokens, pointer) {
+	var selfName;
+	pointer += 1; // skip "fn"
+
+	// method signature:
+	// fn self.methodName(params) { body }
+
+	if (isIdentifier(tokens[pointer])) {
+		selfName = makeIdentifier(tokens[pointer].string);
+		pointer += 1;
+		checkToken(tokens, pointer, ".");
+		var params = parseParams(tokens, pointer + 1);
+		var body = parseBody(tokens, params.pointer);
+
+		return {
+			exp: [makeIdentifier(":fn"), selfName, params.exp, body.exp],
+			pointer: body.pointer
+		};
+	}
+	else errorAt(tokens[pointer], "Invalid method signature");
+
+}
+
 var prefixOperators = {
 	"-": unaryOp(60),
 	"not": unaryOp(30),
@@ -301,11 +384,14 @@ var prefixOperators = {
 		checkToken(tokens, pointer, ")");
 		return {exp: inner.exp, pointer: pointer + 1};
 	},
-	"[": function (tokens, pointer, precedence) {
-		return parseCall(tokens, pointer, precedence, makeIdentifier("list"));
+	"[": function (tokens, pointer) {
+		//return parseCall(tokens, pointer, precedence, );
+		return prependCallee("list", 
+			parseArguments(tokens, pointer + 1, onToken("]")));
 	},
 	"{": function (tokens, pointer, precedence) {
-		return parseCall(tokens, pointer, precedence, makeIdentifier("object"));
+		return prependCallee("object", parseObjLiteral(tokens, pointer + 1));
+		//return parseCall(tokens, pointer, precedence, makeIdentifier("object"));
 	},
 	"fn": parseLambda,
 	"if": parseIf,
@@ -359,13 +445,13 @@ function lispString(ast) {
 			: ast.value || ast.name;
 }
 
-function isBracketAtStartOfLine (tokens, pointer) {
+function isBracketAtStartOfLine(tokens, pointer) {
 	return tokens[pointer].string in matchToken && 
 		tokens[pointer - 1] && 
 		tokens[pointer - 1].type == "Indent";
 }
 
-function makeIdentifier (name) {
+function makeIdentifier(name) {
 	return {
 		type: "Identifier",
 		name: name
@@ -376,6 +462,16 @@ function isCallTo(identifier, node) {
 	return node instanceof Array && node[0].name === identifier;
 }
 
+function onToken(tokenString) {
+	var f = function (token) {
+		return token.type === "End of File" || token.string === tokenString;
+	}
+	f.toString = function () {
+		return "on token: " + tokenString;
+	}
+	return f;
+}
+
 function advancePointer (tokens, pointer) {
 	while (isSkippable(tokens[pointer])) {
 		pointer += 1;
@@ -383,20 +479,17 @@ function advancePointer (tokens, pointer) {
 	return pointer;
 }
 
-function advanceToNextExpression(tokens, pointer) {
+function advanceToNextExpression(tokens, pointer, isEnd) {
 	var foundDivider = false;
 	while (isSkippable(tokens[pointer])) {
 		pointer += 1;
 		foundDivider = true;
 	}
 
-	// throw an error if two expressions are on the same line without a semicolon
-	if (!foundDivider && 
-		tokens[pointer].type !== "End of File" && 
-		tokens[pointer].string !== "}") {
-
-		errorAt(tokens[pointer], 
-			"Unexpected start of expression");
+	// throw an error if two expressions are 
+	// on the same line without a semicolon
+	if (!(foundDivider || isEnd(tokens[pointer]))) {
+		errorAt(tokens[pointer], "Unexpected start of expression");
 	}
 	return pointer;
 }
@@ -431,4 +524,12 @@ function errorAt(token, message) {
 function withPrecedence (precedence, func) {
 	func.precedence = precedence;
 	return func;
+}
+
+function prependCallee(callee, parseResult) {
+	if (typeof(callee) === "string") callee = makeIdentifier(callee);
+	return {
+		exp: [callee].concat(parseResult.exp),
+		pointer: parseResult.pointer
+	};
 }

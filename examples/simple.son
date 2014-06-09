@@ -7,13 +7,13 @@ fn abs(x) {
 	else - x 
 }
 
-xs: [0 12 -4 8.3 -2]
+xs: [0, 12, -4, 8.3, -2]
 
 print(xs.map(abs).map(dbl-num))
 
 fn merge(|lists) lists.reduce(fn (a b) a ++ b)
 
-print(merge(xs, [56 34] [99 88 77]))
+print(merge(xs, [56, 34], [99, 88, 77]))
 
 if true {
 	fn yo() {

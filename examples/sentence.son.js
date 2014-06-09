@@ -5,11 +5,13 @@
     var eq;
     var js;
     var print;
-    var dbl_$U45_num;
-    var abs;
-    var xs;
-    var merge;
-    var yo;
+    var subjects;
+    var qualifiers;
+    var opinions;
+    var verbs;
+    var targets;
+    var main;
+    var sentences;
     list = require('texo');
     range = list.range;
     eq = list.eq;
@@ -167,34 +169,34 @@
             main.apply(null, process.argv.slice(2));
         }
     }
-    dbl_$U45_num = undefined, abs = undefined, xs = undefined, merge = undefined, yo = undefined;
-    dbl_$U45_num = function dbl_$U45_num(x) {
-        return +x + +x;
+    subjects = undefined, qualifiers = undefined, opinions = undefined, verbs = undefined, targets = undefined, main = undefined, sentences = undefined;
+    subjects = list('Dave', 'Phil', 'Ved', 'Rob', 'Craig', 'Alistair');
+    qualifiers = list('really', 'kinda', 'probably');
+    opinions = list('likes', 'enjoys', 'hates', 'doesn\'t mind');
+    verbs = list('playing', 'eating', 'watching', 'making');
+    targets = list('cake', 'football', 'video games', 'guitar', 'piano', 'pizza');
+    main = function main() {
+        return sentences();
     };
-    abs = function abs(x) {
-        if (x >= 0)
-            return x;
-        else
-            return -x;
-    };
-    xs = list(0, 12, -4, 8.3, -2);
-    print(xs.map(abs).map(dbl_$U45_num));
-    merge = function merge() {
-        var $sonata_i;
-        var $sonata_restArray;
-        var lists;
-        $sonata_i = undefined, $sonata_restArray = [];
-        for ($sonata_i = 0; $sonata_i < arguments.length; $sonata_i++) {
-            $sonata_restArray.push(arguments[$sonata_i]);
-        }
-        lists = list.fromArray($sonata_restArray);
-        return lists.reduce(function (a, b) {
-            return a.concat(b);
+    sentences = function sentences() {
+        var subject;
+        var qualifier;
+        var opinion;
+        var verb;
+        var target;
+        return findAll(from(subjects), function (subject) {
+            return findAll(from(qualifiers), function (qualifier) {
+                return findAll(from(opinions), function (opinion) {
+                    return findAll(from(verbs), function (verb) {
+                        return findAll(from(targets), function (target) {
+                            return findAll(Math.random() < 0.03, function () {
+                                return print(subject, qualifier, opinion, verb, target);
+                            });
+                        });
+                    });
+                });
+            });
         });
     };
-    print(merge(xs, list(56, 34), list(99, 88, 77)));
-    true ? yo = function yo() {
-        return huh;
-    } : false;
     $sonata_startMain();
 }());

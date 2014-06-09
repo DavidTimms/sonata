@@ -10,10 +10,10 @@ fn main(playerMove) {
 		print(
 			if playerMove = cpuMove
 				"it's a draw!"
-			else if verb: get(playerBeats cpuMove)
+			else if verb: get(playerBeats, cpuMove)
 				playerMove & verb & cpuMove & ", player wins!"
 			else
-				cpuMove & get(get(moves cpuMove) playerMove) & 
+				cpuMove & get(get(moves, cpuMove), playerMove) & 
 					playerMove & ", computer wins!"
 		)
 	}
