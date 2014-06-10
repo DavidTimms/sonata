@@ -64,20 +64,20 @@ function mapChildren(node, context) {
 	if (node instanceof Array) {
 
 		// otherwise, map over each item in the array normally
-		mapped = node.map(function (item) {
+		mapped = flatmap(node, function (item) {
 			// if present, get the name of the data parameter
 			// for an each command
 			var eachParam = extractEachParam(item) || 
-				(item && extractEachParam(item.expression));
+				(item && (
+					extractEachParam(item.expression) || 
+					extractEachParam(item.key)));
 
 			// return the data parameter unmodified if an each
 			// command is present in the array
 			return eachParam ?
 				getDataParam(eachParam, context.data) :
 				mapTree(item, context);
-		}).reduce(function (a, b) {
-			return a.concat(b);
-		}, []);
+		});
 	}
 	else {
 		mapped = {};
@@ -113,4 +113,10 @@ function mix(obj1, obj2) {
 		combined[key] = obj2[key];
 	}
 	return combined;
+}
+
+function flatmap(arr, func) {
+	return arr.map(func).reduce(function (a, b) {
+		return a.concat(b);
+	}, []);
 }

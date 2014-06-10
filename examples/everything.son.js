@@ -1,25 +1,11 @@
 (function () {
     'use strict';
-    var list;
-    var range;
-    var eq;
-    var js;
-    var print;
-    var main;
-    var doScoping;
-    var withBlock;
-    var withPredicate;
-    var withFind;
-    var withFindAll;
-    var maths;
-    var country;
-    list = require('texo');
-    range = list.range;
-    eq = list.eq;
+    var list = require('texo');
+    var range = list.range;
+    var eq = list.eq;
     function mix(parent, child) {
         var key;
-        var obj;
-        obj = {};
+        var obj = {};
         for (key in parent) {
             obj[key] = parent[key];
         }
@@ -29,9 +15,7 @@
         return obj;
     }
     function addKey(parent, newKey, newValue) {
-        var obj;
-        var key;
-        obj = {}, key = undefined;
+        var obj = {}, key;
         for (key in parent) {
             obj[key] = parent[key];
         }
@@ -39,8 +23,7 @@
         return obj;
     }
     function contains(collection, value) {
-        var i;
-        var key;
+        var i, key;
         if (typeof collection === 'function' && collection.count) {
             for (i = 0; i < collection.count; i++) {
                 if (list.eq(collection(i), value)) {
@@ -60,10 +43,7 @@
         return rest(value);
     }
     function predicate(value, next) {
-        if (value)
-            return next(value);
-        else
-            return false;
+        return value ? next(value) : false;
     }
     function find(value, rest) {
         var res;
@@ -80,9 +60,7 @@
         return rest(value);
     }
     function findAll(value, rest) {
-        var all;
-        var res;
-        all = list(), res = undefined;
+        var all = list(), res;
         if (!value)
             return all;
         if (value instanceof Iterator) {
@@ -115,11 +93,7 @@
         return true;
     }
     function forIn(collection, func) {
-        var i;
-        var t;
-        var resultArray;
-        var keys;
-        i = undefined, t = typeof collection, resultArray = [];
+        var i, t = typeof collection, resultArray = [];
         switch (t) {
         case 'string':
             for (i = 0; i < collection.length; i++) {
@@ -130,7 +104,7 @@
             if (typeof collection.map === 'function') {
                 return collection.map(func);
             } else {
-                keys = Object.keys(collection);
+                var keys = Object.keys(collection);
                 for (i = 0; i < keys.length; i++) {
                     resultArray.push(func(keys[i], collection[keys[i]]));
                 }
@@ -156,21 +130,28 @@
             return typeof type === 'function' && x instanceof type;
         }
     }
-    js = {
-        'typeof': function (value) {
-            return typeof value;
-        },
-        'instanceof': function (value, constructor) {
-            return value instanceof constructor;
-        }
-    };
-    print = console.log.bind(console);
+    var js = {
+            'typeof': function (value) {
+                return typeof value;
+            },
+            'instanceof': function (value, constructor) {
+                return value instanceof constructor;
+            }
+        };
+    var print = console.log.bind(console);
     function $sonata_startMain() {
         if (typeof main === 'function' && require && require.main && module && require.main === module && process && process.argv instanceof Array) {
             main.apply(null, process.argv.slice(2));
         }
     }
-    main = undefined, doScoping = undefined, withBlock = undefined, withPredicate = undefined, withFind = undefined, withFindAll = undefined, maths = undefined, country = undefined;
+    var main;
+    var doScoping;
+    var withBlock;
+    var withPredicate;
+    var withFind;
+    var withFindAll;
+    var maths;
+    var country;
     function Person(name, age, gender) {
         if (!(this instanceof Person))
             return new Person(name, age, gender);

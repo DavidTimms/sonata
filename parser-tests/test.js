@@ -78,11 +78,11 @@ var tests = {
 
 	"{nested: {inner: value}}":  "((:object (: nested (:object (: inner value)))))",
 
-	"type Point(x, y)": "((type Point x y))",
+	"type Point(x, y)": "((type Point (x y)))",
 
-	"type Person(name, age)('Dave', 21)": "(((type Person name age) 'Dave' 21))",
+	"type Person(name, age)('Dave', 21)": "(((type Person (name age)) 'Dave' 21))",
 
-	"type Maybe(value).call(34)": "(((. (type Maybe value) call) 34))",
+	"type Maybe(value).call(34)": "(((. (type Maybe (value)) call) 34))",
 
 	"do print(x)": "((do ((print x))))",
 
@@ -128,6 +128,25 @@ multilineTest([
 ], "((:object (:fn self greet (name) ((print (& 'Hi' name))))))");
 
 multilineTest([
+	"type Door(colour) {",
+	"	fn self.paint(newColour) {",
+	"		mix(self, {colour: newColour})",
+	"	}",
+	"}"
+], 	"((type Door (colour) ((:fn self paint (newColour) " + 
+		"((mix self (:object (: colour newColour))))))))");
+
+multilineTest([
+	"type Man(name) {",
+	"	gender: 'male'",
+	"	fn self.sayHi() {",
+	"		print('Hi, I am', self.name)",
+	"	}",
+	"}"
+], 	"((type Man (name) ((: gender 'male') " + 
+		"(:fn self sayHi () ((print 'Hi, I am' (. self name)))))))");
+
+multilineTest([
 	"do {",
 	"	x = 2",
 	"	y = x + 3",
@@ -155,7 +174,7 @@ function test(input, output) {
 	if (parsed !== output) {
 		console.log("Test failed: ");
 		console.log("	Expected " + output + ", but received " + parsed);
-		console.log(tokenize(input));
+		//console.log(tokenize(input));
 		return false;
 	}
 	return true;

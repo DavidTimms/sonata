@@ -193,7 +193,7 @@ restParam: {
 	for (_i = $fromIndex; _i < arguments.length; _i++) {
 		_restArray.push(arguments[_i]);
 	}
-	var $paramName = list.fromArray(_restArray);
+	$paramName = list.fromArray(_restArray);
 }
 
 defaultArgument: {
@@ -235,40 +235,37 @@ functionWrapper: {
 }
 
 typeExpression: {
-	(function $typeName($each_properties) {
-		if (!(this instanceof $typeName))
-			return new $typeName($each_properties);
-		$each_assignments;
-	})
-}
-
-fullTypeExpression: {
 	(function () {
-		function $typeName($each_properties) {
+		function $typeName($each_params) {
 			if (!(this instanceof $typeName))
-				return new $typeName($each_properties);
+				return new $typeName($each_params);
 			$each_assignments;
 		}
-		$typeName.prototype = Object.create(_baseObject, {
+		Object.defineProperties($typeName, {
+			$each_staticMethods: _
+		});
+		$typeName.prototype = Object.create(Object.prototype, {
 			constructor: {
 				value: $typeName,
 			},
-			$each: $methods
+			$each_properties: _
 		});
 		return $typeName;
 	})();
 }
 
 typeDeclaration: {
-	function $typeName($each_properties) {
-		if (!(this instanceof $typeName))
-			return new $typeName($each_properties);
-		$each_assignments;
-	}
+	var $typeName = $typeExpression;
 }
 
-typePropertyAssignment: {
-	this.$property = $property;
+typeParamAssignment: {
+	this.$param = $param;
+}
+
+typeProperty: {
+	({$key: {
+		value: $value
+	}});
 }
 
 assign: {

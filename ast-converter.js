@@ -126,22 +126,50 @@ function convertStatement(exp, context) {
 var statementConverters = {
 	"#": function () { return [] },
 	"type": function (parts) {
-		var properties = parts.slice(1);
+		var data = typeSnippetData(parts);
 		return buildSnippet("typeDeclaration", {
-			typeName: parts[0],
-			properties: properties,
-			assignments: makeTypePropAssignments(properties)
+			typeName: data.typeName,
+			typeExpression: snippetExp("typeExpression", data)
 		});
 	}
 };
 
+function typeSnippetData(parts) {
+	var params = convertParameters(parts[1]);
+	var defaultAssignments = createDefaultAssignments(params.defaults);
+	var paramAssignments = makeTypeParamAssignments(params.identifiers);
+	var props = parts[2] || [];
+	var isStatic = isStaticMethod(parts[0].name);
+
+	return {
+		typeName: parts[0],
+		params: params.identifiers,
+		assignments: defaultAssignments.concat(paramAssignments),
+
+		properties: props
+			.filter(negate(isStatic))
+			.map(convertObjProperty)
+			.map(snippetProperty.bind(null, "typeProperty")),
+
+		staticMethods: props
+			.filter(isStatic)
+			.map(convertMethod)
+			.map(snippetProperty.bind(null, "typeProperty"))
+	};
+}
+
+function makeTypeParamAssignments(params) {
+	return params.map(function (param) {
+		return buildSnippet("typeParamAssignment", {
+			param: param
+		});
+	}).reduce(concatArrays, []);
+}
+
 function convertParameters(params) {
 	return params.reduce(function (output, node, index) {
-		if (isCallTo(assignmentOp, node)) {
+		if (isCallTo(assignmentOp, node) || isCallTo("|", node)) {
 			output.identifiers.push(node[1]);
-			output.defaults[index] = node;
-		}
-		else if (isCallTo("|", node)) {
 			output.defaults[index] = node;
 		}
 		else if (node.type === "Identifier") {
@@ -255,29 +283,26 @@ function convertWithBlock(convertedController, expressions, context) {
 }
 
 function convertObjProperty(property) {
-	var key, value;
 	if (isCallTo(":", property)) {
-		key = convertObjKey(property[1]);
-		value = convertExp(property[2]);
+		return makeProperty(
+			convertObjKey(property[1]), 
+			convertExp(property[2]))
 	}
 	else if (isCallTo(":fn", property)) {
-		// property format: [fn, self, methodName, params, body]
-		key = convertObjKey(property[2]);
-
-		var context = {
-			selfName: convertExp(property[1])
-		};
-
-		value = converters.fn([property[3], property[4]], context);
+		return convertMethod(property);
 	}
 	else throw "only property assignments allowed in an object literal";
+}
 
-	return {
-		type: "Property",
-		key: key,
-		value: value,
-		kind: "init"
+function convertMethod(property) {
+	// property format: [fn, self, methodName, params, body]
+	var context = {
+		selfName: convertExp(property[1])
 	};
+
+	return makeProperty(
+		convertObjKey(property[2]), 
+		converters.fn([property[3], property[4]], context));
 }
 
 function convertObjKey(node) {
@@ -413,22 +438,11 @@ var converters = {
 			})
 		};
 	},
-	"continue": macro(function () {
-		var args = ([]).slice.call(arguments);
-		return ["new", "$sonata_Continuation"].concat(args);
-	}),
 	"for": macro(function (key, inKeyword, collection, body) {
 		return ["forIn", collection, ["fn", [key], body]];
 	}),
 	"type": function (parts) {
-		var params = convertParameters(parts.slice(1));
-		var defaultAssignments = createDefaultAssignments(params.defaults);
-		var propAssignments = makeTypePropAssignments(params.identifiers);
-		return snippetExp("typeExpression", {
-			typeName: parts[0],
-			properties: params.identifiers,
-			assignments: defaultAssignments.concat(propAssignments)
-		});
+		return snippetExp("typeExpression", typeSnippetData(parts));
 	},
 	"::": function (parts) {
 		return snippetExp("ofType", {
@@ -500,13 +514,6 @@ function wrapToken(token) {
 	}
 }
 
-function makeTypePropAssignments(properties) {
-	return properties.map(function (property) {
-		return buildSnippet("typePropertyAssignment", {
-			property: property
-		});
-	}).reduce(concatArrays);
-}
 function isStringNode(node) {
 	return node && (isCallTo("&", node) ||
 		(node.type === "Literal" && typeof(node.value) === "string"));
@@ -514,6 +521,10 @@ function isStringNode(node) {
 
 function snippetExp(name, data) {
 	return buildSnippet(name, data)[0].expression;
+}
+
+function snippetProperty(name, data) {
+	return buildSnippet(name, data)[0].expression.properties[0];
 }
 
 function makeFunctionCall(func, args) {
@@ -611,6 +622,15 @@ function makeDeclarations() {
 	};
 }
 
+function makeProperty(key, value) {
+	return {
+		type: "Property",
+		key: key,
+		value: value,
+		kind: "init"
+	};
+}
+
 function walkNode(node, callback) {
 	if (node instanceof Array) {
 		callback(node);
@@ -646,6 +666,14 @@ function isFuncApplication(exp) {
 		exp[0].name !== "object";
 }
 
+function isStaticMethod(typeIdentifier) {
+	return function (property) {
+		return isCallTo(":fn", property) && 
+			property[1].type === "Identifier" && 
+			property[1].name === typeIdentifier;
+	}
+}
+
 function concatArrays(a, b) {
 	return a.concat(b);
 }
@@ -666,6 +694,12 @@ function flatmap(arr, func) {
 	return arr.map(func).reduce(function (a, b) {
 		return a.concat(b);
 	}, []);
+}
+
+function negate(predicate) {
+	return function () {
+		return !predicate.apply(this, arguments);
+	}
 }
 
 module.exports = convertAST;

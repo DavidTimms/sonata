@@ -147,23 +147,53 @@
     var dave;
     var gender;
     var origin;
-    dave = function Person(name, age, gender) {
-        if (!(this instanceof Person))
-            return new Person(name, age, gender);
-        if (gender === undefined)
-            gender = 'male';
-        this.name = name;
-        this.age = age;
-        this.gender = gender;
-    }('Dave', 21);
+    var myPosition;
+    var Point;
+    dave = function () {
+        function Person(name, age, gender) {
+            if (!(this instanceof Person))
+                return new Person(name, age, gender);
+            if (gender === undefined)
+                gender = 'male';
+            this.name = name;
+            this.age = age;
+            this.gender = gender;
+        }
+        Object.defineProperties(Person, {});
+        Person.prototype = Object.create(Object.prototype, { constructor: { value: Person } });
+        return Person;
+    }()('Dave', 21);
     print(dave.name, 'is a', dave.age, 'year old', dave.gender);
-    function Point(x, y) {
-        if (!(this instanceof Point))
-            return new Point(x, y);
-        this.x = x;
-        this.y = y;
-    }
+    Point = function () {
+        function Point(x, y) {
+            if (!(this instanceof Point))
+                return new Point(x, y);
+            this.x = x;
+            this.y = y;
+        }
+        Object.defineProperties(Point, {
+            'random': {
+                value: function () {
+                    var Point = this;
+                    return Point(Math.round(Math.random() * 10), Math.round(Math.random() * 10));
+                }
+            }
+        });
+        Point.prototype = Object.create(Object.prototype, {
+            constructor: { value: Point },
+            'distanceTo': {
+                value: function (other) {
+                    var self = this;
+                    return Math.sqrt(+Math.pow(self.x - other.x, 2) + +Math.pow(self.y - other.y, 2));
+                }
+            }
+        });
+        return Point;
+    }();
     origin = Point(0, 0);
-    print('origin:', origin);
+    myPosition = Point(4, 3);
+    print('distance to origin:', myPosition.distanceTo(origin));
+    print('random point: ', Point.random());
+    print(Object.keys(Point));
     $sonata_startMain();
 }());

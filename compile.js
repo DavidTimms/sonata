@@ -22,8 +22,10 @@ fs.readFile(inputFile, "utf8", function (err, source) {
 	var parsed = parse(tokenized);
 	//printObj(parsed);
 	convertAST(parsed, function (jsAst) {
+		//printObj(jsAst);
 		validateAST(jsAst);
 		//console.log(JSON.stringify(jsAst));
+
 		var compiled = escodegen.generate(jsAst);
 
 		var duration = Date.now() - start;

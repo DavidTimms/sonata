@@ -298,16 +298,25 @@ function parseBody(tokens, pointer) {
 }
 
 function parseType(tokens, pointer) {
+	var behaviour;
 	var token = tokens[pointer + 1];
 	if (!isIdentifier(token)) errorAt(token, 
 			"Expected a type name, but found " + token.string);
 
 	var typeName = parseIdentifier(tokens, pointer + 1).exp;
-	var properties = parseParams(tokens, pointer + 2);
+	var params = parseParams(tokens, pointer + 2);
+
+	// optional behaviour block
+	pointer = params.pointer;
+	if (tokens[pointer].string === "{") {
+		behaviour = parseObjLiteral(tokens, pointer + 1);
+		pointer = behaviour.pointer;
+	}
 
 	return {
-		exp: [makeIdentifier("type"), typeName].concat(properties.exp), 
-		pointer: properties.pointer
+		exp: [makeIdentifier("type"), typeName, params.exp]
+			.concat(behaviour ? [behaviour.exp] : []), 
+		pointer: pointer
 	};
 }
 
