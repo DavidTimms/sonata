@@ -1,5 +1,5 @@
 
-dave = type Person(name, age, gender = "unknown")("Dave", 21)
+dave = type Person(name, age, gender = "male")("Dave", 21)
 
 print(dave.name, "is a", dave.age, "year old", dave.gender)
 

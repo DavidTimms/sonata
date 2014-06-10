@@ -7,6 +7,7 @@ var identifierUtils = require("./utils/identifier-utils");
 var normalizeIdentifier = identifierUtils.normalizeIdentifier;
 var isValidJSIdentifier = identifierUtils.isValidJSIdentifier;
 
+// This throws an error if it is used before it is redefined later
 var buildSnippet = function () {
 	throw Error("Attempted to call snippet builder before it was initialised.");
 };
@@ -28,19 +29,29 @@ function convertAST(ast, callback) {
 
 		var context = {isFuncBody: true, noReturn: true};
 
-		var body = buildSnippet("prelude")
-			.concat(convertBody(ast, context))
-			.concat(buildSnippet("startMain"));
+//		buildSnippet("prelude")
+//			.concat(convertBody(ast, context))
+//			.concat(buildSnippet("startMain"));
 
-		// Define the program with an immediately invoked function wrapper
-		callback(tailCallElim({
+		var program = tailCallElim({
 			type: "Program",
 			body: buildSnippet("functionWrapper", {
-				statements: body,
+				statements: convertBody(ast, context),
 				parameters: [],
 				arguments: []
 			})
-		}));
+		});
+
+		var funcWrapper = program.body[0].expression.callee.body;
+
+
+		funcWrapper.body = 
+			buildSnippet("prelude")
+			.concat(funcWrapper.body)
+			.concat(buildSnippet("startMain"));
+
+		// Define the program with an immediately invoked function wrapper
+		callback(program);
 	});
 }
 
