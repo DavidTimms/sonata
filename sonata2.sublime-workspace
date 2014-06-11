@@ -4,20 +4,192 @@
 		"selected_items":
 		[
 			[
-				"js",
-				"jsAst"
+				"ident",
+				"Identifier"
 			],
 			[
-				"par",
+				"prop",
+				"property"
+			],
+			[
+				"dist",
+				"distanceTo"
+			],
+			[
+				"full",
+				"fullTypeExpression"
+			],
+			[
+				"sni",
+				"snippetExp"
+			],
+			[
+				"proto",
+				"prototype"
+			],
+			[
+				"ex",
+				"extractEachParam"
+			],
+			[
+				"ty",
+				"typeName"
+			],
+			[
+				"b",
+				"behaviourExp"
+			],
+			[
+				"adva",
+				"advancePointer"
+			],
+			[
+				"func",
+				"funcWrapper"
+			],
+			[
+				"ide",
+				"identifiers"
+			],
+			[
+				"make",
+				"makeIdentifier"
+			],
+			[
+				"each",
+				"eachBody"
+			],
+			[
+				"di",
+				"dimentions"
+			],
+			[
+				"buid",
+				"buildSnippet"
+			],
+			[
+				"prot",
+				"property"
+			],
+			[
+				"pro",
+				"property"
+			],
+			[
+				"convertObj",
+				"convertObjProperty"
+			],
+			[
+				"check",
+				"checkToken"
+			],
+			[
+				"is",
+				"isIdentifier"
+			],
+			[
+				"parseOb",
+				"parseObjProperty"
+			],
+			[
+				"on",
+				"onToken"
+			],
+			[
+				"p",
+				"pointer"
+			],
+			[
+				"toke",
+				"token"
+			],
+			[
+				"sto",
+				"stopWhen"
+			],
+			[
+				"ver",
+				"verb"
+			],
+			[
+				"with",
+				"withPrecedence"
+			],
+			[
+				"co",
+				"constructor"
+			],
+			[
+				"param",
 				"parameters"
+			],
+			[
+				"conv",
+				"convertExp"
+			],
+			[
+				"con",
+				"converters"
 			],
 			[
 				"sn",
 				"snippetExp"
 			],
 			[
-				"sni",
-				"snippetExp"
+				"che",
+				"checkToken"
+			],
+			[
+				"tem",
+				"tempVarsNeeded"
+			],
+			[
+				"default",
+				"defaultAssign"
+			],
+			[
+				"mu",
+				"multiLocals"
+			],
+			[
+				"fr",
+				"fragment"
+			],
+			[
+				"tail",
+				"tailCallElim"
+			],
+			[
+				"dis",
+				"distanceTo"
+			],
+			[
+				"err",
+				"errorAt"
+			],
+			[
+				"type",
+				"typeName"
+			],
+			[
+				"concat",
+				"concatArrays"
+			],
+			[
+				"def",
+				"defaults"
+			],
+			[
+				"node",
+				"nodeName"
+			],
+			[
+				"js",
+				"jsAst"
+			],
+			[
+				"par",
+				"parameters"
 			],
 			[
 				"bui",
@@ -38,10 +210,6 @@
 			[
 				"es",
 				"esprima"
-			],
-			[
-				"make",
-				"makeIdentifier"
 			],
 			[
 				"arg",
@@ -66,10 +234,6 @@
 			[
 				"op",
 				"optimisedAST"
-			],
-			[
-				"type",
-				"typeof"
 			],
 			[
 				"temp",
@@ -116,10 +280,6 @@
 				"tempVarNames"
 			],
 			[
-				"con",
-				"context"
-			],
-			[
 				"fu",
 				"functionBody"
 			],
@@ -144,10 +304,6 @@
 				"transform"
 			],
 			[
-				"func",
-				"funcName"
-			],
-			[
 				"Funct",
 				"FunctionExpression"
 			],
@@ -166,10 +322,6 @@
 			[
 				"comb",
 				"combineObjects"
-			],
-			[
-				"co",
-				"combined"
 			],
 			[
 				"_",
@@ -204,14 +356,6 @@
 				"sonata_startMain"
 			],
 			[
-				"ide",
-				"identifierUtils"
-			],
-			[
-				"is",
-				"isCallTo"
-			],
-			[
 				"mak",
 				"makeIdentifier"
 			],
@@ -222,10 +366,6 @@
 			[
 				"parseEx",
 				"parseExpression"
-			],
-			[
-				"ex",
-				"expressions"
 			],
 			[
 				"else",
@@ -246,10 +386,6 @@
 			[
 				"lis",
 				"lispString"
-			],
-			[
-				"with",
-				"withPrecedence"
 			],
 			[
 				"parse",
@@ -328,10 +464,6 @@
 				"Identifier"
 			],
 			[
-				"toke",
-				"tokenized"
-			],
-			[
 				"to",
 				"tokenized"
 			],
@@ -382,138 +514,6 @@
 			[
 				"eval",
 				"evaluate"
-			],
-			[
-				"sli",
-				"sliced"
-			],
-			[
-				"ty",
-				"typeof"
-			],
-			[
-				"find",
-				"findNode"
-			],
-			[
-				"dec",
-				"declaration"
-			],
-			[
-				"Func",
-				"FunctionExpression"
-			],
-			[
-				"state",
-				"statementLevel"
-			],
-			[
-				"conver",
-				"convertExp"
-			],
-			[
-				"las",
-				"lastAssignment"
-			],
-			[
-				"res",
-				"reassignments"
-			],
-			[
-				"def",
-				"defaultAssign"
-			],
-			[
-				"para",
-				"paramDefaults"
-			],
-			[
-				"na",
-				"nameIdent"
-			],
-			[
-				"e",
-				"expressions"
-			],
-			[
-				"mu",
-				"mutate_fold"
-			],
-			[
-				"Ba",
-				"Base_seq"
-			],
-			[
-				"muta",
-				"mutate_sequence"
-			],
-			[
-				"ne",
-				"newSequenceBarCount"
-			],
-			[
-				"write",
-				"writeln"
-			],
-			[
-				"L",
-				"LB_Bar"
-			],
-			[
-				"Ch",
-				"Chord_notes"
-			],
-			[
-				"B",
-				"Bass_notes"
-			],
-			[
-				"hi",
-				"history_string"
-			],
-			[
-				"wri",
-				"writeln"
-			],
-			[
-				"Lo",
-				"Lookback"
-			],
-			[
-				"Loo",
-				"Lookback_ticks"
-			],
-			[
-				"last",
-				"last_tick"
-			],
-			[
-				"La",
-				"Last_tick"
-			],
-			[
-				"bea",
-				"beatPattern"
-			],
-			[
-				"appe",
-				"append"
-			],
-			[
-				"slc",
-				"sliced"
-			],
-			[
-				"reve",
-				"reversed"
-			],
-			[
-				"rev",
-				"reversed"
-			],
-			[
-				"list",
-				"listFunc"
 			]
 		]
 	},
@@ -523,7 +523,7 @@
 			"file": "compile.js",
 			"settings":
 			{
-				"buffer_size": 902,
+				"buffer_size": 990,
 				"line_ending": "Windows"
 			}
 		},
@@ -531,7 +531,7 @@
 			"file": "main-tokenizer.js",
 			"settings":
 			{
-				"buffer_size": 3871,
+				"buffer_size": 4469,
 				"line_ending": "Windows"
 			}
 		},
@@ -539,40 +539,7 @@
 			"file": "tdop-parser.js",
 			"settings":
 			{
-				"buffer_size": 10552,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "examples/curried-operator-lambdas.potential.son",
-			"settings":
-			{
-				"buffer_size": 205,
-				"line_ending": "Windows",
-				"name": "fn main() {"
-			}
-		},
-		{
-			"file": "ast-converter.js",
-			"settings":
-			{
-				"buffer_size": 15373,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "snippets/snippet-parser.js",
-			"settings":
-			{
-				"buffer_size": 2781,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "snippets/snippets.js",
-			"settings":
-			{
-				"buffer_size": 2740,
+				"buffer_size": 14469,
 				"line_ending": "Windows"
 			}
 		},
@@ -580,47 +547,63 @@
 			"file": "parser-tests/test.js",
 			"settings":
 			{
-				"buffer_size": 3095,
+				"buffer_size": 4638,
 				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "ast-converter.js",
+			"settings":
+			{
+				"buffer_size": 16479,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "snippets/snippets.js",
+			"settings":
+			{
+				"buffer_size": 5069,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "examples/everything.son",
+			"settings":
+			{
+				"buffer_size": 1458,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "examples/everything.son.js",
+			"settings":
+			{
+				"buffer_size": 7545,
+				"line_ending": "Unix"
 			}
 		},
 		{
 			"file": "todo.md",
 			"settings":
 			{
-				"buffer_size": 311,
+				"buffer_size": 478,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "examples/rpsls.son",
+			"file": "examples/type.son",
 			"settings":
 			{
-				"buffer_size": 867,
+				"buffer_size": 565,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "examples/rpsls.son.js",
+			"file": "examples/type.son.js",
 			"settings":
 			{
-				"buffer_size": 4052,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "examples/simple.son",
-			"settings":
-			{
-				"buffer_size": 206,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "examples/simple.son.js",
-			"settings":
-			{
-				"buffer_size": 3739,
+				"buffer_size": 6083,
 				"line_ending": "Unix"
 			}
 		}
@@ -685,27 +668,57 @@
 	},
 	"file_history":
 	[
-		"/C/Users/Dave/Web/tco/tail-call-op.js",
+		"/C/Users/Dave/Web/compile-to-js/parse-engine.js",
+		"/C/Users/Dave/Web/compile-to-js/examples/list.son.js",
+		"/C/Users/Dave/Web/compile-to-js/examples/list.son",
+		"/C/Users/Dave/Web/compile-to-js/out",
+		"/C/Users/Dave/Web/compile-to-js/snippets/snippet-parser.js",
+		"/C/Users/Dave/Web/compile-to-js/snippets/test-snippets.js",
+		"/C/Users/Dave/Web/compile-to-js/yo",
+		"/C/Users/Dave/Web/compile-to-js/examples/type.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/trig.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/torn.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/templating.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/simple.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/sentence.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/async.son.js",
+		"/C/Users/Dave/Web/compile-to-js/examples/async.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/cmd-line-input.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/quine.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/pascal-output.txt",
+		"/C/Users/Dave/Web/compile-to-js/examples/pascals-pyramid.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/if-assign.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/async.potential.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/rpsls.son.js",
+		"/C/Users/Dave/Web/compile-to-js/examples/rpsls.son",
+		"/C/Users/Dave/Web/compile-to-js/content.html",
+		"/C/Users/Dave/Web/compile-to-js/examples/sentence.son.js",
+		"/C/Users/Dave/Web/compile-to-js/examples/torn.son.js",
+		"/C/Users/Dave/Web/compile-to-js/comp-run.cmd",
+		"/C/Users/Dave/Web/compile-to-js/examples/go-port.potential.son",
+		"/C/Users/Dave/Web/compile-to-js/todo.md",
+		"/C/Users/Dave/Web/compile-to-js/examples/simple.son.js",
+		"/C/Users/Dave/Web/tco/validation.js",
 		"/C/Users/Dave/Web/tco/test-tco.js",
+		"/C/Users/Dave/Web/tco/tail-call-op.js",
+		"/C/Users/Dave/Web/tco/package.json",
+		"/C/Users/Dave/Web/ast-checker/package.json",
+		"/C/Users/Dave/Web/compile-to-js/examples/type.son.js",
+		"/C/Users/Dave/Web/compile-to-js/examples/full-type-declaration.potential.son",
+		"/C/Users/Dave/Web/compile-to-js/readme.md",
+		"/C/Users/Dave/Web/compile-to-js/.gitignore",
+		"/C/Users/Dave/Web/compile-to-js/examples/curried-operator-lambdas.potential.son",
 		"/C/Users/Dave/Web/compile-to-js/ast_good.json",
 		"/C/Users/Dave/Web/compile-to-js/ast.json",
 		"/C/Users/Dave/Web/compile-to-js/node_modules/tail-call-eliminator/tail-call-op.js",
 		"/C/Users/Dave/Web/compile-to-js/ast-converter.js",
 		"/C/Users/Dave/AppData/Roaming/Sublime Text 2/Packages/Pretty JSON/Pretty JSON.sublime-settings",
 		"/C/Users/Dave/AppData/Roaming/Sublime Text 2/Packages/User/Pretty JSON.sublime-settings",
-		"/C/Users/Dave/Web/compile-to-js/.gitignore",
-		"/C/Users/Dave/Web/compile-to-js/parse-engine.js",
-		"/C/Users/Dave/Web/compile-to-js/snippets/test-snippets.js",
 		"/C/Users/Dave/Web/compile-to-js/runtime.js",
 		"/C/Users/Dave/Uni/C/ruby-ish.c",
-		"/C/Users/Dave/Web/compile-to-js/examples/pascals-pyramid.son",
 		"/C/Users/Dave/Web/compile-to-js/examples/parser-test.son.js",
 		"/C/Users/Dave/Web/compile-to-js/examples/parser-test.son",
-		"/C/Users/Dave/Web/compile-to-js/examples/simple.son.js",
-		"/C/Users/Dave/Web/compile-to-js/examples/simple.son",
 		"/C/Users/Dave/Web/tco/readme.md",
-		"/C/Users/Dave/Web/tco/package.json",
-		"/C/Users/Dave/Web/compile-to-js/examples/if-assign.son",
 		"/C/Users/Dave/Web/tco/LICENSE",
 		"/C/Users/Dave/Web/tco/.gitignore",
 		"/C/Users/Dave/Web/compile-to-js/JS-AST-transforms/out",
@@ -714,13 +727,8 @@
 		"/C/Users/Dave/Web/compile-to-js/JS-AST-transforms/tail-call-opt.js",
 		"/C/Users/Dave/Web/compile-to-js/utils/dict.js",
 		"/C/Users/Dave/Web/useful-JS-bits/moori/node_modules/mori/mori.js",
-		"/C/Users/Dave/Web/compile-to-js/examples/templating.son",
-		"/C/Users/Dave/Web/compile-to-js/examples/torn.son",
-		"/C/Users/Dave/Web/compile-to-js/examples/quine.son",
 		"/C/Users/Dave/Web/compile-to-js/examples/quine2.son",
 		"/C/Users/Dave/Web/compile-to-js/compile-runtime.js",
-		"/C/Users/Dave/Web/compile-to-js/examples/cmd-line-input.son",
-		"/C/Users/Dave/Web/compile-to-js/comp-run.cmd",
 		"/C/Users/Dave/Web/compile-to-js/examples/cmd-line-input.son.js",
 		"/C/Users/Dave/Web/compile-to-js/examples/node_modules/mod.js",
 		"/C/Users/Dave/Web/compile-to-js/examples/node_modules/yo.js",
@@ -751,7 +759,6 @@
 		"/C/Users/Dave/Web/useful-JS-bits/texo/package.json",
 		"/C/Users/Dave/Web/compile-to-js/decoder.lisp",
 		"/C/Users/Dave/Prolog/ff1.pl",
-		"/C/Users/Dave/Web/compile-to-js/out",
 		"/C/Users/Dave/Web/compile-to-js/compile.js",
 		"/C/Users/Dave/Web/useful-JS-bits/texo/README.md",
 		"/C/Users/Dave/Web/compile-to-js/lisp-tokenizer.js",
@@ -788,31 +795,7 @@
 		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/pitch_analysis.pl",
 		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/prediction.pl",
 		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/grammar.pl",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/converters.pl",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/utils.pl",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/rhythm.pl",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/utils/helpers.coffee",
-		"/C/Users/Dave/AppData/Local/Temp/Temp1_clojure-1.5.1.zip/clojure-1.5.1/readme.txt",
-		"/C/Users/Dave/Web/tiny-style/package.json",
-		"/C/Users/Dave/Web/live-list/test.coffee",
-		"/C/Users/Dave/Web/panic.js",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/pick-distribution.pl",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/pitch-analysis.pl",
-		"/C/Users/Dave/Web/sonata/vm.js",
-		"/C/Users/Dave/Web/sonata/jit.js",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/sequence.coffee",
-		"/C/Users/Dave/Uni/improv-project/teVirtualMIDI SDK_1_1_2_25/C/teVirtualMIDITest.c",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/coins.pl",
-		"/C/Users/Dave/Web/sonata/compiler/examples/test-source.son",
-		"/C/Users/Dave/Web/sonata/tests/control-flow.son",
-		"/C/Users/Dave/Web/sonata/tests/functions.son",
-		"/C/Users/Dave/AppData/Roaming/Sublime Text 2/Packages/User/Preferences.sublime-settings",
-		"/C/Users/Dave/AppData/Roaming/Sublime Text 2/Packages/JavaScript/JavaScript.tmLanguage",
-		"/C/Program Files/Sublime Text 2/Pristine Packages/JavaScript.sublime-package",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/prolog.coffee",
-		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/test.js",
-		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node_modules/swipl/swipl.js",
-		"/C/Users/Dave/Uni/improv-project/js-proto/node-swipl/node_modules/swipl/src/libswipl.cc"
+		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/converters.pl"
 	],
 	"find":
 	{
@@ -830,6 +813,62 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"isCa",
+			"isStaticMethod",
+			"makeTypePropAssignments",
+			"type",
+			"Function",
+			"advancePointer",
+			":",
+			"\"==\"",
+			"\"=\"",
+			"\":\"",
+			"assignmentOp",
+			"\":\"",
+			"makeAssignment",
+			"convertBody",
+			"parseLiteral",
+			"makeIdentifier",
+			"parseIdentifier",
+			"convertObjectKey",
+			"object",
+			"parseParams",
+			"check",
+			"parseLambda",
+			"\"fn\"",
+			"parseFunction",
+			"checkToken",
+			"parseIdent",
+			"binaryOp",
+			"isIdentifier",
+			"parseArguments",
+			"parseBraceBlock",
+			"advanceToNextExpression",
+			"parseCall",
+			"isToken",
+			"parseCall",
+			"parseBraceBlock",
+			"Indent",
+			"advancePointer",
+			"checkToken",
+			"    ",
+			"convertBody",
+			"parseBraceBlock",
+			"truthy",
+			"context.params",
+			"convertSequence",
+			"if",
+			"convertTail",
+			"localVars",
+			"makeIdentifier",
+			"macro",
+			"nameIdent",
+			"\"fn\"",
+			"\"if\"",
+			"if",
+			"findA",
+			"convertStatement",
+			"converters",
 			"for (",
 			"for (va",
 			"ExpressionStatement",
@@ -901,63 +940,7 @@
 			".result",
 			"prefixParseFuncs",
 			"parseExpression",
-			"unaryOperators",
-			"binaryOperators",
-			");\n",
-			"}\n",
-			"();\n",
-			"console",
-			"    ",
-			"list.eq",
-			"functionCall",
-			"obj",
-			"object",
-			"obj",
-			"list",
-			"context.declaration",
-			"declaration",
-			"context.declaration",
-			"convertParameters",
-			"convertBody",
-			"convertFuncBody",
-			"    ",
-			"makeIdentifer",
-			"    ",
-			"convertTail",
-			"convertFuncBody",
-			"convertParameters",
-			"markTailRecursion",
-			"findAssignments",
-			"convertParameters",
-			"console",
-			"    ",
-			"ExpressionSta",
-			"conso",
-			"cons",
-			"Un",
-			"unknown",
-			"unkown",
-			"    ",
-			"convertFuncBody",
-			"slice",
-			"(\n",
-			"convertFuncBody",
-			"console",
-			"    ",
-			"convertNode",
-			"ding",
-			"),",
-			"\\==",
-			"lookback",
-			"nth0",
-			"nth",
-			"nth0",
-			"played_note",
-			"maybe",
-			"]).\n",
-			"print",
-			"prolog",
-			"inputProcess"
+			"unaryOperators"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -965,6 +948,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			" =",
 			"	",
 			"=",
 			": ",
@@ -1048,7 +1032,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 9,
 			"sheets":
 			[
 				{
@@ -1056,15 +1040,15 @@
 					"file": "compile.js",
 					"settings":
 					{
-						"buffer_size": 902,
+						"buffer_size": 990,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								676,
-								676
+								720,
+								720
 							]
 						],
 						"settings":
@@ -1073,7 +1057,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 180.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1083,15 +1067,15 @@
 					"file": "main-tokenizer.js",
 					"settings":
 					{
-						"buffer_size": 3871,
+						"buffer_size": 4469,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								510,
-								510
+								3449,
+								3449
 							]
 						],
 						"settings":
@@ -1100,7 +1084,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 3460.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1110,15 +1094,15 @@
 					"file": "tdop-parser.js",
 					"settings":
 					{
-						"buffer_size": 10552,
+						"buffer_size": 14469,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6638,
-								6638
+								8538,
+								8538
 							]
 						],
 						"settings":
@@ -1127,34 +1111,34 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 4500.0,
+						"translation.y": 5924.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "examples/curried-operator-lambdas.potential.son",
+					"file": "parser-tests/test.js",
 					"settings":
 					{
-						"buffer_size": 205,
+						"buffer_size": 4638,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								205,
-								205
+								3296,
+								3296
 							]
 						],
 						"settings":
 						{
-							"auto_name": "fn main() {",
-							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage"
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2400.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1164,15 +1148,15 @@
 					"file": "ast-converter.js",
 					"settings":
 					{
-						"buffer_size": 15373,
+						"buffer_size": 16479,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1167,
-								1167
+								4622,
+								4622
 							]
 						],
 						"settings":
@@ -1181,25 +1165,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 420.0,
+						"translation.y": 3135.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 5,
-					"file": "snippets/snippet-parser.js",
+					"file": "snippets/snippets.js",
 					"settings":
 					{
-						"buffer_size": 2781,
+						"buffer_size": 5069,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1831,
-								1831
+								4504,
+								4504
 							]
 						],
 						"settings":
@@ -1208,61 +1192,62 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1020.0,
+						"translation.y": 4448.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 6,
-					"file": "snippets/snippets.js",
+					"file": "examples/everything.son",
 					"settings":
 					{
-						"buffer_size": 2740,
+						"buffer_size": 1458,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								322,
-								322
+								1458,
+								1458
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 66.0,
+						"translation.y": 1320.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 7,
-					"file": "parser-tests/test.js",
+					"file": "examples/everything.son.js",
 					"settings":
 					{
-						"buffer_size": 3095,
+						"buffer_size": 7545,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								244,
-								244
+								7545,
+								7545
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 4720.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1272,15 +1257,15 @@
 					"file": "todo.md",
 					"settings":
 					{
-						"buffer_size": 311,
+						"buffer_size": 478,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								311,
-								311
+								10,
+								10
 							]
 						],
 						"settings":
@@ -1295,79 +1280,23 @@
 				},
 				{
 					"buffer": 9,
-					"file": "examples/rpsls.son",
+					"file": "examples/type.son",
 					"settings":
 					{
-						"buffer_size": 867,
+						"buffer_size": 565,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								534,
-								534
+								565,
+								565
 							]
 						],
 						"settings":
 						{
-							"auto_name": "",
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 120.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "examples/rpsls.son.js",
-					"settings":
-					{
-						"buffer_size": 4052,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2579,
-								2579
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1560.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "examples/simple.son",
-					"settings":
-					{
-						"buffer_size": 206,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								206,
-								206
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1376,19 +1305,19 @@
 					"type": "text"
 				},
 				{
-					"buffer": 12,
-					"file": "examples/simple.son.js",
+					"buffer": 10,
+					"file": "examples/type.son.js",
 					"settings":
 					{
-						"buffer_size": 3739,
+						"buffer_size": 6083,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2988,
-								2988
+								4331,
+								4331
 							]
 						],
 						"settings":
@@ -1398,7 +1327,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1140.0,
+						"translation.y": 2588.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
