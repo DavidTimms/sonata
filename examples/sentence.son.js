@@ -1,24 +1,11 @@
 (function () {
     'use strict';
-    var list;
-    var range;
-    var eq;
-    var js;
-    var print;
-    var subjects;
-    var qualifiers;
-    var opinions;
-    var verbs;
-    var targets;
-    var main;
-    var sentences;
-    list = require('texo');
-    range = list.range;
-    eq = list.eq;
+    var list = require('texo');
+    var range = list.range;
+    var eq = list.eq;
     function mix(parent, child) {
         var key;
-        var obj;
-        obj = {};
+        var obj = {};
         for (key in parent) {
             obj[key] = parent[key];
         }
@@ -28,9 +15,7 @@
         return obj;
     }
     function addKey(parent, newKey, newValue) {
-        var obj;
-        var key;
-        obj = {}, key = undefined;
+        var obj = {}, key;
         for (key in parent) {
             obj[key] = parent[key];
         }
@@ -38,8 +23,7 @@
         return obj;
     }
     function contains(collection, value) {
-        var i;
-        var key;
+        var i, key;
         if (typeof collection === 'function' && collection.count) {
             for (i = 0; i < collection.count; i++) {
                 if (list.eq(collection(i), value)) {
@@ -59,18 +43,16 @@
         return rest(value);
     }
     function predicate(value, next) {
-        if (value)
-            return next(value);
-        else
-            return false;
+        return value ? next(value) : false;
     }
-    function find(value, rest) {
-        var res;
+    function findWhere(value, rest) {
+        var res, count;
         if (!value)
             return false;
-        if (value instanceof Iterator) {
-            while (value.hasNext()) {
-                if (res = rest(value.next())) {
+        if ($sonata_ofType(value, List)) {
+            count = value.count;
+            for (var i = 0; i < count; i++) {
+                if (res = rest(value(i))) {
                     return res;
                 }
             }
@@ -78,34 +60,21 @@
         }
         return rest(value);
     }
-    function findAll(value, rest) {
-        var all;
-        var res;
-        all = list(), res = undefined;
+    function findAllWhere(value, rest) {
+        var all, res, count;
         if (!value)
-            return all;
-        if (value instanceof Iterator) {
-            while (value.hasNext()) {
-                if (res = rest(value.next())) {
+            return list();
+        if ($sonata_ofType(value, List)) {
+            count = value.count;
+            all = list();
+            for (var i = 0; i < count; i++) {
+                if (res = rest(value(i))) {
                     all = all.concat(res);
                 }
             }
             return all;
         }
-        return rest(value);
-    }
-    function Iterator(l) {
-        this.items = l;
-        this.pointer = 0;
-    }
-    Iterator.prototype.hasNext = function () {
-        return this.items && this.pointer < this.items.count;
-    };
-    Iterator.prototype.next = function () {
-        return this.items && this.items(this.pointer++);
-    };
-    function from(a) {
-        return new Iterator(a);
+        return list(rest(value));
     }
     function ensure(predicateResult, msg) {
         if (!predicateResult) {
@@ -114,11 +83,7 @@
         return true;
     }
     function forIn(collection, func) {
-        var i;
-        var t;
-        var resultArray;
-        var keys;
-        i = undefined, t = typeof collection, resultArray = [];
+        var i, t = typeof collection, resultArray = [];
         switch (t) {
         case 'string':
             for (i = 0; i < collection.length; i++) {
@@ -129,7 +94,7 @@
             if (typeof collection.map === 'function') {
                 return collection.map(func);
             } else {
-                keys = Object.keys(collection);
+                var keys = Object.keys(collection);
                 for (i = 0; i < keys.length; i++) {
                     resultArray.push(func(keys[i], collection[keys[i]]));
                 }
@@ -152,50 +117,88 @@
         default:
             if (x === null && type === null)
                 return true;
-            return typeof type === 'function' && x instanceof type;
+            if (typeof type === 'function') {
+                return type.isPredicateType ? type(x) : x instanceof type;
+            }
+            return false;
         }
     }
-    js = {
-        'typeof': function (value) {
-            return typeof value;
-        },
-        'instanceof': function (value, constructor) {
-            return value instanceof constructor;
-        }
-    };
-    print = console.log.bind(console);
+    function predicateType(func) {
+        var predicate = function (value) {
+            return !!func(value);
+        };
+        predicate.isPredicateType = true;
+        return predicate;
+    }
+    var List = function () {
+            var emptyList = list();
+            return predicateType(function (value) {
+                return typeof value === 'function' && value.map === emptyList.map;
+            });
+        }();
+    var js = {
+            'typeof': function (value) {
+                return typeof value;
+            },
+            'instanceof': function (value, constructor) {
+                return value instanceof constructor;
+            }
+        };
+    var print = console.log.bind(console);
     function $sonata_startMain() {
         if (typeof main === 'function' && require && require.main && module && require.main === module && process && process.argv instanceof Array) {
             main.apply(null, process.argv.slice(2));
         }
     }
-    subjects = undefined, qualifiers = undefined, opinions = undefined, verbs = undefined, targets = undefined, main = undefined, sentences = undefined;
+    var subjects;
+    var qualifiers;
+    var opinions;
+    var verbs;
+    var targets;
+    var main;
+    var sentences;
+    var shuffle;
+    var partition;
     subjects = list('Dave', 'Phil', 'Ved', 'Rob', 'Craig', 'Alistair');
-    qualifiers = list('really', 'kinda', 'probably');
+    qualifiers = list('really', null, 'kinda', 'probably');
     opinions = list('likes', 'enjoys', 'hates', 'doesn\'t mind');
-    verbs = list('playing', 'eating', 'watching', 'making');
+    verbs = list('playing', 'eating', 'watching', 'making', null);
     targets = list('cake', 'football', 'video games', 'guitar', 'piano', 'pizza');
     main = function main() {
-        return sentences();
+        return shuffle(sentences()).map(function (s) {
+            return print(s);
+        });
     };
     sentences = function sentences() {
-        var subject;
-        var qualifier;
-        var opinion;
-        var verb;
-        var target;
-        return findAll(from(subjects), function (subject) {
-            return findAll(from(qualifiers), function (qualifier) {
-                return findAll(from(opinions), function (opinion) {
-                    return findAll(from(verbs), function (verb) {
-                        return findAll(from(targets), function (target) {
-                            return findAll(Math.random() < 0.03, function () {
-                                return print(subject, qualifier, opinion, verb, target);
+        return findAllWhere(subjects, function (subject) {
+            return findAllWhere(qualifiers, function (qualifier) {
+                return findAllWhere(opinions, function (opinion) {
+                    return findAllWhere(verbs, function (verb) {
+                        return findAllWhere(targets, function (target) {
+                            return findAllWhere(Math.random() < 0.01, function () {
+                                return list(subject, qualifier, opinion, verb, target).filter(Boolean).join(' ');
                             });
                         });
                     });
                 });
             });
+        });
+    };
+    shuffle = function shuffle(items) {
+        var halves;
+        if (items.count < 2)
+            return items;
+        else
+            return halves = partition(items, function () {
+                return Math.random() > 0.5;
+            }).map(shuffle), halves(0).concat(halves(1));
+    };
+    partition = function partition(items, predicate) {
+        return items.reduce(list(list(), list()), function (prev, item) {
+            if (predicate(item))
+                return list(prev(0).concat(list(item)), prev(1));
+            else
+                return list(prev(0), prev(1).concat(list(item)));
         });
     };
     $sonata_startMain();

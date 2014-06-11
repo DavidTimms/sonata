@@ -1,24 +1,45 @@
 
 subjects = ["Dave", "Phil", "Ved", "Rob", "Craig", "Alistair"]
 
-qualifiers = ["really", "kinda", "probably"]
+qualifiers = ["really", null, "kinda", "probably"]
 
 opinions = ["likes", "enjoys", "hates", "doesn't mind"]
 
-verbs = ["playing", "eating", "watching", "making"]
+verbs = ["playing", "eating", "watching", "making", null]
 
 targets = ["cake", "football", "video games", "guitar", "piano", "pizza"]
 
 fn main() {
-	sentences()
+	shuffle(sentences()).map(fn (s) print(s))
 }
 
-fn sentences() with findAll {
-	subject = from(subjects)
-	qualifier = from(qualifiers)
-	opinion = from(opinions)
-	verb = from(verbs)
-	target = from(targets)
-	Math.random() < 0.03
-	print(subject, qualifier, opinion, verb, target)
+fn sentences() with findAllWhere {
+	subject <- subjects
+	qualifier <- qualifiers
+	opinion <- opinions
+	verb <- verbs
+	target <- targets
+	Math.random() < 0.01
+	[subject, qualifier, opinion, verb, target]
+		.filter(Boolean)
+		.join(" ")
+}
+
+fn shuffle(items) {
+	if items.count < 2 {
+		items
+	}
+	else {
+		halves = partition(items, fn () Math.random() > 0.5).map(shuffle)
+		halves(0) ++ halves(1)
+	}
+}
+
+fn partition(items, predicate) {
+	items.reduce([[], []], fn (prev, item) {
+		if predicate(item)
+			[prev(0) ++ [item], prev(1)]
+		else
+			[prev(0), prev(1) ++ [item]]
+	})
 }

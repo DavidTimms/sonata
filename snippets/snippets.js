@@ -83,10 +83,11 @@ prelude: {
 	}
 
 	function findAllWhere(value, rest) {
-		var all = list(), res, count;
-		if (!value) return all;
+		var all, res, count;
+		if (!value) return list();
 		if (_ofType(value, List)) {
 			count = value.count;
+			all = list();
 			for (var i = 0; i < count; i++) {
 				if (res = rest(value(i))) {
 					all = all.concat(res);
@@ -94,7 +95,7 @@ prelude: {
 			}
 			return all;
 		}
-		return rest(value);
+		return list(rest(value));
 	}
 
 	// ------------------------------------------------------
