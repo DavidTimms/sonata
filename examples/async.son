@@ -15,7 +15,7 @@ fn async(value, rest) {
 # fetch the URL passed as an argument (default is google)
 # then write the result to content.html
 fn main(url = "http://google.com") with async {
-	html = request.getAsync(url)
+	html <- request.getAsync(url)
 	fs.writeFileAsync("content.html", get(html, 1))
 	print("written to contents.html")
 }

@@ -447,6 +447,7 @@ var infixOperators = {
 	"and": binaryOp(20),
 	"or": binaryOp(15),
 	"=": binaryOp(10),
+	"<-": binaryOp(10),
 	"(": withPrecedence(70, parseCall),
 	".": withPrecedence(80, parseMemberAccess)
 };

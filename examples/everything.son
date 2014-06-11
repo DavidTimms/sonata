@@ -4,12 +4,10 @@ type Person(name, age, gender)
 fn main() {
 	ensure(doScoping(2) == doScoping(18))
 
-	ensure(withBlock(5) == 21)
-
 	dave = Person("Dave", 21, "male")
-	ensure(withPredicate(dave))
+	ensure(isDave(dave))
 	jane = Person("Jane", 25, "female")
-	ensure(withPredicate(jane) == false)
+	ensure(isDave(jane) == false)
 
 	names = ["John", "Dan", "David", "Dave", "James", "Derrick"]
 	parentDict = {
@@ -18,9 +16,9 @@ fn main() {
 		David: ["Tina", "Les"]
 		Derrick: ["Lucy", "Matt"]
 	}
-	ensure(withFind(names) == "David")
+	ensure(findName(names) == "David")
 	validParents = ["Tina", "Les", "Lucy", "Matt"]
-	ensure(withFindAll(names, parentDict) == validParents)
+	ensure(findParents(names, parentDict) == validParents)
 
 	ensure(maths.add(get(maths, 45), 2) == 34)
 
@@ -37,15 +35,7 @@ fn doScoping(x) {
 	y
 }
 
-fn withBlock(x) {
-	with applied {
-		y = x + 2
-		z = y * 2
-		z + y
-	}
-}
-
-fn withPredicate(person) {
+fn isDave(person) {
 	with predicate {
 		person.age > 18
 		person.gender == "male"
@@ -53,16 +43,16 @@ fn withPredicate(person) {
 	}
 }
 
-fn withFind(items) with find {
-    item = from(items)
+fn findName(items) with findWhere {
+    item <- items
     item.length > 4
     item.charAt(0) == "D"
     item
 }
 
 
-fn withFindAll(names, parents) with findAll {
-	name = from(names)
+fn findParents(names, parents) with findAllWhere {
+	name <- names
 	name.length > 4
 	name.charAt(0) == "D"
 	get(parents, name)

@@ -259,7 +259,7 @@ function convertWithBlock(convertedController, expressions, context) {
 	var head, tail, parameters;
 	var headExp = expressions[0];
 
-	if (isCallTo(assignmentOp, headExp)) {
+	if (isCallTo("<-", headExp)) {
 		var head = convertExp(headExp[2]);
 		var parameters = [headExp[1]];
 	}
@@ -472,6 +472,10 @@ var converters = {
 		var convertedController = convertExp(parts[0]);
 		var expressions = parts[1];
 		return convertWithBlock(convertedController, expressions, context);
+	},
+	"<-": function () {
+		throw new SyntaxError(
+			"The '<-' operator is only valid in a 'with' block");
 	}
 };
 

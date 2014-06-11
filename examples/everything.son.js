@@ -45,13 +45,14 @@
     function predicate(value, next) {
         return value ? next(value) : false;
     }
-    function find(value, rest) {
-        var res;
+    function findWhere(value, rest) {
+        var res, count;
         if (!value)
             return false;
-        if (value instanceof Iterator) {
-            while (value.hasNext()) {
-                if (res = rest(value.next())) {
+        if ($sonata_ofType(value, List)) {
+            count = value.count;
+            for (var i = 0; i < count; i++) {
+                if (res = rest(value(i))) {
                     return res;
                 }
             }
@@ -59,32 +60,20 @@
         }
         return rest(value);
     }
-    function findAll(value, rest) {
-        var all = list(), res;
+    function findAllWhere(value, rest) {
+        var all = list(), res, count;
         if (!value)
             return all;
-        if (value instanceof Iterator) {
-            while (value.hasNext()) {
-                if (res = rest(value.next())) {
+        if ($sonata_ofType(value, List)) {
+            count = value.count;
+            for (var i = 0; i < count; i++) {
+                if (res = rest(value(i))) {
                     all = all.concat(res);
                 }
             }
             return all;
         }
         return rest(value);
-    }
-    function Iterator(l) {
-        this.items = l;
-        this.pointer = 0;
-    }
-    Iterator.prototype.hasNext = function () {
-        return this.items && this.pointer < this.items.count;
-    };
-    Iterator.prototype.next = function () {
-        return this.items && this.items(this.pointer++);
-    };
-    function from(a) {
-        return new Iterator(a);
     }
     function ensure(predicateResult, msg) {
         if (!predicateResult) {
@@ -127,9 +116,25 @@
         default:
             if (x === null && type === null)
                 return true;
-            return typeof type === 'function' && x instanceof type;
+            if (typeof type === 'function') {
+                return type.isPredicateType ? type(x) : x instanceof type;
+            }
+            return false;
         }
     }
+    function predicateType(func) {
+        var predicate = function (value) {
+            return !!func(value);
+        };
+        predicate.isPredicateType = true;
+        return predicate;
+    }
+    var List = function () {
+            var emptyList = list();
+            return predicateType(function (value) {
+                return typeof value === 'function' && value.map === emptyList.map;
+            });
+        }();
     var js = {
             'typeof': function (value) {
                 return typeof value;
@@ -146,19 +151,24 @@
     }
     var main;
     var doScoping;
-    var withBlock;
-    var withPredicate;
-    var withFind;
-    var withFindAll;
+    var isDave;
+    var findName;
+    var findParents;
     var maths;
     var country;
-    function Person(name, age, gender) {
-        if (!(this instanceof Person))
-            return new Person(name, age, gender);
-        this.name = name;
-        this.age = age;
-        this.gender = gender;
-    }
+    var Person;
+    Person = function () {
+        function Person(name, age, gender) {
+            if (!(this instanceof Person))
+                return new Person(name, age, gender);
+            this.name = name;
+            this.age = age;
+            this.gender = gender;
+        }
+        Object.defineProperties(Person, {});
+        Person.prototype = Object.create(Object.prototype, { constructor: { value: Person } });
+        return Person;
+    }();
     main = function main() {
         var dave;
         var jane;
@@ -166,11 +176,10 @@
         var parentDict;
         var validParents;
         ensure(eq(doScoping(2), doScoping(18)));
-        ensure(eq(withBlock(5), 21));
         dave = Person('Dave', 21, 'male');
-        ensure(withPredicate(dave));
+        ensure(isDave(dave));
         jane = Person('Jane', 25, 'female');
-        ensure(eq(withPredicate(jane), false));
+        ensure(eq(isDave(jane), false));
         names = list('John', 'Dan', 'David', 'Dave', 'James', 'Derrick');
         parentDict = {
             'John': list('Lisa', 'Rick'),
@@ -178,9 +187,9 @@
             'David': list('Tina', 'Les'),
             'Derrick': list('Lucy', 'Matt')
         };
-        ensure(eq(withFind(names), 'David'));
+        ensure(eq(findName(names), 'David'));
         validParents = list('Tina', 'Les', 'Lucy', 'Matt');
-        ensure(eq(withFindAll(names, parentDict), validParents));
+        ensure(eq(findParents(names, parentDict), validParents));
         ensure(eq(maths.add(maths[45], 2), 34));
         ensure(eq(country('China', 'Asia').describe(), 'China is a country in Asia'));
         return print('All tests passed');
@@ -194,37 +203,26 @@
         }() : false;
         return y;
     };
-    withBlock = function withBlock(x) {
-        var y;
-        var z;
-        return applied(+x + +2, function (y) {
-            return applied(y * 2, function (z) {
-                return +z + +y;
-            });
-        });
-    };
-    withPredicate = function withPredicate(person) {
+    isDave = function isDave(person) {
         return predicate(person.age > 18, function () {
             return predicate(eq(person.gender, 'male'), function () {
                 return eq(person.name, 'Dave');
             });
         });
     };
-    withFind = function withFind(items) {
-        var item;
-        return find(from(items), function (item) {
-            return find(item.length > 4, function () {
-                return find(eq(item.charAt(0), 'D'), function () {
+    findName = function findName(items) {
+        return findWhere(items, function (item) {
+            return findWhere(item.length > 4, function () {
+                return findWhere(eq(item.charAt(0), 'D'), function () {
                     return item;
                 });
             });
         });
     };
-    withFindAll = function withFindAll(names, parents) {
-        var name;
-        return findAll(from(names), function (name) {
-            return findAll(name.length > 4, function () {
-                return findAll(eq(name.charAt(0), 'D'), function () {
+    findParents = function findParents(names, parents) {
+        return findAllWhere(names, function (name) {
+            return findAllWhere(name.length > 4, function () {
+                return findAllWhere(eq(name.charAt(0), 'D'), function () {
                     return parents[name];
                 });
             });

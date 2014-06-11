@@ -67,12 +67,13 @@ prelude: {
 		return value ? next(value) : false;
 	}
 
-	function find(value, rest) {
-		var res;
+	function findWhere(value, rest) {
+		var res, count;
 		if (!value) return false;
-		if (value instanceof Iterator) {
-			while (value.hasNext()) {
-				if (res = rest(value.next())) {
+		if (_ofType(value, List)) {
+			count = value.count;
+			for (var i = 0; i < count; i++) {
+				if (res = rest(value(i))) {
 					return res;
 				}
 			}
@@ -81,34 +82,19 @@ prelude: {
 		return rest(value);
 	}
 
-	function findAll(value, rest) {
-		var all = list(), res;
+	function findAllWhere(value, rest) {
+		var all = list(), res, count;
 		if (!value) return all;
-		if (value instanceof Iterator) {
-			while (value.hasNext()) {
-				if (res = rest(value.next())) {
+		if (_ofType(value, List)) {
+			count = value.count;
+			for (var i = 0; i < count; i++) {
+				if (res = rest(value(i))) {
 					all = all.concat(res);
 				}
 			}
 			return all;
 		}
 		return rest(value);
-	}
-
-
-	function Iterator(l) {
-		this.items = l;
-		this.pointer = 0;
-	}
-	Iterator.prototype.hasNext = function () {
-		return this.items && (this.pointer < this.items.count);
-	}
-	Iterator.prototype.next = function () {
-		return this.items && this.items(this.pointer++);
-	}
-
-	function from(a) {
-		return new Iterator(a);
 	}
 
 	// ------------------------------------------------------
@@ -156,9 +142,30 @@ prelude: {
 				return type === undefined;
 			default:
 				if (x === null && type === null) return true;
-				return typeof(type) === "function" && x instanceof type;
+				if (typeof(type) === "function") {
+					return type.isPredicateType ?
+						type(x) :
+						x instanceof type;
+				}
+				return false;
 		}
 	}
+
+	function predicateType(func) {
+		var predicate = function (value) {
+			return !!func(value);
+		}
+		predicate.isPredicateType = true;
+		return predicate;
+	}
+
+	var List = (function () {
+		var emptyList = list();
+		return predicateType(function (value) {
+			return typeof(value) === "function" && 
+				value.map === emptyList.map;
+		});
+	})();
 
 	var js = {
 		"typeof": function (value) {
