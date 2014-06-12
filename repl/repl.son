@@ -1,0 +1,41 @@
+nodeREPL = require("repl")
+vm = require("vm")
+
+tokenize = require("../main-tokenizer")
+parse = require("../tdop-parser")
+convertAST = require("../ast-converter")
+validateAST = require("ast-validator")
+escodegen = require("escodegen")
+
+fn main() {
+	options = {
+		prompt: 'sonata> '
+
+		fn self.eval(wrappedInput, context, filename, callback) tryCatch(
+			fn () {
+				input = wrappedInput.slice(1, -2)
+				tokens = tokenize(input)
+				sonataAST = parse(tokens)
+
+				convertAST.convertPartial(sonataAST, fn (jsAST) tryCatch(
+					fn () {
+						validateAST(jsAST)
+						js = escodegen.generate(jsAST)
+						callback(null, 
+						vm.runInContext(js, context, filename))
+					}
+					fn (e) callback(e)
+				))
+			}
+			fn (e) callback(e)
+		)
+	}
+
+	repl = nodeREPL.start(options)
+
+	# load the prelude (runtime) into the context
+	convertAST.prelude(fn (preludeAST) {
+		js = escodegen.generate(preludeAST)
+		vm.runInContext(js, repl.context)
+	})
+}

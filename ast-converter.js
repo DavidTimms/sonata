@@ -29,10 +29,6 @@ function convertAST(ast, callback) {
 
 		var context = {isFuncBody: true, noReturn: true};
 
-//		buildSnippet("prelude")
-//			.concat(convertBody(ast, context))
-//			.concat(buildSnippet("startMain"));
-
 		var program = tailCallElim({
 			type: "Program",
 			body: buildSnippet("functionWrapper", {
@@ -50,7 +46,6 @@ function convertAST(ast, callback) {
 			.concat(funcWrapper.body)
 			.concat(buildSnippet("startMain"));
 
-		// Define the program with an immediately invoked function wrapper
 		callback(program);
 	});
 }
@@ -706,4 +701,46 @@ function negate(predicate) {
 	}
 }
 
-module.exports = convertAST;
+module.exports = {
+	convertProgram: convertAST,
+	convertPartial: function (ast, callback) {
+
+		snippets.createSnippetBuilder(
+			"./snippets/snippets.js", function (snippetBuilder) {
+
+			// assign global snippet builder function
+			buildSnippet = snippetBuilder;
+
+			var context = {isFuncBody: true, noReturn: true};
+
+			// !!! need to run tail call eliminator here !!!
+
+			var converted = {
+				type: "Program",
+				body: convertBody(ast, context)
+			};
+			
+			callback(converted);
+		});
+	},
+	prelude: function (callback) {
+
+		snippets.createSnippetBuilder(
+			"./snippets/snippets.js", function (snippetBuilder) {
+
+			// assign global snippet builder function
+			buildSnippet = snippetBuilder;
+
+			var context = {isFuncBody: true, noReturn: true};
+
+			// !!! need to run tail call eliminator here !!!
+
+			var prelude = {
+				type: "Program",
+				body: buildSnippet("prelude")
+			};
+
+			callback(prelude);
+		});
+	}
+};

@@ -1,10 +1,6 @@
 TODO
 ====
 
- - REPL, see:
- 	- [Node REPL](http://nodejs.org/api/repl.html).
- 	- [CoffeeScript REPL](http://coffeescript.org/documentation/docs/repl.html).
-
  - Syntax:
 	- replace braces with significant whitespace.
 	- List and object property access syntax, eg. `items[2] and user{name}`.

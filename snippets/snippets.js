@@ -4,16 +4,14 @@ prelude: {
 	var range = list.range;
 	var eq = list.eq;
 
-//	var baseObject = Object.create(null, {
-//		type: {
-//			value: "Object"
-//		},
-//		toString: {
-//			value: function () {
-//				return "{" + this.type + "}";
-//			}
-//		}
-//	});
+	function tryCatch(tryBody, catchBody) {
+		try {
+			return tryBody();
+		}
+		catch (e) {
+			return catchBody(e);
+		}
+	}
 
 	function mix(parent, child) {
 		var key;

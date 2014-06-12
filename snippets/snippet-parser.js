@@ -1,11 +1,19 @@
 var esprima = require("esprima");
 var fs = require("fs");
 
+var builderCache = Object.create(null);
+
 exports.createSnippetBuilder = function (snippetsFile, callback) {
 	if (!callback) {
 		callback = snippetsFile;
 		snippetsFile = "./snippets.js";
 	}
+
+	if (builderCache[snippetsFile]) {
+		callback(builderCache[snippetsFile]);
+		return;
+	}
+
 	fs.readFile(snippetsFile, "utf8", function (err, source) {
 		if (err || !source) {
 			throw new Error("unable to read snippets file");
@@ -20,12 +28,15 @@ exports.createSnippetBuilder = function (snippetsFile, callback) {
 				snippets[statement.label.name] = statement.body.body;
 				return snippets;
 			}, {});
-			callback(function buildSnippet(name, data) {
-				if (!snippets[name]) 
-					throw Error("unable to find source snippet: " + name);
 
-				return renderSnippet(snippets[name], data);
-			});
+		builderCache[snippetsFile] = function buildSnippet(name, data) {
+			if (!snippets[name]) 
+				throw Error("unable to find source snippet: " + name);
+
+			return renderSnippet(snippets[name], data);
+		};
+
+		callback(builderCache[snippetsFile]);
 	});
 };
 
