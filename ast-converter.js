@@ -1,4 +1,3 @@
-var list = require("texo");
 var jsonpretty = require('jsonpretty');
 var snippets = require("./snippets/snippet-parser.js");
 var tailCallElim = require("tail-call-eliminator");
@@ -382,11 +381,16 @@ var converters = {
 		}
 	},
 	"++": function (parts) {
-		return snippetExp("concat", {
+		var snippetName = isStringNode(parts[0]) ?
+			"concatString" :
+			"concat";
+			
+		return snippetExp(snippetName, {
 			left: convertExp(parts[0]),
 			right: convertExp(parts[1])
 		})
 	},
+	/* Sting concatenation operator removed in favour of generic "++"
 	"&": function (parts) {
 		var left =  convertExp(parts[0]);
 		var right = convertExp(parts[1]);
@@ -405,6 +409,7 @@ var converters = {
 			right: right
 		});
 	},
+	*/
 	"^": macro(function (left, right) {
 		return [[".", "Math", "pow"], left, right];
 	}),

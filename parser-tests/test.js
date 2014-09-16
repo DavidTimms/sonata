@@ -32,9 +32,9 @@ var tests = {
 
 	"func(arg) % 4 == 2":  "((== (% (func arg) 4) 2))",
 
-	"[a, b, c, d]":  "((list a b c d))",
+	"[a, b, c, d]":  "((Vector a b c d))",
 
-	"[a, [b + 3, c], d]":  "((list a (list (+ b 3) c) d))",
+	"[a, [b + 3, c], d]":  "((Vector a (Vector (+ b 3) c) d))",
 
 	"not x <= 89":  "((not (<= x 89)))",
 
@@ -48,7 +48,7 @@ var tests = {
 
 	"(5 + 4).toString()":  "(((. (+ 5 4) toString)))",
 
-	"[1, 2] ++ [3, 4, 5]":  "((++ (list 1 2) (list 3 4 5)))",
+	"[1, 2] ++ [3, 4, 5]":  "((++ (Vector 1 2) (Vector 3 4 5)))",
 
 	"fn () 45 - 2": "((fn () ((- 45 2))))",
 
@@ -56,9 +56,9 @@ var tests = {
 
 	"fn add(a b) {a + b}": "((= add (fn (a b) ((+ a b)))))",
 
-	"xs.reduce(fn (x, y) x & y)": "(((. xs reduce) (fn (x y) ((& x y)))))",
+	"xs.reduce(fn (x, y) x ++ y, '')": "(((. xs reduce) (fn (x y) ((++ x y))) ''))",
 
-	"fn (name = 'Dave') name & '!'": "((fn ((= name 'Dave')) ((& name '!'))))",
+	"fn (name = 'Dave') name ++ '!'": "((fn ((= name 'Dave')) ((++ name '!'))))",
 
 	"if (x < 2) print(x)": "((if (< x 2) ((print x))))",
 
@@ -97,12 +97,12 @@ var tests = {
 
 multilineTest([
 	"if s.match(/\s/) {",
-	"	s2 = s & '?'",
+	"	s2 = s ++ '?'",
 	"	print(s)",
 	"} else {",
 	"	print('no')",
 	"}"
-], "((if ((. s match) /\s/) ((= s2 (& s '?')) (print s)) ((print 'no'))))");
+], "((if ((. s match) /\s/) ((= s2 (++ s '?')) (print s)) ((print 'no'))))");
 
 multilineTest([
 	"xs.map(fn (x) {",
@@ -115,17 +115,17 @@ multilineTest([
 	"print({",
 	"	x: 2,",
 	"	'y': 5.5",
-	"	2: 'hello' & ' world'",
+	"	2: 'hello' ++ ' world'",
 	"})"
-], "((print (:object (: x 2) (: 'y' 5.5) (: 2 (& 'hello' ' world')))))");
+], "((print (:object (: x 2) (: 'y' 5.5) (: 2 (++ 'hello' ' world')))))");
 
 multilineTest([
 	"{",
 	"	fn self.greet(name) {",
-	"		print('Hi' & name)",
+	"		print('Hi' ++ name)",
 	"	}",
 	"}"
-], "((:object (:fn self greet (name) ((print (& 'Hi' name))))))");
+], "((:object (:fn self greet (name) ((print (++ 'Hi' name))))))");
 
 multilineTest([
 	"type Door(colour) {",

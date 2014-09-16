@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Ractive Bacon counters</title>
+		<style type="text/css">
+			.counter {
+				display: inline-block;
+				width: 150px;
+				height: 140px;
+				padding: 10px;
+				border-radius: 5px;
+				border: 1px solid #DDDDDD;
+				text-align: center;
+			}
+			.counter button {
+				width: 50px;
+			}
+
+			#counters-container p {
+				color: navy;
+				font-size: 25px;
+			}
+
+			.counter.red {
+				background-color: #FFDDDD;
+			}
+			.counter.green {
+				background-color: #DDFFDD;
+			}
+			.counter.blue {
+				background-color: #DDDDFF;
+			}
+			.counter.yellow {
+				background-color: #FFFFDD;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="counters-container">
+
+		</div>
+
+		<script id="counters-template" type="text/ractive">
+			{{#counters}}
+				<div class="counter {{colour}}" id="counter-{{index}}">
+					<p>{{count}}</p>
+
+					<button class="up">up</button>
+					<button class="down">down</button>
+					<br>
+					<button class="delete">delete</button>
+				</div>
+			{{/counters}}
+			<div>
+				<p>Total: {{totalCount}}</p>
+				<button class="add-counter">Add counter</button>
+			</div>
+		</script>
+		<script src="./lib/jquery.js"></script>
+		<script src="./lib/ractive-legacy.js"></script>
+		<script src="./lib/bacon.js"></script>
+		<script src="./lib/ractive-adaptors-bacon.js"></script>
+		<script src="./lib/texo.js"></script>
+		<script>
+			var require = function (module) {
+				if (module === "texo") {
+					return texo;
+				}
+				else throw Error("require not supported in browser");
+			}
+		</script>
+		<script src="./counters.son.js"></script>
+	</body>
+<html>

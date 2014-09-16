@@ -3,10 +3,10 @@
 // even if not surrounded by whitespace
 var punctuationChars = "(){}[].,;:|";
 
-function tokenize (source) {
+function tokenize(source) {
 	var input = source.split("");
 
-	function reduceInput (tokens, chr) {
+	function reduceInput(tokens, chr) {
 		var last = tokens.last();
 		var lastFirstChar = last.at(0);
 
@@ -91,7 +91,7 @@ function tokenize (source) {
 		]);
 }
 
-function emptyTokenArray () {
+function emptyTokenArray() {
 	var tokens = [];
 
 	tokens.add = function (tokenString) {
@@ -120,11 +120,11 @@ function lastNonEmptyToken(tokens) {
 	return null;
 }
 
-function isLiteralDelimiter (chr) {
+function isLiteralDelimiter(chr) {
 	return chr !== "" && ("[\"'/#]").indexOf(chr) >= 0;
 }
 
-function isPunctuation (chr) {
+function isPunctuation(chr) {
 	return punctuationChars.indexOf(chr) >= 0;
 }
 
@@ -134,7 +134,7 @@ function charAt(str, index) {
 }
 
 // Token Constructor
-function Token (tokenString, position) {
+function Token(tokenString, position) {
 	if (tokenString instanceof Token) {
 		return Token.call(tokenString, tokenString.string);
 	}
@@ -178,7 +178,7 @@ function Token (tokenString, position) {
 	}
 	return this;
 }
-function TokenToString () {
+function TokenToString() {
 	// show width for indents
 	return this.type + "(" + ("width" in this ? this.width : this.string) + ")"
 		+ " at line " + this.position.line + ", column " + this.position.column
@@ -191,7 +191,7 @@ Token.prototype = Object.create(Object, {
 	}}
 });
 
-function evalMultiline (str) {
+function evalMultiline(str) {
 	return eval(str.replace(/\r\n|\r|\n/g, "\\n"));
 }
 

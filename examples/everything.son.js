@@ -1,8 +1,14 @@
 (function () {
     'use strict';
-    var list = require('texo');
-    var range = list.range;
-    var eq = list.eq;
+    var $sonata_Immutable = require('immutable'), Sequence = $sonata_Immutable.Sequence, Vector = $sonata_Immutable.Vector, Map = $sonata_Immutable.Map, OrderedMap = $sonata_Immutable.OrderedMap, Range = $sonata_Immutable.Range, Repeat = $sonata_Immutable.Repeat, Record = $sonata_Immutable.Record, eq = $sonata_Immutable.is;
+    var sqrt = Math.sqrt, floor = Math.floor, ceil = Math.ceil, round = Math.round, max = Math.max, min = Math.min, random = Math.random;
+    function tryCatch(tryBody, catchBody) {
+        try {
+            return tryBody();
+        } catch (e) {
+            return catchBody(e);
+        }
+    }
     function mix(parent, child) {
         var key;
         var obj = {};
@@ -22,23 +28,6 @@
         obj[newKey] = newValue;
         return obj;
     }
-    function contains(collection, value) {
-        var i, key;
-        if (typeof collection === 'function' && collection.count) {
-            for (i = 0; i < collection.count; i++) {
-                if (list.eq(collection(i), value)) {
-                    return true;
-                }
-            }
-        } else {
-            for (key in collection) {
-                if (list.eq(collection[key], value)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
     function applied(value, rest) {
         return rest(value);
     }
@@ -46,32 +35,22 @@
         return value ? next(value) : false;
     }
     function findWhere(value, rest) {
-        var res, count;
         if (!value)
             return false;
-        if ($sonata_ofType(value, List)) {
-            count = value.count;
-            for (var i = 0; i < count; i++) {
-                if (res = rest(value(i))) {
-                    return res;
-                }
-            }
-            return false;
+        if ($sonata_ofType(value, Sequence)) {
+            return value.find(function (condidate) {
+                return rest(condidate);
+            });
         }
         return rest(value);
     }
     function findAllWhere(value, rest) {
-        var all = list(), res, count;
         if (!value)
-            return all;
-        if ($sonata_ofType(value, List)) {
-            count = value.count;
-            for (var i = 0; i < count; i++) {
-                if (res = rest(value(i))) {
-                    all = all.concat(res);
-                }
-            }
-            return all;
+            return Vector();
+        if ($sonata_ofType(value, Sequence)) {
+            return value.reduce(function (all, condidate) {
+                return all.concat(rest(condidate));
+            }, Vector());
         }
         return rest(value);
     }
@@ -80,28 +59,6 @@
             throw Error(msg || 'ensure failed');
         }
         return true;
-    }
-    function forIn(collection, func) {
-        var i, t = typeof collection, resultArray = [];
-        switch (t) {
-        case 'string':
-            for (i = 0; i < collection.length; i++) {
-                resultArray.push(func(collection.charAt(i), i));
-            }
-            return resultArray;
-        case 'object':
-            if (typeof collection.map === 'function') {
-                return collection.map(func);
-            } else {
-                var keys = Object.keys(collection);
-                for (i = 0; i < keys.length; i++) {
-                    resultArray.push(func(keys[i], collection[keys[i]]));
-                }
-                return resultArray;
-            }
-        case 'function':
-            return collection.map(func);
-        }
     }
     function $sonata_ofType(x, type) {
         switch (typeof x) {
@@ -117,24 +74,11 @@
             if (x === null && type === null)
                 return true;
             if (typeof type === 'function') {
-                return type.isPredicateType ? type(x) : x instanceof type;
+                return x instanceof type;
             }
             return false;
         }
     }
-    function predicateType(func) {
-        var predicate = function (value) {
-            return !!func(value);
-        };
-        predicate.isPredicateType = true;
-        return predicate;
-    }
-    var List = function () {
-            var emptyList = list();
-            return predicateType(function (value) {
-                return typeof value === 'function' && value.map === emptyList.map;
-            });
-        }();
     var js = {
             'typeof': function (value) {
                 return typeof value;
@@ -180,15 +124,15 @@
         ensure(isDave(dave));
         jane = Person('Jane', 25, 'female');
         ensure(eq(isDave(jane), false));
-        names = list('John', 'Dan', 'David', 'Dave', 'James', 'Derrick');
+        names = Vector('John', 'Dan', 'David', 'Dave', 'James', 'Derrick');
         parentDict = {
-            'John': list('Lisa', 'Rick'),
-            'Dan': list('Sarah', 'Jim'),
-            'David': list('Tina', 'Les'),
-            'Derrick': list('Lucy', 'Matt')
+            'John': Vector('Lisa', 'Rick'),
+            'Dan': Vector('Sarah', 'Jim'),
+            'David': Vector('Tina', 'Les'),
+            'Derrick': Vector('Lucy', 'Matt')
         };
         ensure(eq(findName(names), 'David'));
-        validParents = list('Tina', 'Les', 'Lucy', 'Matt');
+        validParents = Vector('Tina', 'Les', 'Lucy', 'Matt');
         ensure(eq(findParents(names, parentDict), validParents));
         ensure(eq(maths.add(maths[45], 2), 34));
         ensure(eq(country('China', 'Asia').describe(), 'China is a country in Asia'));
@@ -237,12 +181,14 @@
         45: 32
     };
     country = function country(name, continent) {
+        ensure($sonata_ofType(name, String), 'Country name must be a String');
+        ensure($sonata_ofType(continent, String), 'Continent name must be a String');
         return {
             'name': name,
             'describe': function () {
                 var self;
                 self = this;
-                return name + (' is a country in ' + continent);
+                return name.concat(' is a country in ' + continent);
             }
         };
     };

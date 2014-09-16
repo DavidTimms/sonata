@@ -17,5 +17,5 @@ fn async(value, rest) {
 fn main(url = "http://google.com") with async {
 	html <- request.getAsync(url)
 	fs.writeFileAsync("content.html", get(html, 1))
-	print("written to contents.html")
+	print("written to content.html")
 }

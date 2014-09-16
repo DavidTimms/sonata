@@ -1,0 +1,18 @@
+
+fn errorGuard(value, next) {
+	if (value :: Error) value
+	else next(value)
+}
+
+fn main() {
+	guarded("not ok")
+	print("----------------")
+	guarded("ok")
+}
+
+fn guarded(msg) with errorGuard {
+	print("message is " & msg)
+	if (msg != "ok") Error(msg)
+	print("this is only printed if the message is 'ok'")
+	"everything went OK"
+}

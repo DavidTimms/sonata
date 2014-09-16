@@ -1,8 +1,14 @@
 (function () {
     'use strict';
-    var list = require('texo');
-    var range = list.range;
-    var eq = list.eq;
+    var $sonata_Immutable = require('immutable'), Sequence = $sonata_Immutable.Sequence, Vector = $sonata_Immutable.Vector, Map = $sonata_Immutable.Map, OrderedMap = $sonata_Immutable.OrderedMap, Range = $sonata_Immutable.Range, Repeat = $sonata_Immutable.Repeat, Record = $sonata_Immutable.Record, eq = $sonata_Immutable.is;
+    var sqrt = Math.sqrt, floor = Math.floor, ceil = Math.ceil, round = Math.round, max = Math.max, min = Math.min, random = Math.random;
+    function tryCatch(tryBody, catchBody) {
+        try {
+            return tryBody();
+        } catch (e) {
+            return catchBody(e);
+        }
+    }
     function mix(parent, child) {
         var key;
         var obj = {};
@@ -22,97 +28,37 @@
         obj[newKey] = newValue;
         return obj;
     }
-    function contains(collection, value) {
-        var i, key;
-        if (typeof collection === 'function' && collection.count) {
-            for (i = 0; i < collection.count; i++) {
-                if (list.eq(collection(i), value)) {
-                    return true;
-                }
-            }
-        } else {
-            for (key in collection) {
-                if (list.eq(collection[key], value)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
     function applied(value, rest) {
         return rest(value);
     }
     function predicate(value, next) {
         return value ? next(value) : false;
     }
-    function find(value, rest) {
-        var res;
+    function findWhere(value, rest) {
         if (!value)
             return false;
-        if (value instanceof Iterator) {
-            while (value.hasNext()) {
-                if (res = rest(value.next())) {
-                    return res;
-                }
-            }
-            return false;
+        if ($sonata_ofType(value, Sequence)) {
+            return value.find(function (condidate) {
+                return rest(condidate);
+            });
         }
         return rest(value);
     }
-    function findAll(value, rest) {
-        var all = list(), res;
+    function findAllWhere(value, rest) {
         if (!value)
-            return all;
-        if (value instanceof Iterator) {
-            while (value.hasNext()) {
-                if (res = rest(value.next())) {
-                    all = all.concat(res);
-                }
-            }
-            return all;
+            return Vector();
+        if ($sonata_ofType(value, Sequence)) {
+            return value.reduce(function (all, condidate) {
+                return all.concat(rest(condidate));
+            }, Vector());
         }
         return rest(value);
-    }
-    function Iterator(l) {
-        this.items = l;
-        this.pointer = 0;
-    }
-    Iterator.prototype.hasNext = function () {
-        return this.items && this.pointer < this.items.count;
-    };
-    Iterator.prototype.next = function () {
-        return this.items && this.items(this.pointer++);
-    };
-    function from(a) {
-        return new Iterator(a);
     }
     function ensure(predicateResult, msg) {
         if (!predicateResult) {
             throw Error(msg || 'ensure failed');
         }
         return true;
-    }
-    function forIn(collection, func) {
-        var i, t = typeof collection, resultArray = [];
-        switch (t) {
-        case 'string':
-            for (i = 0; i < collection.length; i++) {
-                resultArray.push(func(collection.charAt(i), i));
-            }
-            return resultArray;
-        case 'object':
-            if (typeof collection.map === 'function') {
-                return collection.map(func);
-            } else {
-                var keys = Object.keys(collection);
-                for (i = 0; i < keys.length; i++) {
-                    resultArray.push(func(keys[i], collection[keys[i]]));
-                }
-                return resultArray;
-            }
-        case 'function':
-            return collection.map(func);
-        }
     }
     function $sonata_ofType(x, type) {
         switch (typeof x) {
@@ -127,7 +73,10 @@
         default:
             if (x === null && type === null)
                 return true;
-            return typeof type === 'function' && x instanceof type;
+            if (typeof type === 'function') {
+                return x instanceof type;
+            }
+            return false;
         }
     }
     var js = {

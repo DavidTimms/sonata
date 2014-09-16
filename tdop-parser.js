@@ -413,7 +413,7 @@ var prefixOperators = {
 	},
 	"[": function (tokens, pointer) {
 		//return parseCall(tokens, pointer, precedence, );
-		return prependCallee("list", 
+		return prependCallee("Vector", 
 			parseArguments(tokens, pointer + 1, onToken("]")));
 	},
 	"{": function (tokens, pointer, precedence) {
@@ -429,7 +429,8 @@ var prefixOperators = {
 
 var infixOperators = {
 	"++": binaryOp(55),
-	"&": binaryOp(55),
+	// String concatenation operator removed, as ++ can be used
+	//"&": binaryOp(55), 
 	"^": binaryOp(52),
 	"*": binaryOp(50),
 	"/": binaryOp(50),
@@ -500,7 +501,7 @@ function onToken(tokenString) {
 	return f;
 }
 
-function advancePointer (tokens, pointer) {
+function advancePointer(tokens, pointer) {
 	while (isSkippable(tokens[pointer])) {
 		pointer += 1;
 	}
@@ -528,7 +529,7 @@ function isSkippable(token) {
 		token.type === "Comment";
 }
 
-function checkToken (tokens, pointer, expected) {
+function checkToken(tokens, pointer, expected) {
 	var token = tokens[pointer];
 	if (token.string !== expected) {
 		errorAt(token, "Expected \"" + expected + 
@@ -544,12 +545,11 @@ function isIdentifier(node, name) {
 }
 
 function errorAt(token, message) {
-	console.log("Parse Error: " + message + 
-		"\nat line " + token.position.line + ":" + token.position.column);
-	process.exit(1);
+	throw new SyntaxError(message + "\nat line " + 
+		token.position.line + ":" + token.position.column);
 }
 
-function withPrecedence (precedence, func) {
+function withPrecedence(precedence, func) {
 	func.precedence = precedence;
 	return func;
 }

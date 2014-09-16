@@ -1,0 +1,42 @@
+
+type Channel(buffer = Array(), handlers = Array()) {
+
+	fn self.send(msg) {
+		self.buffer.push(msg)
+
+		if self.handlers.length > 0
+			self.handlers.shift()(self.buffer.shift())
+		null
+	}
+
+	fn self.receive(handler) {
+		subChan = Channel()
+		if self.buffer.length > 0 {
+			setImmediate(
+				fn () subChan.send(handler(self.buffer.shift())))
+		}
+		else {
+			self.handlers.push(
+				fn (msg) subChan.send(handler(msg)))
+		}
+		subChan
+	}
+
+	fn self.toString() "Channel(" & self.buffer & ")"
+	fn self.inspect() "Channel(" & self.buffer & ")"
+}
+
+fn coroutine(exp, cont) {
+	print("co: ", exp)
+	if exp :: Channel
+		exp.receive(cont or id)
+	else if cont
+		cont(exp)
+	else
+		exp
+}
+
+fn id(x) x
+
+set!(exports.Channel, Channel)
+set!(exports.routine, coroutine)

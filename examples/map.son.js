@@ -100,58 +100,12 @@
             main.apply(null, process.argv.slice(2));
         }
     }
-    var nodeREPL;
-    var vm;
-    var tokenize;
-    var parse;
-    var convertAST;
-    var validateAST;
-    var escodegen;
     var main;
-    nodeREPL = require('repl');
-    vm = require('vm');
-    tokenize = require('../main-tokenizer');
-    parse = require('../tdop-parser');
-    convertAST = require('../ast-converter');
-    validateAST = require('ast-validator');
-    escodegen = require('escodegen');
     main = function main() {
-        var options;
-        var repl;
-        options = {
-            'prompt': 'sonata> ',
-            'eval': function (wrappedInput, context, filename, callback) {
-                var self;
-                self = this;
-                return tryCatch(function () {
-                    var input;
-                    var tokens;
-                    var sonataAST;
-                    input = wrappedInput.slice(1, -2);
-                    tokens = tokenize(input);
-                    sonataAST = parse(tokens);
-                    return convertAST.convertPartial(sonataAST, function (jsAST) {
-                        return tryCatch(function () {
-                            var js;
-                            validateAST(jsAST);
-                            js = escodegen.generate(jsAST);
-                            print(js);
-                            return callback(null, vm.runInContext(js, context, filename));
-                        }, function (e) {
-                            return callback(e);
-                        });
-                    });
-                }, function (e) {
-                    return callback(e);
-                });
-            }
-        };
-        repl = nodeREPL.start(options);
-        return convertAST.prelude(function (preludeAST) {
-            var js;
-            js = escodegen.generate(preludeAST);
-            return vm.runInContext(js, repl.context);
-        });
+        return print(Map({
+            'a': 99,
+            'b': 77
+        }));
     };
     $sonata_startMain();
 }());

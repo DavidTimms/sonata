@@ -1,8 +1,22 @@
 prelude: {
 	"use strict";
-	var list = require("texo");
-	var range = list.range;
-	var eq = list.eq;
+	var _Immutable = require("immutable"),
+		Sequence = _Immutable.Sequence,
+		Vector = _Immutable.Vector,
+		Map = _Immutable.Map,
+		OrderedMap = _Immutable.OrderedMap,
+		Range = _Immutable.Range,
+		Repeat = _Immutable.Repeat,
+		Record = _Immutable.Record,
+		eq = _Immutable.is;
+
+	var sqrt = Math.sqrt,
+		floor = Math.floor,
+		ceil = Math.ceil,
+		round = Math.round,
+		max = Math.max,
+		min = Math.min,
+		random = Math.random;
 
 	function tryCatch(tryBody, catchBody) {
 		try {
@@ -34,6 +48,7 @@ prelude: {
 		return obj;
 	}
 
+	/*
 	function contains(collection, value) {
 		var i, key;
 		if (typeof(collection) === "function" && collection.count) {
@@ -52,6 +67,7 @@ prelude: {
 		}
 		return false;
 	}
+	*/
 
 	// WITH CONTROLLERS
 
@@ -66,34 +82,23 @@ prelude: {
 	}
 
 	function findWhere(value, rest) {
-		var res, count;
 		if (!value) return false;
-		if (_ofType(value, List)) {
-			count = value.count;
-			for (var i = 0; i < count; i++) {
-				if (res = rest(value(i))) {
-					return res;
-				}
-			}
-			return false;
+		if (_ofType(value, Sequence)) {
+			return value.find(function (condidate) {
+				return rest(condidate);
+			});
 		}
 		return rest(value);
 	}
-
+	
 	function findAllWhere(value, rest) {
-		var all, res, count;
-		if (!value) return list();
-		if (_ofType(value, List)) {
-			count = value.count;
-			all = list();
-			for (var i = 0; i < count; i++) {
-				if (res = rest(value(i))) {
-					all = all.concat(res);
-				}
-			}
-			return all;
+		if (!value) return Vector();
+		if (_ofType(value, Sequence)) {
+			return value.reduce(function (all, condidate) {
+				return all.concat(rest(condidate));
+			}, Vector());
 		}
-		return list(rest(value));
+		return rest(value);
 	}
 
 	// ------------------------------------------------------
@@ -105,6 +110,7 @@ prelude: {
 		return true;
 	}
 
+	/*
 	function forIn(collection, func) {
 		var i, t = typeof(collection), resultArray = [];
 		switch (t) {
@@ -128,6 +134,7 @@ prelude: {
 				return collection.map(func);
 		}
 	}
+	*/
 
 	function _ofType(x, type) {
 		switch (typeof x) {
@@ -142,29 +149,11 @@ prelude: {
 			default:
 				if (x === null && type === null) return true;
 				if (typeof(type) === "function") {
-					return type.isPredicateType ?
-						type(x) :
-						x instanceof type;
+					return x instanceof type;
 				}
 				return false;
 		}
 	}
-
-	function predicateType(func) {
-		var predicate = function (value) {
-			return !!func(value);
-		}
-		predicate.isPredicateType = true;
-		return predicate;
-	}
-
-	var List = (function () {
-		var emptyList = list();
-		return predicateType(function (value) {
-			return typeof(value) === "function" && 
-				value.map === emptyList.map;
-		});
-	})();
 
 	var js = {
 		"typeof": function (value) {
@@ -199,7 +188,7 @@ restParam: {
 	for (_i = $fromIndex; _i < arguments.length; _i++) {
 		_restArray.push(arguments[_i]);
 	}
-	$paramName = list.fromArray(_restArray);
+	$paramName = Vector.from(_restArray);
 }
 
 defaultArgument: {

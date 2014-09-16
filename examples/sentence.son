@@ -10,7 +10,7 @@ verbs = ["playing", "eating", "watching", "making", null]
 targets = ["cake", "football", "video games", "guitar", "piano", "pizza"]
 
 fn main() {
-	shuffle(sentences()).map(fn (s) print(s))
+	shuffle(sentences()).forEach(fn (s) print(s))
 }
 
 fn sentences() with findAllWhere {
@@ -26,20 +26,20 @@ fn sentences() with findAllWhere {
 }
 
 fn shuffle(items) {
-	if items.count < 2 {
+	if items.length < 2 {
 		items
 	}
 	else {
 		halves = partition(items, fn () Math.random() > 0.5).map(shuffle)
-		halves(0) ++ halves(1)
+		halves.get(0) ++ halves.get(1)
 	}
 }
 
 fn partition(items, predicate) {
-	items.reduce([[], []], fn (prev, item) {
+	items.reduce(fn (prev, item) {
 		if predicate(item)
-			[prev(0) ++ [item], prev(1)]
+			[prev.get(0) ++ [item], prev.get(1)]
 		else
-			[prev(0), prev(1) ++ [item]]
-	})
+			[prev.get(0), prev.get(1) ++ [item]]
+	}, [[], []])
 }

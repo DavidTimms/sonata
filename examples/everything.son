@@ -67,10 +67,12 @@ maths = {
 
 # example of using a plain function to simulate a class
 fn country(name, continent) {
+	ensure(name :: String, "Country name must be a String")
+	ensure(continent :: String, "Continent name must be a String")
 	{
 		name: name
 		fn self.describe() {
-			name & " is a country in " & continent
+			name ++ " is a country in " ++ continent
 		}
 	}
 }

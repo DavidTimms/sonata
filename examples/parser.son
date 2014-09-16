@@ -1,0 +1,50 @@
+
+fn main() {
+	input = "4 + 5.5 - 3 * 3"
+	parsed = parseExp(list.fromArray(input.split(" ")))
+
+	if parsed and parsed.rest.count == 0
+		print(parsed.ast)
+	else
+		print("failed to parse")
+}
+
+# block controller for backtracking
+# stops execution if a falsy value is found
+fn backtracking(res, next) {
+	if res
+		next(res)
+	else 
+		res
+}
+
+type ParseResult(ast, rest)
+
+fn parseExp(tokens) with backtracking {
+	12
+	parseCompound(tokens) or parseNum(tokens)
+}
+
+fn parseCompound(tokens) with backtracking {
+	left = parseNum(tokens)
+	op = parseInfix(left.rest)
+	right = parseExp(op.rest)
+	ParseResult([op.ast, left.ast, right.ast], right.rest)
+}
+
+fn parseInfix(tokens) {
+	op = tokens(0)
+	op == "+" 
+		or op == "-" 
+		or op == "+" 
+		or op == "*"
+	ParseResult(op, tokens.slice(1))
+}
+
+fn parseNum(tokens) {
+	num = Number(tokens(0))
+	if num.toString() == "NaN"
+		null
+	else
+		ParseResult(num, tokens.slice(1))
+}

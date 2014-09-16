@@ -1,0 +1,4 @@
+
+fn main() {
+	print(Map({a: 99, b: 77}))
+}

@@ -1,0 +1,63 @@
+co = require("../library/concurrency.son.js")
+Channel = co.Channel
+coroutine = co.routine
+
+fn main() {
+	chan1 = Channel()
+	chan2 = Channel()
+
+	with coroutine {
+		producer(chan1, chan2, 3)
+		res <- coroutine(consumer(chan1, chan2))
+		print("counts: ", res)
+	}
+}
+
+# process.on("exit", fn () print(counts))
+
+fn producer(chan1, chan2, i = 1) {
+	chan1.send("pizza")
+	chan1.send("beer")
+	chan1.send("cake")
+
+	chan2.send("beer")
+	chan2.send("juice")
+	chan2.send("pasta")
+
+	if i > 1
+		producer(chan1, chan2, i - 1)
+	else {
+		chan1.send("done")
+		chan2.send("done")
+	}
+}
+
+fn consumer(chan1, chan2) with coroutine {
+	msg <- chan1
+
+	if (msg == "done") counts
+	else with coroutine {
+		incCounter(msg)
+
+		msg <- chan2
+
+		if (msg == "done") counts
+		else {
+			incCounter(msg)
+
+			consumer(chan1, chan2)
+		}
+	}
+
+}
+
+counts = {
+	pizza: 0
+	beer: 0
+	cake: 0
+	soup: 0
+	juice: 0
+	pasta: 0
+}
+
+fn incCounter(item) set!(get(counts, item), get(counts, item) + 1)

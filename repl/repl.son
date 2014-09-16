@@ -21,6 +21,7 @@ fn main() {
 					fn () {
 						validateAST(jsAST)
 						js = escodegen.generate(jsAST)
+						print(js)
 						callback(null, 
 						vm.runInContext(js, context, filename))
 					}

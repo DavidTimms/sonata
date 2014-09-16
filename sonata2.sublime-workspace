@@ -4,6 +4,54 @@
 		"selected_items":
 		[
 			[
+				"c",
+				"chan1"
+			],
+			[
+				"co",
+				"coroutine"
+			],
+			[
+				"ch",
+				"chan2"
+			],
+			[
+				"hand",
+				"handlers"
+			],
+			[
+				"cat",
+				"catchBody"
+			],
+			[
+				"try",
+				"tryBody"
+			],
+			[
+				"sn",
+				"snippetsFile"
+			],
+			[
+				"js",
+				"jsAST"
+			],
+			[
+				"son",
+				"sonataAST"
+			],
+			[
+				"rand",
+				"randInt"
+			],
+			[
+				"pri",
+				"predicate"
+			],
+			[
+				"pred",
+				"predicate"
+			],
+			[
 				"ident",
 				"Identifier"
 			],
@@ -116,10 +164,6 @@
 				"withPrecedence"
 			],
 			[
-				"co",
-				"constructor"
-			],
-			[
 				"param",
 				"parameters"
 			],
@@ -130,10 +174,6 @@
 			[
 				"con",
 				"converters"
-			],
-			[
-				"sn",
-				"snippetExp"
 			],
 			[
 				"che",
@@ -182,10 +222,6 @@
 			[
 				"node",
 				"nodeName"
-			],
-			[
-				"js",
-				"jsAst"
 			],
 			[
 				"par",
@@ -344,10 +380,6 @@
 				"assignmentOp"
 			],
 			[
-				"rand",
-				"randomMove"
-			],
-			[
 				"player",
 				"playerMove"
 			],
@@ -468,10 +500,6 @@
 				"tokenized"
 			],
 			[
-				"ch",
-				"charAt"
-			],
-			[
 				"token",
 				"tokenString"
 			],
@@ -486,34 +514,6 @@
 			[
 				"member",
 				"member-access"
-			],
-			[
-				"mem",
-				"memberAccess"
-			],
-			[
-				"print",
-				"printObj"
-			],
-			[
-				"wrap",
-				"wrapTokens"
-			],
-			[
-				"pri",
-				"printObj"
-			],
-			[
-				"S",
-				"sonata_Continuation"
-			],
-			[
-				"vow",
-				"vowels"
-			],
-			[
-				"eval",
-				"evaluate"
 			]
 		]
 	},
@@ -523,7 +523,7 @@
 			"file": "compile.js",
 			"settings":
 			{
-				"buffer_size": 990,
+				"buffer_size": 1005,
 				"line_ending": "Windows"
 			}
 		},
@@ -539,7 +539,7 @@
 			"file": "tdop-parser.js",
 			"settings":
 			{
-				"buffer_size": 14469,
+				"buffer_size": 14464,
 				"line_ending": "Windows"
 			}
 		},
@@ -555,7 +555,15 @@
 			"file": "ast-converter.js",
 			"settings":
 			{
-				"buffer_size": 16479,
+				"buffer_size": 17289,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "snippets/snippet-parser.js",
+			"settings":
+			{
+				"buffer_size": 3112,
 				"line_ending": "Windows"
 			}
 		},
@@ -563,15 +571,31 @@
 			"file": "snippets/snippets.js",
 			"settings":
 			{
-				"buffer_size": 5069,
+				"buffer_size": 5199,
 				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "examples/sentence.son",
+			"settings":
+			{
+				"buffer_size": 936,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "examples/sentence.son.js",
+			"settings":
+			{
+				"buffer_size": 6597,
+				"line_ending": "Unix"
 			}
 		},
 		{
 			"file": "examples/everything.son",
 			"settings":
 			{
-				"buffer_size": 1458,
+				"buffer_size": 1336,
 				"line_ending": "Windows"
 			}
 		},
@@ -579,7 +603,7 @@
 			"file": "examples/everything.son.js",
 			"settings":
 			{
-				"buffer_size": 7545,
+				"buffer_size": 7699,
 				"line_ending": "Unix"
 			}
 		},
@@ -587,24 +611,40 @@
 			"file": "todo.md",
 			"settings":
 			{
-				"buffer_size": 478,
+				"buffer_size": 1118,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "examples/type.son",
+			"file": "examples/channel.son",
 			"settings":
 			{
-				"buffer_size": 565,
+				"buffer_size": 937,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "examples/type.son.js",
+			"file": "repl/repl.son",
 			"settings":
 			{
-				"buffer_size": 6083,
+				"buffer_size": 934,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "examples/channel.son.js",
+			"settings":
+			{
+				"buffer_size": 6818,
 				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "library/concurrency.son",
+			"settings":
+			{
+				"buffer_size": 746,
+				"line_ending": "Windows"
 			}
 		}
 	],
@@ -668,21 +708,29 @@
 	},
 	"file_history":
 	[
+		"/C/Users/Dave/Web/ractive-bacon/index.html",
+		"/C/Users/Dave/Documents/Things to do in the summer.txt",
+		"/C/Users/Dave/Web/compile-to-js/sonata.cmd",
+		"/C/Users/Dave/Web/compile-to-js/repl.son",
+		"/C/Users/Dave/Web/compile-to-js/repl/repl.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/channel.son.js",
+		"/C/Users/Dave/Web/compile-to-js/snippets/snippet-parser.js",
+		"/C/Users/Dave/Web/compile-to-js/examples/type.son.js",
+		"/C/Users/Dave/Web/compile-to-js/examples/type.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/list.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/async.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/async.son.js",
+		"/C/Users/Dave/Web/compile-to-js/content.html",
 		"/C/Users/Dave/Web/compile-to-js/parse-engine.js",
 		"/C/Users/Dave/Web/compile-to-js/examples/list.son.js",
-		"/C/Users/Dave/Web/compile-to-js/examples/list.son",
 		"/C/Users/Dave/Web/compile-to-js/out",
-		"/C/Users/Dave/Web/compile-to-js/snippets/snippet-parser.js",
 		"/C/Users/Dave/Web/compile-to-js/snippets/test-snippets.js",
 		"/C/Users/Dave/Web/compile-to-js/yo",
-		"/C/Users/Dave/Web/compile-to-js/examples/type.son",
 		"/C/Users/Dave/Web/compile-to-js/examples/trig.son",
 		"/C/Users/Dave/Web/compile-to-js/examples/torn.son",
 		"/C/Users/Dave/Web/compile-to-js/examples/templating.son",
 		"/C/Users/Dave/Web/compile-to-js/examples/simple.son",
 		"/C/Users/Dave/Web/compile-to-js/examples/sentence.son",
-		"/C/Users/Dave/Web/compile-to-js/examples/async.son.js",
-		"/C/Users/Dave/Web/compile-to-js/examples/async.son",
 		"/C/Users/Dave/Web/compile-to-js/examples/cmd-line-input.son",
 		"/C/Users/Dave/Web/compile-to-js/examples/quine.son",
 		"/C/Users/Dave/Web/compile-to-js/examples/pascal-output.txt",
@@ -691,7 +739,6 @@
 		"/C/Users/Dave/Web/compile-to-js/examples/async.potential.son",
 		"/C/Users/Dave/Web/compile-to-js/examples/rpsls.son.js",
 		"/C/Users/Dave/Web/compile-to-js/examples/rpsls.son",
-		"/C/Users/Dave/Web/compile-to-js/content.html",
 		"/C/Users/Dave/Web/compile-to-js/examples/sentence.son.js",
 		"/C/Users/Dave/Web/compile-to-js/examples/torn.son.js",
 		"/C/Users/Dave/Web/compile-to-js/comp-run.cmd",
@@ -703,7 +750,6 @@
 		"/C/Users/Dave/Web/tco/tail-call-op.js",
 		"/C/Users/Dave/Web/tco/package.json",
 		"/C/Users/Dave/Web/ast-checker/package.json",
-		"/C/Users/Dave/Web/compile-to-js/examples/type.son.js",
 		"/C/Users/Dave/Web/compile-to-js/examples/full-type-declaration.potential.son",
 		"/C/Users/Dave/Web/compile-to-js/readme.md",
 		"/C/Users/Dave/Web/compile-to-js/.gitignore",
@@ -789,13 +835,7 @@
 		"/C/Users/Dave/Uni/improv-project/improvise/src/rhythm-composer/rhythm.coffee",
 		"/C/Users/Dave/Uni/improv-project/improvise/src/test-beat.txt",
 		"/C/Users/Dave/Uni/improv-project/improvise/src/half-time-beat.txt",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/house-beat",
-		"/C/Users/Dave/Uni/improv-project/improvise/test-beat.txt",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/analysis.pl",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/pitch_analysis.pl",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/prediction.pl",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/grammar.pl",
-		"/C/Users/Dave/Uni/improv-project/improvise/src/logic/converters.pl"
+		"/C/Users/Dave/Uni/improv-project/improvise/src/house-beat"
 	],
 	"find":
 	{
@@ -813,6 +853,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"convertWithBlock",
 			"isCa",
 			"isStaticMethod",
 			"makeTypePropAssignments",
@@ -939,8 +980,7 @@
 			"result",
 			".result",
 			"prefixParseFuncs",
-			"parseExpression",
-			"unaryOperators"
+			"parseExpression"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1032,7 +1072,7 @@
 	"groups":
 	[
 		{
-			"selected": 9,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -1040,15 +1080,15 @@
 					"file": "compile.js",
 					"settings":
 					{
-						"buffer_size": 990,
+						"buffer_size": 1005,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								720,
-								720
+								633,
+								633
 							]
 						],
 						"settings":
@@ -1094,15 +1134,15 @@
 					"file": "tdop-parser.js",
 					"settings":
 					{
-						"buffer_size": 14469,
+						"buffer_size": 14464,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								8538,
-								8538
+								13815,
+								13815
 							]
 						],
 						"settings":
@@ -1111,7 +1151,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 5924.0,
+						"translation.y": 10544.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1148,15 +1188,15 @@
 					"file": "ast-converter.js",
 					"settings":
 					{
-						"buffer_size": 16479,
+						"buffer_size": 17289,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4622,
-								4622
+								16824,
+								16824
 							]
 						],
 						"settings":
@@ -1165,25 +1205,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3135.0,
+						"translation.y": 13876.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 5,
-					"file": "snippets/snippets.js",
+					"file": "snippets/snippet-parser.js",
 					"settings":
 					{
-						"buffer_size": 5069,
+						"buffer_size": 3112,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4504,
-								4504
+								334,
+								334
 							]
 						],
 						"settings":
@@ -1192,25 +1232,107 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 4448.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 6,
-					"file": "examples/everything.son",
+					"file": "snippets/snippets.js",
 					"settings":
 					{
-						"buffer_size": 1458,
+						"buffer_size": 5199,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1458,
-								1458
+								215,
+								215
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "examples/sentence.son",
+					"settings":
+					{
+						"buffer_size": 936,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								936,
+								936
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 420.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "examples/sentence.son.js",
+					"settings":
+					{
+						"buffer_size": 6597,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3460.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "examples/everything.son",
+					"settings":
+					{
+						"buffer_size": 1336,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								579,
+								579
 							]
 						],
 						"settings":
@@ -1219,105 +1341,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1320.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "examples/everything.son.js",
-					"settings":
-					{
-						"buffer_size": 7545,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								7545,
-								7545
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 4720.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "todo.md",
-					"settings":
-					{
-						"buffer_size": 478,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								10,
-								10
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Markdown/Markdown.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "examples/type.son",
-					"settings":
-					{
-						"buffer_size": 565,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								565,
-								565
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 180.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 10,
-					"file": "examples/type.son.js",
+					"file": "examples/everything.son.js",
 					"settings":
 					{
-						"buffer_size": 6083,
+						"buffer_size": 7699,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4331,
-								4331
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1327,7 +1369,143 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2588.0,
+						"translation.y": 4180.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "todo.md",
+					"settings":
+					{
+						"buffer_size": 1118,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4,
+								4
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Markdown/Markdown.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "examples/channel.son",
+					"settings":
+					{
+						"buffer_size": 937,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								360,
+								360
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "repl/repl.son",
+					"settings":
+					{
+						"buffer_size": 934,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								360,
+								360
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 60.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "examples/channel.son.js",
+					"settings":
+					{
+						"buffer_size": 6818,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3120.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "library/concurrency.son",
+					"settings":
+					{
+						"buffer_size": 746,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								374,
+								374
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

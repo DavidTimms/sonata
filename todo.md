@@ -13,12 +13,6 @@ TODO
  	- Check for variables used before they are initialised.
  	- Run macros.
 
- - Texo (vector library) modifications:
-	- instances as objects rather than functions.
-	- More methods, see [lodash](http://lodash.com/docs).
-	- Flatten tree when depth exceeds O(log(n)) rather than a constant.
-	- lazy filtering.
-
  - Pattern matching, see:
 	- Clojure core.match: https://github.com/clojure/core.match/wiki/Understanding-the-algorithm
 	- Maranget's algorithm: http://www.cs.tufts.edu/~nr/cs257/archive/luc-maranget/jun08.pdf
