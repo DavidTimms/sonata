@@ -8,41 +8,58 @@ module.exports = function (tokens) {
 
 var assignmentOp = "=";
 
-/*
-function parseBraceBlock(tokens, pointer) {
-	var parseExpResult, expressions = [];
-	pointer = advancePointer(tokens, pointer || 0);
-
-	while (tokens[pointer].type !== "End of File" && 
-		tokens[pointer].string !== "}") {
-
-		parseExpResult = parseExpression(tokens, pointer);
-		expressions.push(parseExpResult.exp);
-		pointer = advanceToNextExpression(tokens, parseExpResult.pointer);
-	}
-
-	return {exp: expressions, pointer: pointer};
-}
-*/
-
 var parseBraceBlock = parseSequence({
 	of: parseExpression, 
 	stopWhen: onToken("}")
 });
 
+function parseWSBlock(tokens, pointer) {
+	if (tokens[pointer].type === "Indent") {
+		var parseResult = parseSequence({
+			of: parseExpression, 
+			stopWhen: indentLessThan(tokens[pointer].width)
+		})(tokens, pointer);
+
+		return {exp: parseResult.exp, pointer: parseResult.pointer - 1};
+	}
+	else errorAt(tokens[pointer],
+		"Block must start on a new line");
+}
+
+function indentLessThan(blockIndent) {
+	return function (tokens, pointer) {
+		var token =  tokens[pointer];
+		var nextToken = tokens[pointer + 1];
+
+		if (token.type === "End of File") return true;
+
+		return token.type === "Indent" && 
+			token.width < blockIndent && 
+			nextToken.type !== "Indent";
+	}
+}
+
+var scopeCount = 0;
+
+// Parse repeatedly using some parse function
+// until the isEnd predicate returns true
 function parseSequence(options) {
-	var parseFunction = options.of;
+	var parseNext = options.of;
 	return function (tokens, pointer, altIsEnd) {
+		var sc = scopeCount++;
 		var isEnd = altIsEnd || options.stopWhen;
 		var parseResult;
 		var expressions = [];
 		pointer = advancePointer(tokens, pointer || 0);
 
-		while (!isEnd(tokens[pointer])) {
-			parseResult = parseFunction(tokens, pointer);
+		//console.log(sc, "checking:", tokens[pointer]);
+		while (!isEnd(tokens, pointer)) {
+			parseResult = parseNext(tokens, pointer);
 			expressions.push(parseResult.exp);
+			//console.log(sc, "now looking at:", tokens[parseResult.pointer]);
 			pointer = advanceToNextExpression(
 				tokens, parseResult.pointer, isEnd);
+			//console.log(sc, "advanced to:", tokens[pointer]);
 		}
 
 		return {exp: expressions, pointer: pointer + 1};
@@ -269,7 +286,7 @@ function parseIf(tokens, pointer) {
 	var elseBody = parseElse(tokens, ifBody.pointer);
 	//elseBody.exp will be an empty array if there is no else part
 	return {
-		exp: [makeIdentifier("if"), test.exp, ifBody.exp].concat(elseBody.exp), 
+		exp: [makeIdentifier("if"), test.exp, ifBody.exp].concat(elseBody.exp),
 		pointer: elseBody.pointer
 	};
 }
@@ -286,13 +303,28 @@ function parseElse(tokens, pointer) {
 	else return {exp: [], pointer: pointer};
 }
 
-function parseBody(tokens, pointer) {
+function parseBraceBody(tokens, pointer) {
 	pointer = advancePointer(tokens, pointer);
+
 	if (tokens[pointer].string === "{") {
 		return parseBraceBlock(tokens, pointer + 1);
 	}
 	else {
 		var expResult = parseExpression(tokens, pointer);
+		return {exp: [expResult.exp], pointer: expResult.pointer};
+	}
+}
+
+function parseBody(tokens, pointer) {
+	pointer = advancePointer(tokens, pointer);
+
+	checkToken(tokens, pointer, ":");
+
+	if (tokens[pointer + 1].type === "Indent") {
+		return parseWSBlock(tokens, pointer + 1);
+	}
+	else {
+		var expResult = parseExpression(tokens, pointer + 1);
 		return {exp: [expResult.exp], pointer: expResult.pointer};
 	}
 }
@@ -492,7 +524,8 @@ function isCallTo(identifier, node) {
 }
 
 function onToken(tokenString) {
-	var f = function (token) {
+	var f = function (tokens, pointer) {
+		var token = tokens[pointer];
 		return token.type === "End of File" || token.string === tokenString;
 	}
 	f.toString = function () {
@@ -510,14 +543,14 @@ function advancePointer(tokens, pointer) {
 
 function advanceToNextExpression(tokens, pointer, isEnd) {
 	var foundDivider = false;
-	while (isSkippable(tokens[pointer])) {
+	while (isSkippable(tokens[pointer]) && !isEnd(tokens, pointer)) {
 		pointer += 1;
 		foundDivider = true;
 	}
 
 	// throw an error if two expressions are 
-	// on the same line without a semicolon
-	if (!(foundDivider || isEnd(tokens[pointer]))) {
+	// on the same line without a comma
+	if (!(foundDivider || isEnd(tokens, pointer))) {
 		errorAt(tokens[pointer], "Unexpected start of expression");
 	}
 	return pointer;

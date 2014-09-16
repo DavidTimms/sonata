@@ -1,14 +1,7 @@
 (function () {
     'use strict';
-    var $sonata_Immutable = require('immutable');
-    var Sequence = $sonata_Immutable.Sequence;
-    var Vector = $sonata_Immutable.Vector;
-    var Map = $sonata_Immutable.Map;
-    var OrderedMap = $sonata_Immutable.OrderedMap;
-    var Range = $sonata_Immutable.Range;
-    var Repeat = $sonata_Immutable.Repeat;
-    var Record = $sonata_Immutable.Record;
-    var eq = $sonata_Immutable.is;
+    var $sonata_Immutable = require('immutable'), Sequence = $sonata_Immutable.Sequence, Vector = $sonata_Immutable.Vector, Map = $sonata_Immutable.Map, OrderedMap = $sonata_Immutable.OrderedMap, Range = $sonata_Immutable.Range, Repeat = $sonata_Immutable.Repeat, Record = $sonata_Immutable.Record, eq = $sonata_Immutable.is;
+    var sqrt = Math.sqrt, floor = Math.floor, ceil = Math.ceil, round = Math.round, max = Math.max, min = Math.min, random = Math.random;
     function tryCatch(tryBody, catchBody) {
         try {
             return tryBody();

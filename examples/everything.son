@@ -1,7 +1,7 @@
 
 type Person(name, age, gender)
 
-fn main() {
+fn main():
 	ensure(doScoping(2) == doScoping(18))
 
 	dave = Person("Dave", 21, "male")
@@ -25,54 +25,44 @@ fn main() {
 	ensure(country("China", "Asia").describe() == "China is a country in Asia")
 
 	print("All tests passed")
-}
 
-fn doScoping(x) {
+fn doScoping(x):
 	y = true
-	if x > 10 do {
+	if x > 10: do:
 		y = false
-	}
 	y
-}
 
-fn isDave(person) {
-	with predicate {
+fn isDave(person):
+	with predicate:
 		person.age > 18
 		person.gender == "male"
 		person.name == "Dave"
-	}
-}
 
-fn findName(items) with findWhere {
+fn findName(items): with findWhere:
     item <- items
     item.length > 4
     item.charAt(0) == "D"
     item
-}
 
 
-fn findParents(names, parents) with findAllWhere {
+fn findParents(names, parents): with findAllWhere:
 	name <- names
 	name.length > 4
 	name.charAt(0) == "D"
 	get(parents, name)
-}
 
 maths = {
-	fn self.add(a, b) {
+	fn self.add(a, b):
 		a + b
-	}
 	45: 32
 }
 
 # example of using a plain function to simulate a class
-fn country(name, continent) {
+fn country(name, continent):
 	ensure(name :: String, "Country name must be a String")
 	ensure(continent :: String, "Continent name must be a String")
 	{
 		name: name
-		fn self.describe() {
+		fn self.describe():
 			name ++ " is a country in " ++ continent
-		}
 	}
-}

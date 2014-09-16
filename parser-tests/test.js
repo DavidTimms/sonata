@@ -22,7 +22,7 @@ var tests = {
 
 	"x + y # add x to y": "((+ x y))",
 
-	"if true # always # { print('hi') }": "((if true ((print 'hi'))))",
+	"if true # always #: print('hi')": "((if true ((print 'hi'))))",
 
 	"func()":  "((func))",
 
@@ -50,23 +50,23 @@ var tests = {
 
 	"[1, 2] ++ [3, 4, 5]":  "((++ (Vector 1 2) (Vector 3 4 5)))",
 
-	"fn () 45 - 2": "((fn () ((- 45 2))))",
+	"fn (): 45 - 2": "((fn () ((- 45 2))))",
 
-	"fn sum(h | t) t.append(h)": "((= sum (fn (h (| t)) (((. t append) h)))))",
+	"fn sum(h | t): t.append(h)": "((= sum (fn (h (| t)) (((. t append) h)))))",
 
-	"fn add(a b) {a + b}": "((= add (fn (a b) ((+ a b)))))",
+	"fn add(a b): a + b": "((= add (fn (a b) ((+ a b)))))",
 
-	"xs.reduce(fn (x, y) x ++ y, '')": "(((. xs reduce) (fn (x y) ((++ x y))) ''))",
+	"xs.reduce(fn (x, y): x ++ y, '')": "(((. xs reduce) (fn (x y) ((++ x y))) ''))",
 
-	"fn (name = 'Dave') name ++ '!'": "((fn ((= name 'Dave')) ((++ name '!'))))",
+	"fn (name = 'Dave'): name ++ '!'": "((fn ((= name 'Dave')) ((++ name '!'))))",
 
-	"if (x < 2) print(x)": "((if (< x 2) ((print x))))",
+	"if x < 2: print(x)": "((if (< x 2) ((print x))))",
 
-	"if true 34 * 23 else 93 - 2": "((if true ((* 34 23)) ((- 93 2))))",
+	"if true: 34 * 23 else: 93 - 2": "((if true ((* 34 23)) ((- 93 2))))",
 
-	"if isTrue() \n10 \nelse\n 5": "((if (isTrue) (10) (5)))",
+	"if isTrue():\n 10 \nelse:\n 5": "((if (isTrue) (10) (5)))",
 
-	"if y > z {y + 2}": "((if (> y z) ((+ y 2))))",
+	"if y > z: y + 2": "((if (> y z) ((+ y 2))))",
 
 	"exp1, exp2":  "(exp1 exp2)",
 
@@ -84,31 +84,28 @@ var tests = {
 
 	"type Maybe(value).call(34)": "(((. (type Maybe (value)) call) 34))",
 
-	"do print(x)": "((do ((print x))))",
+	"do: print(x)": "((do ((print x))))",
 
-	"run(do {})": "((run (do ())))",
-
-	"with applied 45": "((with applied (45)))",
+	"with applied: 45": "((with applied (45)))",
 
 	"x::Object": "((:: x Object))",
 
-	"if (x::y.type) x": "((if (:: x (. y type)) (x)))",
+	"if x :: y.type: x": "((if (:: x (. y type)) (x)))",
 };
 
 multilineTest([
-	"if s.match(/\s/) {",
+	"if s.match(/\s/):",
 	"	s2 = s ++ '?'",
 	"	print(s)",
-	"} else {",
-	"	print('no')",
-	"}"
+	"else:",
+	"	print('no')"
 ], "((if ((. s match) /\s/) ((= s2 (++ s '?')) (print s)) ((print 'no'))))");
 
 multilineTest([
-	"xs.map(fn (x) {",
+	"xs.map(fn (x):",
 	"	print(x)",
 	"	x * x",
-	"}).join(' ')"
+	").join(' ')"
 ], "(((. ((. xs map) (fn (x) ((print x) (* x x)))) join) ' '))");
 
 multilineTest([
@@ -121,17 +118,15 @@ multilineTest([
 
 multilineTest([
 	"{",
-	"	fn self.greet(name) {",
+	"	fn self.greet(name):",
 	"		print('Hi' ++ name)",
-	"	}",
 	"}"
 ], "((:object (:fn self greet (name) ((print (++ 'Hi' name))))))");
 
 multilineTest([
 	"type Door(colour) {",
-	"	fn self.paint(newColour) {",
+	"	fn self.paint(newColour):",
 	"		mix(self, {colour: newColour})",
-	"	}",
 	"}"
 ], 	"((type Door (colour) ((:fn self paint (newColour) " + 
 		"((mix self (:object (: colour newColour))))))))");
@@ -139,25 +134,22 @@ multilineTest([
 multilineTest([
 	"type Man(name) {",
 	"	gender: 'male'",
-	"	fn self.sayHi() {",
+	"	fn self.sayHi():",
 	"		print('Hi, I am', self.name)",
-	"	}",
 	"}"
 ], 	"((type Man (name) ((: gender 'male') " + 
 		"(:fn self sayHi () ((print 'Hi, I am' (. self name)))))))");
 
 multilineTest([
-	"do {",
+	"do:",
 	"	x = 2",
 	"	y = x + 3",
-	"}"
 ], "((do ((= x 2) (= y (+ x 3)))))");
 
 multilineTest([
-	"with async {",
+	"with async:",
 	"	x = read('file.txt')",
 	"	print(x)",
-	"}"
 ], "((with async ((= x (read 'file.txt')) (print x))))");
 
 
