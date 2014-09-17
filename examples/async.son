@@ -5,17 +5,15 @@ fs = Promise.promisifyAll(require("fs"))
 
 # define the async controller function.
 # This is a simplified version without error handling
-fn async(value, rest) {
-	if value and (value.then :: Function)
+fn async(value, rest):
+	if value and (value.then :: Function):
 		value.then(rest)
-	else
+	else:
 		rest(value)
-}
 
 # fetch the URL passed as an argument (default is google)
 # then write the result to content.html
-fn main(url = "http://google.com") with async {
+fn main(url = "http://google.com"): with async:
 	html <- request.getAsync(url)
 	fs.writeFileAsync("content.html", get(html, 1))
 	print("written to content.html")
-}

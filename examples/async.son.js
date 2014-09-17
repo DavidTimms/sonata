@@ -112,7 +112,7 @@
             url = 'http://google.com';
         return async(request.getAsync(url), function (html) {
             return async(fs.writeFileAsync('content.html', html[1]), function () {
-                return print('written to contents.html');
+                return print('written to content.html');
             });
         });
     };

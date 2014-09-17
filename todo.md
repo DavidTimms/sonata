@@ -3,6 +3,8 @@ TODO
 
  - Syntax:
 	X replace braces with significant whitespace.
+	- combine parse operations for functions and methods so they can both be used 
+	  in object and expression contexts.
 	- ES6 style lambdas.
 	- List and object property access syntax, eg. `items[2] and user["name"]`.
 	- For-in loops.
@@ -25,6 +27,6 @@ TODO
  	- traits.
 
  - Extras:
-	- Wrap calls to built-in functions which return arrays to return texo vectors.
+	- Wrap calls to built-in functions which return arrays to return immutable vectors.
 	- Curried operator lambdas eg. `(+ 4)` as a shorthand for `fn (a) a + 4`.
 	- Lexically scoped methods.

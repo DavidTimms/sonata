@@ -8,6 +8,7 @@ prelude: {
 		Range = _Immutable.Range,
 		Repeat = _Immutable.Repeat,
 		Record = _Immutable.Record,
+		Set = _Immutable.Set,
 		eq = _Immutable.is;
 
 	var sqrt = Math.sqrt,

@@ -2,7 +2,7 @@ var type = require("./utils/type.js");
 var printObj = require('./utils/print-object.js');
 
 module.exports = function (tokens) {
-	var parsed = parseBraceBlock(tokens);
+	var parsed = parseWSBlock(tokens, 0);
 	return parsed.exp;
 };
 
@@ -33,6 +33,8 @@ function indentLessThan(blockIndent) {
 
 		if (token.type === "End of File") return true;
 
+		// check if next token is also an indent,
+		// so empty lines can be skipped
 		return token.type === "Indent" && 
 			token.width < blockIndent && 
 			nextToken.type !== "Indent";
