@@ -6,6 +6,7 @@ TODO
 	- combine parse operations for functions and methods so they can both be used 
 	  in object and expression contexts.
 	- ES6 style lambdas.
+	- 'type Point(x, y)' -> 'record Point {x, y}' 
 	- List and object property access syntax, eg. `items[2] and user["name"]`.
 	- For-in loops.
 	- import and export.

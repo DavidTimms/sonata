@@ -26,6 +26,8 @@ fn main():
 
 	ensure(Map {a: 11, b: 44}.get("a") == 11)
 
+	ensure((20 => sqrt => Math.pow(2) => Math.floor) == 20)
+
 	print("All tests passed")
 
 fn doScoping(x):

@@ -9,6 +9,9 @@
             return catchBody(e);
         }
     }
+    function obj() {
+        return Object;
+    }
     function mix(parent, child) {
         var key;
         var obj = {};
@@ -140,6 +143,7 @@
             'a': 11,
             'b': 44
         }).get('a'), 11));
+        ensure(eq(Math.floor(Math.pow(sqrt(20), 2)), 20));
         return print('All tests passed');
     };
     doScoping = function doScoping(x) {
@@ -192,7 +196,7 @@
             'describe': function () {
                 var self;
                 self = this;
-                return name.concat(' is a country in ' + continent);
+                return name.concat(' is a country in ').concat(continent);
             }
         };
     };

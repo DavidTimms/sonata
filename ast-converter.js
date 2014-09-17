@@ -431,9 +431,13 @@ var converters = {
 	"==": macro(function (left, right) {
 		return ["eq", left, right];
 	}),
-	// This is inefficient and should be replaced:
 	"!=": macro(function (left, right) {
 		return ["not", ["eq", left, right]];
+	}),
+	"=>": macro(function (left, right) {
+		return isNormalFunctionCall(right) ?
+			[right[0], left].concat(right.slice(1)) :
+			[right, left];
 	}),
 	":object": function (parts) {
 		return {
@@ -469,7 +473,6 @@ var converters = {
 		context = context || {};
 		context.isFuncBody = true;
 		var funcBody = convertBody(parts[0], context);
-
 
 		return snippetExp("functionWrapper", {
 			statements: funcBody,
@@ -525,6 +528,10 @@ function wrapToken(token) {
 				return token;
 		}
 	}
+}
+
+function isNormalFunctionCall(node) {
+	return node instanceof Array && !converters.hasOwnProperty(node[0].name);
 }
 
 function isStringNode(node) {

@@ -80,7 +80,6 @@ function parseExpression(tokens, pointer, precedence) {
 	}
 
 	// Parse expression fragments:
-
 	do {
 		parseResult = parseFunction(tokens, pointer, precedence, exp);
 		pointer = parseResult.pointer;
@@ -101,7 +100,7 @@ function parseExpression(tokens, pointer, precedence) {
 
 		// if the token is an operator with higher precedence than 
 		// the current master operator, loop to add the partial expression
-	} while (parseFunction && parseFunction.precedence >= precedence);
+	} while (parseFunction && parseFunction.precedence > precedence);
 
 	return parseResult;
 }
@@ -168,12 +167,12 @@ function unaryOp(unaryOpPrecedence) {
 	return parseUnary;
 }
 
-function binaryOp(binaryOpPrecedence) {
-	function parseBinary (tokens, pointer, precedence, left) {
+function binaryOp(binaryOpPrecedence, rightAssociative) {
+	function parseBinary(tokens, pointer, precedence, left) {
 		var rightResult = parseExpression(
 			tokens, 
 			pointer + 1, 
-			binaryOpPrecedence);
+			binaryOpPrecedence - (rightAssociative ? 0.01 : 0));
 		return {
 			exp: [makeIdentifier(tokens[pointer].string), left, rightResult.exp], 
 			pointer: rightResult.pointer
@@ -432,7 +431,7 @@ function parseMethod(tokens, pointer) {
 
 var prefixOperators = {
 	"-": unaryOp(60),
-	"not": unaryOp(30),
+	"not": unaryOp(23),
 	"(": function (tokens, pointer, precedence) {
 		var inner = parseExpression(tokens, pointer + 1, 0);
 		pointer = advancePointer(tokens, inner.pointer);
@@ -453,6 +452,9 @@ var prefixOperators = {
 };
 
 var infixOperators = {
+	".": withPrecedence(80, parseMemberAccess),
+	"(": withPrecedence(70, parseCall),
+	"{": withPrecedence(70, parseCallWithObject),
 	"^": binaryOp(52),
 	"*": binaryOp(50),
 	"/": binaryOp(50),
@@ -472,11 +474,9 @@ var infixOperators = {
 	"!=": binaryOp(25),
 	"and": binaryOp(20),
 	"or": binaryOp(15),
-	"=": binaryOp(10),
-	"<-": binaryOp(10),
-	"(": withPrecedence(70, parseCall),
-	"{": withPrecedence(70, parseCallWithObject),
-	".": withPrecedence(80, parseMemberAccess)
+	"=>": binaryOp(12),
+	"=": binaryOp(10, "right associative"),
+	"<-": binaryOp(10, "right associative"),
 };
 
 var tokenTypeParsers = {

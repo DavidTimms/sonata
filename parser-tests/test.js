@@ -8,7 +8,13 @@ var tests = {
 
 	"a + b":  "((+ a b))",
 
+	"a + b * c": "((+ a (* b c)))",
+
+	"a - b - c": "((- (- a b) c))",
+
 	"name = 'Maria'":  "((= name 'Maria'))",
+
+	"x = y = 2": "((= x (= y 2)))",
 
 	"a * b - 2":  "((- (* a b) 2))",
 
@@ -40,7 +46,7 @@ var tests = {
 
 	"func()(10)":  "(((func) 10))",
 
-	"x == 2.7 / 3.3 / 2":  "((== x (/ 2.7 (/ 3.3 2))))",
+	"x == 2.7 / 3.3 / 2":  "((== x (/ (/ 2.7 3.3) 2)))",
 
 	"person.name == 'Dave'":  "((== (. person name) 'Dave'))",
 
@@ -93,6 +99,10 @@ var tests = {
 	"x::Object": "((:: x Object))",
 
 	"if x :: y.type: x": "((if (:: x (. y type)) (x)))",
+
+	"x + 2 => square()": "((=> (+ x 2) (square)))",
+
+	"a => b() => c()": "((=> (=> a (b)) (c)))",
 };
 
 multilineTest([
@@ -165,6 +175,7 @@ function test(input, output) {
 		var parsed = "Error: " + e.message;
 	}
 	if (parsed !== output) {
+		console.log(tokenize(input));
 		console.log("Test failed: ");
 		console.log("	Expected " + output + ", but received " + parsed);
 		//console.log(tokenize(input));
