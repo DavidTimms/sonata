@@ -365,6 +365,21 @@ var converters = {
 			property: member
 		});
 	},
+	"set!": function (parts) {
+		var left, right;
+		if (parts.length === 2) {
+			left = convertExp(parts[0]);
+			right = convertExp(parts[1]);
+		}
+		else { // 3 parts for setting property
+			left = snippetExp("dynamicProperty", {
+				object: convertExp(parts[0]),
+				property: convertExp(parts[1])
+			});
+			right = convertExp(parts[2]);
+		}
+		return snippetExp("assign", {left: left, right: right});
+	},
 	"+": function (parts) {
 		return snippetExp("add", {
 			left: convertExp(parts[0]),
@@ -384,7 +399,7 @@ var converters = {
 		var snippetName = isStringNode(parts[0]) ?
 			"concatString" :
 			"concat";
-			
+
 		return snippetExp(snippetName, {
 			left: convertExp(parts[0]),
 			right: convertExp(parts[1])
@@ -447,12 +462,6 @@ var converters = {
 	"::": function (parts) {
 		return snippetExp("ofType", {
 			left: convertExp(parts[0]),
-			right: convertExp(parts[1])
-		});
-	},
-	"set!": function (parts) {
-		return snippetExp("assign", {
-			left: convertExp(parts[0]), 
 			right: convertExp(parts[1])
 		});
 	},

@@ -3,18 +3,15 @@ dave = type Person(name, age, gender = "male")("Dave", 21)
 
 print(dave.name, "is a", dave.age, "year old", dave.gender)
 
-type Point(x, y) {
+type Point(x, y):
 
 	# define a method on Point instances
-	fn self.distanceTo(other) {
-		Math.sqrt((self.x - other.x) ^ 2 + (self.y - other.y) ^ 2)
-	}
+	fn self.distanceTo(other):
+		sqrt((self.x - other.x) ^ 2 + (self.y - other.y) ^ 2)
 
 	# define a static method on the Point type
-	fn Point.random() {
-		Point(Math.round(Math.random() * 10), Math.round(Math.random() * 10))
-	}
-}
+	fn Point.random():
+		Point(round(random() * 10), round(random() * 10))
 
 origin = Point(0, 0)
 

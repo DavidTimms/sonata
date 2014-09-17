@@ -1,6 +1,6 @@
 (function () {
     'use strict';
-    var $sonata_Immutable = require('immutable'), Sequence = $sonata_Immutable.Sequence, Vector = $sonata_Immutable.Vector, Map = $sonata_Immutable.Map, OrderedMap = $sonata_Immutable.OrderedMap, Range = $sonata_Immutable.Range, Repeat = $sonata_Immutable.Repeat, Record = $sonata_Immutable.Record, eq = $sonata_Immutable.is;
+    var $sonata_Immutable = require('immutable'), Sequence = $sonata_Immutable.Sequence, Vector = $sonata_Immutable.Vector, Map = $sonata_Immutable.Map, OrderedMap = $sonata_Immutable.OrderedMap, Range = $sonata_Immutable.Range, Repeat = $sonata_Immutable.Repeat, Record = $sonata_Immutable.Record, Set = $sonata_Immutable.Set, eq = $sonata_Immutable.is;
     var sqrt = Math.sqrt, floor = Math.floor, ceil = Math.ceil, round = Math.round, max = Math.max, min = Math.min, random = Math.random;
     function tryCatch(tryBody, catchBody) {
         try {
@@ -136,6 +136,10 @@
         ensure(eq(findParents(names, parentDict), validParents));
         ensure(eq(maths.add(maths[45], 2), 34));
         ensure(eq(country('China', 'Asia').describe(), 'China is a country in Asia'));
+        ensure(eq(Map({
+            'a': 11,
+            'b': 44
+        }).get('a'), 11));
         return print('All tests passed');
     };
     doScoping = function doScoping(x) {

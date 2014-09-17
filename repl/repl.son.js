@@ -1,6 +1,6 @@
 (function () {
     'use strict';
-    var $sonata_Immutable = require('immutable'), Sequence = $sonata_Immutable.Sequence, Vector = $sonata_Immutable.Vector, Map = $sonata_Immutable.Map, OrderedMap = $sonata_Immutable.OrderedMap, Range = $sonata_Immutable.Range, Repeat = $sonata_Immutable.Repeat, Record = $sonata_Immutable.Record, eq = $sonata_Immutable.is;
+    var $sonata_Immutable = require('immutable'), Sequence = $sonata_Immutable.Sequence, Vector = $sonata_Immutable.Vector, Map = $sonata_Immutable.Map, OrderedMap = $sonata_Immutable.OrderedMap, Range = $sonata_Immutable.Range, Repeat = $sonata_Immutable.Repeat, Record = $sonata_Immutable.Record, Set = $sonata_Immutable.Set, eq = $sonata_Immutable.is;
     var sqrt = Math.sqrt, floor = Math.floor, ceil = Math.ceil, round = Math.round, max = Math.max, min = Math.min, random = Math.random;
     function tryCatch(tryBody, catchBody) {
         try {
@@ -8,6 +8,9 @@
         } catch (e) {
             return catchBody(e);
         }
+    }
+    function obj() {
+        return Object;
     }
     function mix(parent, child) {
         var key;
@@ -113,6 +116,7 @@
         var repl;
         options = {
             'prompt': 'sonata> ',
+            'useGlobal': true,
             'eval': function (wrappedInput, context, filename, callback) {
                 var self;
                 self = this;
@@ -128,8 +132,7 @@
                             var js;
                             validateAST(jsAST);
                             js = escodegen.generate(jsAST);
-                            print(js);
-                            return callback(null, vm.runInContext(js, context, filename));
+                            return callback(null, vm.runInThisContext(js, filename));
                         }, function (e) {
                             return callback(e);
                         });
@@ -143,7 +146,7 @@
         return convertAST.prelude(function (preludeAST) {
             var js;
             js = escodegen.generate(preludeAST);
-            return vm.runInContext(js, repl.context);
+            return vm.runInThisContext(js, 'prelude');
         });
     };
     $sonata_startMain();

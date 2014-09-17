@@ -2,7 +2,7 @@ var type = require("./utils/type.js");
 var printObj = require('./utils/print-object.js');
 
 module.exports = function (tokens) {
-	var parsed = parseWSBlock(tokens, 0);
+	var parsed = parseWSBlock(tokens, 0, parseExpression);
 	return parsed.exp;
 };
 
@@ -13,10 +13,10 @@ var parseBraceBlock = parseSequence({
 	stopWhen: onToken("}")
 });
 
-function parseWSBlock(tokens, pointer) {
+function parseWSBlock(tokens, pointer, elementParser) {
 	if (tokens[pointer].type === "Indent") {
 		var parseResult = parseSequence({
-			of: parseExpression, 
+			of: elementParser, 
 			stopWhen: indentLessThan(tokens[pointer].width)
 		})(tokens, pointer);
 
@@ -41,27 +41,22 @@ function indentLessThan(blockIndent) {
 	}
 }
 
-var scopeCount = 0;
 
 // Parse repeatedly using some parse function
 // until the isEnd predicate returns true
 function parseSequence(options) {
 	var parseNext = options.of;
 	return function (tokens, pointer, altIsEnd) {
-		var sc = scopeCount++;
 		var isEnd = altIsEnd || options.stopWhen;
 		var parseResult;
 		var expressions = [];
 		pointer = advancePointer(tokens, pointer || 0);
 
-		//console.log(sc, "checking:", tokens[pointer]);
 		while (!isEnd(tokens, pointer)) {
 			parseResult = parseNext(tokens, pointer);
 			expressions.push(parseResult.exp);
-			//console.log(sc, "now looking at:", tokens[parseResult.pointer]);
 			pointer = advanceToNextExpression(
 				tokens, parseResult.pointer, isEnd);
-			//console.log(sc, "advanced to:", tokens[pointer]);
 		}
 
 		return {exp: expressions, pointer: pointer + 1};
@@ -154,6 +149,7 @@ function parseIdentifier(tokens, pointer) {
 	return {exp: makeIdentifier(tokens[pointer].string), pointer: pointer + 1};
 }
 
+// Should never be reached by a valid program
 function parsePunctuation(tokens, pointer) {
 	throw SyntaxError("Unknown punctuation token: " + tokens[pointer]);
 }
@@ -196,20 +192,6 @@ var matchToken = {
 };
 
 function parseCall(tokens, pointer, precedence, callee) {
-	var functionCall = [callee];
-	var endToken = matchToken[tokens[pointer].string];
-	// advance pointer to start of first argument
-	pointer += 1;
-	while (tokens[pointer].string !== endToken) {
-		parseResult = parseExpression(tokens, pointer);
-		pointer = parseResult.pointer;
-		functionCall.push(parseResult.exp);
-		pointer = advancePointer(tokens, pointer);
-	}
-	return {exp: functionCall, pointer: pointer + 1};
-}
-
-function parseCall(tokens, pointer, precedence, callee) {
 	return prependCallee(callee, parseArguments(tokens, pointer + 1));
 }
 
@@ -217,6 +199,14 @@ var parseArguments = parseSequence({
 	of: parseExpression, 
 	stopWhen: onToken(")")
 });
+
+function parseCallWithObject(tokens, pointer, precedence, callee) {
+	var objResult = parseObjLiteral(tokens, pointer);
+	return {
+		exp: [callee, objResult.exp],
+		pointer: objResult.pointer
+	};
+}
 
 function parseMemberAccess(tokens, pointer, precedence, parent) {
 	if (tokens[pointer + 1].type !== "Identifier") {
@@ -323,7 +313,7 @@ function parseBody(tokens, pointer) {
 	checkToken(tokens, pointer, ":");
 
 	if (tokens[pointer + 1].type === "Indent") {
-		return parseWSBlock(tokens, pointer + 1);
+		return parseWSBlock(tokens, pointer + 1, parseExpression);
 	}
 	else {
 		var expResult = parseExpression(tokens, pointer + 1);
@@ -342,8 +332,8 @@ function parseType(tokens, pointer) {
 
 	// optional behaviour block
 	pointer = params.pointer;
-	if (tokens[pointer].string === "{") {
-		behaviour = parseObjLiteral(tokens, pointer + 1);
+	if (tokens[pointer].string === ":") {
+		behaviour = parseWSBlock(tokens, pointer + 1, parseObjProperty);
 		pointer = behaviour.pointer;
 	}
 
@@ -373,7 +363,11 @@ function parseWithBlock(tokens, pointer) {
 	};
 }
 
-var parseObjLiteral = parseSequence({
+function parseObjLiteral(tokens, pointer, precedence) {
+	return prependCallee(":object", parseObjLiteralBody(tokens, pointer + 1));
+}
+
+var parseObjLiteralBody = parseSequence({
 	of: parseObjProperty, 
 	stopWhen: onToken("}")
 });
@@ -450,10 +444,7 @@ var prefixOperators = {
 		return prependCallee("Vector", 
 			parseArguments(tokens, pointer + 1, onToken("]")));
 	},
-	"{": function (tokens, pointer, precedence) {
-		return prependCallee(":object", parseObjLiteral(tokens, pointer + 1));
-		//return parseCall(tokens, pointer, precedence, makeIdentifier("object"));
-	},
+	"{": parseObjLiteral,
 	"fn": parseLambda,
 	"if": parseIf,
 	"type": parseType,
@@ -462,15 +453,15 @@ var prefixOperators = {
 };
 
 var infixOperators = {
-	"++": binaryOp(55),
-	// String concatenation operator removed, as ++ can be used
-	//"&": binaryOp(55), 
 	"^": binaryOp(52),
 	"*": binaryOp(50),
 	"/": binaryOp(50),
 	"%": binaryOp(50),
 	"+": binaryOp(40),
 	"-": binaryOp(40),
+	"++": binaryOp(55),
+	// String concatenation operator removed, as ++ can be used
+	//"&": binaryOp(55), 
 	"<": binaryOp(30),
 	">": binaryOp(30),
 	"<=": binaryOp(30),
@@ -484,6 +475,7 @@ var infixOperators = {
 	"=": binaryOp(10),
 	"<-": binaryOp(10),
 	"(": withPrecedence(70, parseCall),
+	"{": withPrecedence(70, parseCallWithObject),
 	".": withPrecedence(80, parseMemberAccess)
 };
 
@@ -511,7 +503,7 @@ function lispString(ast) {
 function isBracketAtStartOfLine(tokens, pointer) {
 	return tokens[pointer].string in matchToken && 
 		tokens[pointer - 1] && 
-		tokens[pointer - 1].type == "Indent";
+		isSkippable(tokens[pointer - 1]);
 }
 
 function makeIdentifier(name) {

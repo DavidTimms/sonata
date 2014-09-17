@@ -50,6 +50,8 @@ var tests = {
 
 	"[1, 2] ++ [3, 4, 5]":  "((++ (Vector 1 2) (Vector 3 4 5)))",
 
+	"Map {a: 77, b: 99}": "((Map (:object (: a 77) (: b 99))))",
+
 	"fn (): 45 - 2": "((fn () ((- 45 2))))",
 
 	"fn sum(h | t): t.append(h)": "((= sum (fn (h (| t)) (((. t append) h)))))",
@@ -124,19 +126,18 @@ multilineTest([
 ], "((:object (:fn self greet (name) ((print (++ 'Hi' name))))))");
 
 multilineTest([
-	"type Door(colour) {",
+	"type Door(colour):",
 	"	fn self.paint(newColour):",
-	"		mix(self, {colour: newColour})",
-	"}"
+	"",
+	"		mix(self, {colour: newColour})"
 ], 	"((type Door (colour) ((:fn self paint (newColour) " + 
 		"((mix self (:object (: colour newColour))))))))");
 
 multilineTest([
-	"type Man(name) {",
+	"type Man(name): ",
 	"	gender: 'male'",
 	"	fn self.sayHi():",
 	"		print('Hi, I am', self.name)",
-	"}"
 ], 	"((type Man (name) ((: gender 'male') " + 
 		"(:fn self sayHi () ((print 'Hi, I am' (. self name)))))))");
 
@@ -161,7 +162,7 @@ function test(input, output) {
 		var parsed = lispString(parse(tokenize(input)));
 	}
 	catch (e) {
-		var parsed = e.message;
+		var parsed = "Error: " + e.message;
 	}
 	if (parsed !== output) {
 		console.log("Test failed: ");

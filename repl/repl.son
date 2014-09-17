@@ -10,6 +10,7 @@ escodegen = require("escodegen")
 fn main():
 	options = {
 		prompt: "sonata> "
+		useGlobal: true
 
 		fn self.eval(wrappedInput, context, filename, callback): tryCatch(
 			fn ():
@@ -21,9 +22,7 @@ fn main():
 					fn ():
 						validateAST(jsAST)
 						js = escodegen.generate(jsAST)
-						print(js)
-						callback(null, 
-						vm.runInContext(js, context, filename))
+						callback(null, vm.runInThisContext(js, filename))
 					fn (e): callback(e)
 				))
 			fn (e): callback(e)
@@ -35,5 +34,5 @@ fn main():
 	# load the prelude (runtime) into the context
 	convertAST.prelude(fn (preludeAST):
 		js = escodegen.generate(preludeAST)
-		vm.runInContext(js, repl.context)
+		vm.runInThisContext(js, "prelude")
 	)

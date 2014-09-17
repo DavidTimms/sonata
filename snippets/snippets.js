@@ -28,6 +28,10 @@ prelude: {
 		}
 	}
 
+	function obj() {
+		return Object;
+	}
+
 	function mix(parent, child) {
 		var key;
 		var obj = {};

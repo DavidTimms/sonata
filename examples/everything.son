@@ -24,6 +24,8 @@ fn main():
 
 	ensure(country("China", "Asia").describe() == "China is a country in Asia")
 
+	ensure(Map {a: 11, b: 44}.get("a") == 11)
+
 	print("All tests passed")
 
 fn doScoping(x):
