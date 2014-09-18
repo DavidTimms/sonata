@@ -1,7 +1,7 @@
 
 // these characters are treated as separate tokens 
 // even if not surrounded by whitespace
-var punctuationChars = "(){}[].,;:|";
+var punctuationChars = "(){}[].,;:|@";
 
 function tokenize(source) {
 	var input = source.split("");

@@ -104,9 +104,11 @@ function convertStatements(expressions, context) {
 	//var isFuncBody = false;
 	context.isFuncBody = false;
 
-	return expressions.map(function (exp) {
-		return convertStatement(exp, context);
-	}).reduce(concatArrays, []);
+	return expressions
+		.map(function (exp) {
+			return convertStatement(exp, context);
+		})
+		.reduce(concatArrays, []);
 }
 
 function convertStatement(exp, context) {
@@ -444,6 +446,9 @@ var converters = {
 			type: "ObjectExpression",
 			properties: parts.map(convertObjProperty)
 		};
+	},
+	"@": function () {
+		throw Error("The @ operator is not yet implemented");
 	},
 	"not": function (parts) {
 		return makeUnary("!", convertExp(parts[0]));

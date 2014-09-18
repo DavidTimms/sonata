@@ -432,6 +432,7 @@ function parseMethod(tokens, pointer) {
 var prefixOperators = {
 	"-": unaryOp(60),
 	"not": unaryOp(23),
+	"@": unaryOp(65),
 	"(": function (tokens, pointer, precedence) {
 		var inner = parseExpression(tokens, pointer + 1, 0);
 		pointer = advancePointer(tokens, inner.pointer);

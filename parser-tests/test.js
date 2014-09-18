@@ -103,6 +103,10 @@ var tests = {
 	"x + 2 => square()": "((=> (+ x 2) (square)))",
 
 	"a => b() => c()": "((=> (=> a (b)) (c)))",
+
+	"@functor": "((@ functor))",
+
+	"@people.map(getAge) + 1": "((+ (@ ((. people map) getAge)) 1))",
 };
 
 multilineTest([

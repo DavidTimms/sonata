@@ -11,6 +11,10 @@ prelude: {
 		Set = _Immutable.Set,
 		eq = _Immutable.is;
 
+	Sequence.prototype._map_ = function (mapper, thisArg) {
+		return this.map(mapper, thisArg);
+	};
+
 	var sqrt = Math.sqrt,
 		floor = Math.floor,
 		ceil = Math.ceil,

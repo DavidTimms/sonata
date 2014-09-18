@@ -14,17 +14,12 @@ fs.readFile(inputFile, "utf8", function (err, source) {
 		console.log("Unable to open file:", inputFile);
 	}
 	var start = Date.now();
-
+	
 	var tokenized = tokenize(source);
-	tokenized.forEach(function (token) {
-		//console.log(token.toString());
-	});
 	var parsed = parse(tokenized);
-	//printObj(parsed);
+
 	convertAST(parsed, function (jsAst) {
-		//printObj(jsAst);
 		validateAST(jsAst);
-		//console.log(JSON.stringify(jsAst));
 
 		var compiled = escodegen.generate(jsAst);
 
