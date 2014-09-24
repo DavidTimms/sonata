@@ -1,6 +1,9 @@
 (function () {
     'use strict';
     var $sonata_Immutable = require('immutable'), Sequence = $sonata_Immutable.Sequence, Vector = $sonata_Immutable.Vector, Map = $sonata_Immutable.Map, OrderedMap = $sonata_Immutable.OrderedMap, Range = $sonata_Immutable.Range, Repeat = $sonata_Immutable.Repeat, Record = $sonata_Immutable.Record, Set = $sonata_Immutable.Set, eq = $sonata_Immutable.is;
+    Sequence.prototype.$sonata_map_ = function (mapper, thisArg) {
+        return this.map(mapper, thisArg);
+    };
     var sqrt = Math.sqrt, floor = Math.floor, ceil = Math.ceil, round = Math.round, max = Math.max, min = Math.min, random = Math.random;
     function tryCatch(tryBody, catchBody) {
         try {
@@ -96,32 +99,21 @@
             main.apply(null, process.argv.slice(2));
         }
     }
-    var main;
-    var doScoping;
-    var isDave;
-    var findName;
-    var findParents;
     var maths;
-    var country;
-    var Person;
-    Person = function () {
-        function Person(name, age, gender) {
-            if (!(this instanceof Person))
-                return new Person(name, age, gender);
-            this.name = name;
-            this.age = age;
-            this.gender = gender;
-        }
-        Object.defineProperties(Person, {});
-        Person.prototype = Object.create(Object.prototype, { constructor: { value: Person } });
-        return Person;
-    }();
-    main = function main() {
-        var dave;
-        var jane;
-        var names;
-        var parentDict;
-        var validParents;
+    var Person = function () {
+            function Person(name, age, gender) {
+                if (!(this instanceof Person))
+                    return new Person(name, age, gender);
+                this.name = name;
+                this.age = age;
+                this.gender = gender;
+            }
+            Object.defineProperties(Person, {});
+            Person.prototype = Object.create(Object.prototype, { constructor: { value: Person } });
+            return Person;
+        }();
+    function main() {
+        var dave, jane, names, parentDict, validParents;
         ensure(eq(doScoping(2), doScoping(18)));
         dave = Person('Dave', 21, 'male');
         ensure(isDave(dave));
@@ -143,10 +135,11 @@
             'a': 11,
             'b': 44
         }).get('a'), 11));
+        ensure(eq(Vector(1, 2, 3).get(2), 3));
         ensure(eq(Math.floor(Math.pow(sqrt(20), 2)), 20));
         return print('All tests passed');
-    };
-    doScoping = function doScoping(x) {
+    }
+    function doScoping(x) {
         var y;
         y = true;
         x > 10 ? function () {
@@ -154,15 +147,15 @@
             return y = false;
         }() : false;
         return y;
-    };
-    isDave = function isDave(person) {
+    }
+    function isDave(person) {
         return predicate(person.age > 18, function () {
             return predicate(eq(person.gender, 'male'), function () {
                 return eq(person.name, 'Dave');
             });
         });
-    };
-    findName = function findName(items) {
+    }
+    function findName(items) {
         return findWhere(items, function (item) {
             return findWhere(item.length > 4, function () {
                 return findWhere(eq(item.charAt(0), 'D'), function () {
@@ -170,8 +163,8 @@
                 });
             });
         });
-    };
-    findParents = function findParents(names, parents) {
+    }
+    function findParents(names, parents) {
         return findAllWhere(names, function (name) {
             return findAllWhere(name.length > 4, function () {
                 return findAllWhere(eq(name.charAt(0), 'D'), function () {
@@ -179,26 +172,32 @@
                 });
             });
         });
-    };
+    }
     maths = {
-        'add': function (a, b) {
-            var self;
-            self = this;
+        'add': function add(a, b) {
+            var self = this;
             return +a + +b;
         },
         45: 32
     };
-    country = function country(name, continent) {
+    function blob() {
+        var self = this;
+        return yo();
+    }
+    function country(name, continent) {
+        var self = this;
         ensure($sonata_ofType(name, String), 'Country name must be a String');
         ensure($sonata_ofType(continent, String), 'Continent name must be a String');
         return {
             'name': name,
-            'describe': function () {
-                var self;
-                self = this;
+            'describe': function describe() {
+                var self = this;
                 return name.concat(' is a country in ').concat(continent);
+            },
+            'foo': function foo() {
+                return bah();
             }
         };
-    };
+    }
     $sonata_startMain();
 }());

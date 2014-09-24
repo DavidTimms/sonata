@@ -1,72 +1,67 @@
 
 initialNumCounters = 3
 
-type Counter(index, count = 0, colour = colours(index))
-
-fn getIndex(event) {
+fn getIndex(event):
 	id = event.currentTarget.parentElement.id
 	Number(id.substring("counter-".length))
-}
-
-fn cycle(items) fn (i) {
-	items(Math.floor(i % items.count))
-}
 
 # an infinite list repeating the colours
-colours = cycle(["red", "green", "blue", "yellow"])
-
-# an lazy list of zeros
-zeros = range().lazyMap(fn () 0)
+colours = ["red", "green", "blue", "yellow"]
 
 container = $("#counters-container")
 
-fn countClicks(clickCounts, index) {
-	clickCounts.replace(index, clickCounts(index) + 1)
-}
+# Create a Map with the number of times up 
+# and down have been clicked for each counter
+fn countClicks(clickCounts, index):
+	clickCounts.set(index, (clickCounts[index] or 0) + 1)
 
-# Creates an array property with the number of times
-# up has been clicked for each counter
 up = container.asEventStream("click", ".counter .up")
 	.map(getIndex)
-	.scan(zeros, countClicks)
+	.scan(Map(), countClicks)
 
 down = container.asEventStream("click", ".counter .down")
 	.map(getIndex)
-	.scan(zeros, countClicks)
+	.scan(Map(), countClicks)
 
-# Combine the up and down counts to get an array of totals
-counts = Bacon.combineWith(fn (up, down) {
-	zeros.lazyMap(fn (zero, i) up(i) - down(i))
-}, up, down)
+
+# Combine the up and down counts to get a list of totals
+counts = Bacon.combineWith(fn (up, down):
+	Range().map(fn (i): (up[i] or 0) - (down[i] or 0))
+, up, down)
+
 
 # The number of counters (including deleted ones) is just 
 # the number of times the "add counter" button has been pressed
 numCounters = container.asEventStream("click", ".add-counter")
 	.map(1)
-	.scan(initialNumCounters, fn (a, b) a + b)
+	.scan(initialNumCounters, fn (a, b): a + b)
 
-# An array with `true` at the index of any deleted counter
+
+# A Map with `true` at the index of any deleted counter
 deleted = container.asEventStream("click", ".counter .delete")
 	.map(getIndex)
-	.scan([], fn (deletions, index) deletions.replace(index, true))
+	.scan(Map(), fn (deletions, index): deletions.set(index, true))
 
-fn counterList(numCounters, counts, deleted) {
+
+# Create a list of objects representing each visible counter
+fn counterList(numCounters, counts, deleted):
 	# build the data object for each counter
 	# then filter to remove deleted counters
-	range(numCounters).lazyMap(fn (i) {
+	Range(0, numCounters).map(fn (i):
 		{
 			index: i
-			count: counts(i)
-			colour: colours(i)
+			count: counts[i]
+			colour: colours[i % colours.length]
 		}
-	}).filter(fn (data, i) not deleted(i))
-}
+	).filter(fn (data, i): not deleted[i])
 
 visibleCounters = Bacon.combineWith(counterList, numCounters, counts, deleted)
 
-sumCounts = visibleCounters.map(fn (countersData) {
-	countersData.reduce(0, fn (total, current) total + current.count)
-})
+
+# Calculate the sum of all the counters
+sumCounts = visibleCounters.map(fn (countersData):
+	countersData.reduce(fn (total, current): total + current.count, 0)
+)
 
 # initialise the ractive component with 
 # the list of counters as it's data source
@@ -74,5 +69,8 @@ ractive = new(Ractive, {
 	el: "counters-container"
 	template: "#counters-template"
 	adapt: "Bacon"
-	data: {counters: visibleCounters.map(".toArray"), totalCount: sumCounts}
+	data: {
+		counters: visibleCounters.map(fn (vec): vec.toArray()), 
+		totalCount: sumCounts
+	}
 })

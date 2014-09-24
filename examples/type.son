@@ -11,7 +11,7 @@ type Point(x, y):
 
 	# define a static method on the Point type
 	fn Point.random():
-		Point(round(random() * 10), round(random() * 10))
+		Point(round(Math.random() * 10), round(Math.random() * 10))
 
 origin = Point(0, 0)
 

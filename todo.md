@@ -3,14 +3,15 @@ TODO
 
  - Syntax:
 	X replace braces with significant whitespace.
-	- combine parse operations for functions and methods so they can both be used 
+	- make colon optional after else.
+	X combine parse operations for functions and methods so they can both be used 
 	  in object and expression contexts.
 	- ES6 style lambdas.
 	- 'type Point(x, y)' -> 'record Point {x, y}' 
-	- List and object property access syntax, eg. `items[2] and user["name"]`.
+	X Vector and Map property access syntax, eg. `items[2] and user["name"]`.
 	- For-in loops.
 	- import and export.
-	- Object extension syntax, eg. `user{name: "Dave", age: 22}`.
+	- Object extension syntax, eg. `user[name: "Dave", age: 22]`.
 
  - Sonata AST walker:
  	- Run after parsing and before conversion to a JS AST.

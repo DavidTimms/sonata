@@ -60,13 +60,15 @@ var tests = {
 
 	"fn (): 45 - 2": "((fn () ((- 45 2))))",
 
-	"fn sum(h | t): t.append(h)": "((= sum (fn (h (| t)) (((. t append) h)))))",
+	"fn sum(h | t): t.append(h)": "((fn sum (h (| t)) (((. t append) h))))",
 
-	"fn add(a b): a + b": "((= add (fn (a b) ((+ a b)))))",
+	"fn add(a b): a + b": "((fn add (a b) ((+ a b))))",
 
 	"xs.reduce(fn (x, y): x ++ y, '')": "(((. xs reduce) (fn (x y) ((++ x y))) ''))",
 
 	"fn (name = 'Dave'): name ++ '!'": "((fn ((= name 'Dave')) ((++ name '!'))))",
+
+	"fn self.method(): 2": "((fn self method () (2)))",
 
 	"if x < 2: print(x)": "((if (< x 2) ((print x))))",
 
@@ -80,7 +82,17 @@ var tests = {
 
 	"variable\n(another + expression)":  "(variable (+ another expression))",
 
+	"list[0]": "(((. list get) 0))",
+
+	"d()['user' ++ id()]['name']": "(((. ((. (d) get) (++ 'user' (id))) get) 'name'))",
+
+	"[[2, 3], [4, 5]][1][0]": "(((. ((. (Vector (Vector 2 3) (Vector 4 5)) get) 1) get) 0))",
+
 	"{name: 'Dave', age: 21}":  "((:object (: name 'Dave') (: age 21)))",
+
+	"{fn self.method(a): a()}": "((:object (: method (fn self method (a) ((a))))))",
+
+	"{fn method(a): a * a}": "((:object (: method (fn method (a) ((* a a))))))",
 
 	"{}":  "((:object))",
 
@@ -137,15 +149,15 @@ multilineTest([
 	"	fn self.greet(name):",
 	"		print('Hi' ++ name)",
 	"}"
-], "((:object (:fn self greet (name) ((print (++ 'Hi' name))))))");
+], "((:object (: greet (fn self greet (name) ((print (++ 'Hi' name)))))))");
 
 multilineTest([
 	"type Door(colour):",
 	"	fn self.paint(newColour):",
 	"",
 	"		mix(self, {colour: newColour})"
-], 	"((type Door (colour) ((:fn self paint (newColour) " + 
-		"((mix self (:object (: colour newColour))))))))");
+], 	"((type Door (colour) ((: paint (fn self paint (newColour) " + 
+		"((mix self (:object (: colour newColour)))))))))");
 
 multilineTest([
 	"type Man(name): ",
@@ -153,7 +165,7 @@ multilineTest([
 	"	fn self.sayHi():",
 	"		print('Hi, I am', self.name)",
 ], 	"((type Man (name) ((: gender 'male') " + 
-		"(:fn self sayHi () ((print 'Hi, I am' (. self name)))))))");
+		"(: sayHi (fn self sayHi () ((print 'Hi, I am' (. self name))))))))");
 
 multilineTest([
 	"do:",
@@ -176,24 +188,33 @@ function test(input, output) {
 		var parsed = lispString(parse(tokenize(input)));
 	}
 	catch (e) {
+		throw e;
 		var parsed = "Error: " + e.message;
 	}
 	if (parsed !== output) {
-		console.log(tokenize(input));
 		console.log("Test failed: ");
 		console.log("	Expected " + output + ", but received " + parsed);
-		//console.log(tokenize(input));
+		console.log(parse(tokenize(input)));
 		return false;
 	}
 	return true;
 }
 
 function lispString(ast) {
-	return (ast instanceof Array) ? 
-		"(" + ast.map(lispString).join(" ") + ")" 
-			: (typeof(ast.value) === "string") ? 
-				"'" + ast.value + "'" 
-			: ast.value || ast.name;
+	return ast instanceof Array ? 
+		"(" + ast.map(lispString).join(" ") + ")" : 
+		stringifyToken(ast);
+}
+
+function stringifyToken(token) {
+	switch (typeof token.value) {
+		// string tokens
+		case "string": return "'" + token.value + "'";
+		// identifiers
+		case "undefined": return token.name;
+		// numbers
+		default: return token.value;
+	}
 }
 
 function runTests(tests) {

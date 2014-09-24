@@ -1,0 +1,27 @@
+fn decomposeExp(exp):
+    decomposed = decomposeSubExp(exp, 0)
+    decomposed.get("assigments").concat([decomposed.get("exp")])
+
+fn decomposeSubExp(exp, i):
+    exp.reduce(fn (context, subExp):
+        if (subExp :: Sequence):
+            decomposed = decomposeSubExp(subExp, context.get("i"))
+
+            varName = "$" ++ decomposed.get("i")
+
+            newAssignments = context.get("assigments")
+                ++ decomposed.get("assigments")
+                ++ [["=", varName, decomposed.get("exp")]]
+            
+            context.merge {
+                exp: context.get("exp") ++ varName
+                assigments: newAssignments
+                i: decomposed.get("i") + 1
+            }
+        else: context.merge {exp: context.get("exp") ++ [subExp]}
+    , Map {assigments: [], exp: [], i: i})
+
+["+", ["/", 2, 7], ["-", ["*", 8, 4], ["*", 9, 3]]] 
+    => decomposeExp 
+    => JSON.stringify
+    => print

@@ -99,71 +99,32 @@
             main.apply(null, process.argv.slice(2));
         }
     }
-    var initialNumCounters;
-    var getIndex;
-    var colours;
-    var container;
-    var countClicks;
-    var up;
-    var down;
-    var counts;
-    var numCounters;
-    var deleted;
-    var counterList;
-    var visibleCounters;
-    var sumCounts;
-    var ractive;
-    initialNumCounters = 3;
-    getIndex = function getIndex(event) {
-        var id;
-        id = event.currentTarget.parentElement.id;
-        return Number(id.substring('counter-'.length));
+    var decomposeExp;
+    var decomposeSubExp;
+    decomposeExp = function decomposeExp(exp) {
+        var decomposed;
+        decomposed = decomposeSubExp(exp, 0);
+        return decomposed.get('assigments').concat(Vector(decomposed.get('exp')));
     };
-    colours = Vector('red', 'green', 'blue', 'yellow');
-    container = $('#counters-container');
-    countClicks = function countClicks(clickCounts, index) {
-        return clickCounts.set(index, +(clickCounts.get(index) || 0) + +1);
+    decomposeSubExp = function decomposeSubExp(exp, i) {
+        return exp.reduce(function (context, subExp) {
+            var decomposed;
+            var varName;
+            var newAssignments;
+            if ($sonata_ofType(subExp, Sequence))
+                return decomposed = decomposeSubExp(subExp, context.get('i')), varName = '$' + decomposed.get('i'), newAssignments = context.get('assigments').concat(decomposed.get('assigments')).concat(Vector(Vector('=', varName, decomposed.get('exp')))), context.merge({
+                    'exp': context.get('exp').concat(varName),
+                    'assigments': newAssignments,
+                    'i': +decomposed.get('i') + +1
+                });
+            else
+                return context.merge({ 'exp': context.get('exp').concat(Vector(subExp)) });
+        }, Map({
+            'assigments': Vector(),
+            'exp': Vector(),
+            'i': i
+        }));
     };
-    up = container.asEventStream('click', '.counter .up').map(getIndex).scan(Map(), countClicks);
-    down = container.asEventStream('click', '.counter .down').map(getIndex).scan(Map(), countClicks);
-    counts = Bacon.combineWith(function (up, down) {
-        return Range().map(function (i) {
-            return (up.get(i) || 0) - (down.get(i) || 0);
-        });
-    }, up, down);
-    numCounters = container.asEventStream('click', '.add-counter').map(1).scan(initialNumCounters, function (a, b) {
-        return +a + +b;
-    });
-    deleted = container.asEventStream('click', '.counter .delete').map(getIndex).scan(Map(), function (deletions, index) {
-        return deletions.set(index, true);
-    });
-    counterList = function counterList(numCounters, counts, deleted) {
-        return Range(0, numCounters).map(function (i) {
-            return {
-                'index': i,
-                'count': counts.get(i),
-                'colour': colours.get(i % colours.length)
-            };
-        }).filter(function (data, i) {
-            return !deleted.get(i);
-        });
-    };
-    visibleCounters = Bacon.combineWith(counterList, numCounters, counts, deleted);
-    sumCounts = visibleCounters.map(function (countersData) {
-        return countersData.reduce(function (total, current) {
-            return +total + +current.count;
-        }, 0);
-    });
-    ractive = new Ractive({
-        'el': 'counters-container',
-        'template': '#counters-template',
-        'adapt': 'Bacon',
-        'data': {
-            'counters': visibleCounters.map(function (vec) {
-                return vec.toArray();
-            }),
-            'totalCount': sumCounts
-        }
-    });
+    print(JSON.stringify(decomposeExp(Vector('+', Vector('/', 2, 7), Vector('-', Vector('*', 8, 4), Vector('*', 9, 3))))));
     $sonata_startMain();
 }());

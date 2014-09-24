@@ -28,6 +28,8 @@ function convertAST(ast, callback) {
 
 		var context = {isFuncBody: true, noReturn: true};
 
+		tailCallElim = function (a) { return a };
+
 		var program = tailCallElim({
 			type: "Program",
 			body: buildSnippet("functionWrapper", {
@@ -127,7 +129,10 @@ var statementConverters = {
 			typeName: data.typeName,
 			typeExpression: snippetExp("typeExpression", data)
 		});
-	}
+	},
+	"fn": function (parts, context) {
+		return converters.fn(parts, context, "FunctionDeclaration");
+	},
 };
 
 function typeSnippetData(parts) {
@@ -149,7 +154,7 @@ function typeSnippetData(parts) {
 
 		staticMethods: props
 			.filter(isStatic)
-			.map(convertMethod)
+			.map(convertObjProperty)
 			.map(snippetProperty.bind(null, "typeProperty"))
 	};
 }
@@ -284,7 +289,7 @@ function convertObjProperty(property) {
 			convertObjKey(property[1]), 
 			convertExp(property[2]))
 	}
-	else if (isCallTo(":fn", property)) {
+	else if (isCallTo("fn", property)) {
 		return convertMethod(property);
 	}
 	else throw "only property assignments allowed in an object literal";
@@ -306,20 +311,39 @@ function convertObjKey(node) {
 }
 
 var converters = {
-	"fn": function (parts, context) {
+	"fn": function (parts, context, functionDeclaration) {
 		context = context || {};
-		var type = (context.isDeclaration ? 
-			"FunctionDeclaration" : "FunctionExpression");
-		context.isDeclaration = false;
-		context.params = convertParameters(parts[0]);
-		var bodyExpressions = parts[1];
+		var name;
+		var offset = 0;
+		
+		var functionIsNamed = parts[0].type === "Identifier";
+		if (functionIsNamed) {
+			var hasSelfName = parts[1].type === "Identifier";
+			if (hasSelfName) {
+				context.selfName = parts[0];
+				name = parts[1];
+				offset = 2;
+			}
+			else {
+				name = parts[0];
+				offset = 1;
+			}
+		}
+		else if (functionDeclaration) {
+			throw SyntaxError("Function Declaration must have a name");
+		}
+
+		context.params = convertParameters(parts[offset]);
+		var bodyExpressions = parts[offset + 1];
 
 		context.isFuncBody = true;
 		var funcBody = convertBody(bodyExpressions, context);
 
 		return {
-			type: type,
-			id: context.nameIdent ? makeIdentifier(context.nameIdent.name) : null,
+			type: functionDeclaration || "FunctionExpression",
+			id: name,
+			//context.nameIdent ? 
+			//	makeIdentifier(context.nameIdent.name) : null,
 			params: context.params.identifiers,
 			body: makeBlock(funcBody),
 			defaults: [],
@@ -343,13 +367,14 @@ var converters = {
 	"=": function (parts) {
 		var identifier = convertExp(parts[0]);
 		var value = parts[1];
-		if (isCallTo("fn", value)) {
-			return makeAssignment(identifier, 
-				converters["fn"](value.slice(1), {nameIdent: identifier}));
-		}
-		else {
-			return makeAssignment(identifier, convertExp(value));
-		}
+		return makeAssignment(identifier, convertExp(value));
+		//if (isCallTo("fn", value)) {
+		//	return makeAssignment(identifier, 
+		//		converters["fn"](value.slice(1), {nameIdent: identifier}));
+		//}
+		//else {
+		//	return makeAssignment(identifier, convertExp(value));
+		//}
 	},
 	".": function (parts) {
 		return snippetExp("staticProperty", {
@@ -693,9 +718,11 @@ function isFuncApplication(exp) {
 
 function isStaticMethod(typeIdentifier) {
 	return function (property) {
-		return isCallTo(":fn", property) && 
-			property[1].type === "Identifier" && 
-			property[1].name === typeIdentifier;
+		return isCallTo(":", property) && 
+			isCallTo("fn", property[2]) &&
+			property[2][1].type === "Identifier" && 
+			property[2][2].type === "Identifier" && 
+			property[2][1].name === typeIdentifier;
 	}
 }
 

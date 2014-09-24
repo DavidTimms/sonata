@@ -1,6 +1,9 @@
 (function () {
     'use strict';
     var $sonata_Immutable = require('immutable'), Sequence = $sonata_Immutable.Sequence, Vector = $sonata_Immutable.Vector, Map = $sonata_Immutable.Map, OrderedMap = $sonata_Immutable.OrderedMap, Range = $sonata_Immutable.Range, Repeat = $sonata_Immutable.Repeat, Record = $sonata_Immutable.Record, Set = $sonata_Immutable.Set, eq = $sonata_Immutable.is;
+    Sequence.prototype.$sonata_map_ = function (mapper, thisArg) {
+        return this.map(mapper, thisArg);
+    };
     var sqrt = Math.sqrt, floor = Math.floor, ceil = Math.ceil, round = Math.round, max = Math.max, min = Math.min, random = Math.random;
     function tryCatch(tryBody, catchBody) {
         try {
@@ -8,6 +11,9 @@
         } catch (e) {
             return catchBody(e);
         }
+    }
+    function obj() {
+        return Object;
     }
     function mix(parent, child) {
         var key;
@@ -93,11 +99,7 @@
             main.apply(null, process.argv.slice(2));
         }
     }
-    var dave;
-    var gender;
-    var origin;
-    var myPosition;
-    var Point;
+    var dave, gender, origin, myPosition;
     dave = function () {
         function Person(name, age, gender) {
             if (!(this instanceof Person))
@@ -113,32 +115,32 @@
         return Person;
     }()('Dave', 21);
     print(dave.name, 'is a', dave.age, 'year old', dave.gender);
-    Point = function () {
-        function Point(x, y) {
-            if (!(this instanceof Point))
-                return new Point(x, y);
-            this.x = x;
-            this.y = y;
-        }
-        Object.defineProperties(Point, {
-            'random': {
-                value: function () {
-                    var Point = this;
-                    return Point(round(random() * 10), round(random() * 10));
-                }
+    var Point = function () {
+            function Point(x, y) {
+                if (!(this instanceof Point))
+                    return new Point(x, y);
+                this.x = x;
+                this.y = y;
             }
-        });
-        Point.prototype = Object.create(Object.prototype, {
-            constructor: { value: Point },
-            'distanceTo': {
-                value: function (other) {
-                    var self = this;
-                    return sqrt(+Math.pow(self.x - other.x, 2) + +Math.pow(self.y - other.y, 2));
+            Object.defineProperties(Point, {
+                'random': {
+                    value: function random() {
+                        var Point = this;
+                        return Point(round(Math.random() * 10), round(Math.random() * 10));
+                    }
                 }
-            }
-        });
-        return Point;
-    }();
+            });
+            Point.prototype = Object.create(Object.prototype, {
+                constructor: { value: Point },
+                'distanceTo': {
+                    value: function distanceTo(other) {
+                        var self = this;
+                        return sqrt(+Math.pow(self.x - other.x, 2) + +Math.pow(self.y - other.y, 2));
+                    }
+                }
+            });
+            return Point;
+        }();
     origin = Point(0, 0);
     myPosition = Point(4, 3);
     print('distance to origin:', myPosition.distanceTo(origin));

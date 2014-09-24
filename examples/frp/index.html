@@ -1,8 +1,23 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Ractive Bacon counters</title>
+		<title>Ractive.js + Bacon.js + Sonata | Counters</title>
 		<style type="text/css">
+			body {
+				font-family: sans-serif;
+				padding: 5px 20px;
+			}
+			h1 {
+				font-weight: 100;
+				font-size: 300%;
+			}
+			a:link, a:visited {
+				color: navy;
+				text-decoration: none;
+			}
+			a:hover {
+				text-decoration: underline;
+			}
 			.counter {
 				display: inline-block;
 				width: 150px;
@@ -36,6 +51,14 @@
 		</style>
 	</head>
 	<body>
+		<h1>
+			<a href="http://www.ractivejs.org/">Ractive.js</a>
+			+ 
+			<a href="http://baconjs.github.io/">Bacon.js</a>
+			+
+			<a href="https://github.com/DavidTimms/sonata">Sonata Language</a>
+		</h1>
+		<p>By <a href="http://www.davidtimms.co.uk">David Timms</a></p>
 		<div id="counters-container">
 
 		</div>
@@ -58,13 +81,13 @@
 		</script>
 		<script src="./lib/jquery.js"></script>
 		<script src="./lib/ractive-legacy.js"></script>
-		<script src="./lib/bacon.js"></script>
+		<script src="./lib/Bacon.js"></script>
 		<script src="./lib/ractive-adaptors-bacon.js"></script>
-		<script src="./lib/texo.js"></script>
+		<script src="./lib/immutable.js"></script>
 		<script>
 			var require = function (module) {
-				if (module === "texo") {
-					return texo;
+				if (module === "immutable") {
+					return Immutable;
 				}
 				else throw Error("require not supported in browser");
 			}

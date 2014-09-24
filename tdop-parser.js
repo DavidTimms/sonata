@@ -191,7 +191,7 @@ var matchToken = {
 };
 
 function parseCall(tokens, pointer, precedence, callee) {
-	return prependCallee(callee, parseArguments(tokens, pointer + 1));
+	return withPrefix([callee], parseArguments(tokens, pointer + 1));
 }
 
 var parseArguments = parseSequence({
@@ -219,23 +219,58 @@ function parseMemberAccess(tokens, pointer, precedence, parent) {
 	};
 }
 
-function parseLambda(tokens, pointer) {
-	var name = null;
-	pointer += 1;
-	// for function declarations, parse the function name
-	if (tokens[pointer].type === "Identifier") {
-		name = makeIdentifier(tokens[pointer].string);
-		pointer += 1;
-	}
+function parseDataStructureGetter(tokens, pointer, precedence, dataStruct) {
+	var memberRes = parseExpression(tokens, pointer + 1);
+	checkToken(tokens, memberRes.pointer, "]");
+	return {
+		exp: [
+			[makeIdentifier("."), dataStruct, makeIdentifier("get")], 
+			memberRes.exp
+		], 
+		pointer: memberRes.pointer + 1
+	};
+}
+
+function parseFn(tokens, pointer) {
+	return withPrefix(["fn"], (
+						fnAnon(tokens, pointer + 1) || 
+						fnNamed(tokens, pointer + 1) || 
+						fnMethod(tokens, pointer + 1) ||
+						errorAt(tokens[pointer], "Invalid method")
+					));
+}
+
+function fnAnon(tokens, pointer) {
+	if (tokens[pointer].string !== "(") return false;
 	var params = parseParams(tokens, pointer);
 	var body = parseBody(tokens, params.pointer);
-
-	var lambda = [makeIdentifier("fn"), params.exp, body.exp];
 	return {
-		// create assignment for function declarations
-		exp: (name ? [makeIdentifier(assignmentOp), name, lambda] : lambda), 
+		exp: [params.exp, body.exp], 
 		pointer: body.pointer
 	};
+}
+
+function fnNamed(tokens, pointer) {
+	var nameToken = tokens[pointer];
+	if (!isIdentifier(nameToken)) 
+		errorAt(nameToken, 
+			"Expected function name, but found " + nameToken.string);
+
+	return withPrefix([makeIdentifier(nameToken)], 
+		fnAnon(tokens, pointer + 1));
+}
+
+function fnMethod(tokens, pointer) {
+
+	if (!(isIdentifier(tokens[pointer]) &&
+		checkToken(tokens, pointer + 1, ".") &&
+		isIdentifier(tokens[pointer + 2])))
+			return false;
+
+	var selfName = makeIdentifier(tokens[pointer]);
+	var name = makeIdentifier(tokens[pointer + 2]);
+
+	return withPrefix([selfName, name], fnAnon(tokens, pointer + 3));
 }
 
 function parseParams(tokens, pointer) {
@@ -363,7 +398,7 @@ function parseWithBlock(tokens, pointer) {
 }
 
 function parseObjLiteral(tokens, pointer, precedence) {
-	return prependCallee(":object", parseObjLiteralBody(tokens, pointer + 1));
+	return withPrefix([":object"], parseObjLiteralBody(tokens, pointer + 1));
 }
 
 var parseObjLiteralBody = parseSequence({
@@ -389,44 +424,62 @@ function parseObjProperty(tokens, pointer) {
 	checkToken(tokens, key.pointer, ":");
 	value = parseExpression(tokens, key.pointer + 1);
 
+	return objProperty(key.exp, value);
+}
+
+function objProperty(keyExp, valueRes) {
 	return {
-		exp: [makeIdentifier(":"), key.exp, value.exp],
-		pointer: value.pointer
+		exp: [makeIdentifier(":"), keyExp, valueRes.exp],
+		pointer: valueRes.pointer
 	};
 }
 
 function parseMethod(tokens, pointer) {
-	var errorToken;
-	pointer += 1; // skip "fn"
+	var method;
 
-	// method signature example:
-	// fn self.methodName(params) { body }
-
-	if (isIdentifier(tokens[pointer])) {
-		var selfName = makeIdentifier(tokens[pointer].string);
-		pointer += 1;
-		checkToken(tokens, pointer, ".");
-		if (isIdentifier(tokens[pointer + 1])) {
-			var methodName = makeIdentifier(tokens[pointer + 1].string);
-			var params = parseParams(tokens, pointer + 2);
-			var body = parseBody(tokens, params.pointer);
-
-			return {
-				exp: [
-					makeIdentifier(":fn"), 
-					selfName,
-					methodName, 
-					params.exp, 
-					body.exp
-				],
-				pointer: body.pointer
-			};
-		}
-		else errorToken = tokens[pointer + 1];
+	if (method = fnNamed(tokens, pointer + 1)) {
+		methodName = method.exp[0];
 	}
-	else errorToken = tokens[pointer];
+	else if (method = fnMethod(tokens, pointer + 1)) {
+		methodName = method.exp[1];
+	}
+	else errorAt(tokens[pointer], "Invalid method")
 
-	errorAt(errorToken, "Invalid method signature");
+	return objProperty(methodName, withPrefix(["fn"], method));
+
+//	var errorToken;
+//	pointer += 1; // skip "fn"
+//
+//
+//	// method signature example:
+//	// fn self.methodName(params) { body }
+//	// fn methodName(params) { body }
+//
+//	if (isIdentifier(tokens[pointer])) {
+//		var selfName = makeIdentifier(tokens[pointer].string);
+//		pointer += 1;
+//		checkToken(tokens, pointer, ".");
+//		if (isIdentifier(tokens[pointer + 1])) {
+//			var methodName = makeIdentifier(tokens[pointer + 1].string);
+//			var params = parseParams(tokens, pointer + 2);
+//			var body = parseBody(tokens, params.pointer);
+//
+//			return {
+//				exp: [
+//					makeIdentifier("fn"), 
+//					selfName,
+//					methodName, 
+//					params.exp, 
+//					body.exp
+//				],
+//				pointer: body.pointer
+//			};
+//		}
+//		else errorToken = tokens[pointer + 1];
+//	}
+//	else errorToken = tokens[pointer];
+//
+//	errorAt(errorToken, "Invalid method signature");
 }
 
 var prefixOperators = {
@@ -441,11 +494,11 @@ var prefixOperators = {
 	},
 	"[": function (tokens, pointer) {
 		//return parseCall(tokens, pointer, precedence, );
-		return prependCallee("Vector", 
+		return withPrefix(["Vector"], 
 			parseArguments(tokens, pointer + 1, onToken("]")));
 	},
 	"{": parseObjLiteral,
-	"fn": parseLambda,
+	"fn": parseFn,
 	"if": parseIf,
 	"type": parseType,
 	"do": parseDoBlock,
@@ -454,6 +507,7 @@ var prefixOperators = {
 
 var infixOperators = {
 	".": withPrecedence(80, parseMemberAccess),
+	"[": withPrecedence(75, parseDataStructureGetter),
 	"(": withPrecedence(70, parseCall),
 	"{": withPrecedence(70, parseCallWithObject),
 	"^": binaryOp(52),
@@ -508,6 +562,9 @@ function isBracketAtStartOfLine(tokens, pointer) {
 }
 
 function makeIdentifier(name) {
+	if (typeof name === "object")
+		name = name.string;
+
 	return {
 		type: "Identifier",
 		name: name
@@ -588,4 +645,18 @@ function prependCallee(callee, parseResult) {
 		exp: [callee].concat(parseResult.exp),
 		pointer: parseResult.pointer
 	};
+}
+
+function withPrefix(prefix, parseResult) {
+	// propagate failure
+	if (!parseResult) return false;
+	return {
+		exp: prefix.map(wrapIdentifier).concat(parseResult.exp),
+		pointer: parseResult.pointer
+	};
+}
+
+function wrapIdentifier(identifier) {
+	return typeof(identifier) === "string" ?
+		makeIdentifier(identifier) : identifier;
 }
