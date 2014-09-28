@@ -30,6 +30,8 @@ fn main():
 
 	ensure((20 => sqrt => Math.pow(2) => Math.floor) == 20)
 
+	ensure(mutatingDouble(5) == 10)
+
 	print("All tests passed")
 
 fn doScoping(x):
@@ -77,3 +79,7 @@ fn country(name, continent):
 		fn foo():
 			bah()
 	}
+
+fn mutatingDouble(x):
+	do: set! x = x * 2
+	x

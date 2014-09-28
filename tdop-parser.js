@@ -41,7 +41,6 @@ function indentLessThan(blockIndent) {
 	}
 }
 
-
 // Parse repeatedly using some parse function
 // until the isEnd predicate returns true
 function parseSequence(options) {
@@ -397,6 +396,16 @@ function parseWithBlock(tokens, pointer) {
 	};
 }
 
+function parseSetExpression(tokens, pointer) {
+	var precedence = 8;
+	var assignResult = parseExpression(tokens, pointer + 1, precedence);
+	if (isCallTo(assignmentOp, assignResult.exp)) {
+		assignResult.exp[0] = makeIdentifier(tokens[pointer]);
+		return assignResult;
+	}
+	else errorAt(tokens[pointer], "invalid variable reassignment");
+}
+
 function parseObjLiteral(tokens, pointer, precedence) {
 	return withPrefix([":object"], parseObjLiteralBody(tokens, pointer + 1));
 }
@@ -446,40 +455,6 @@ function parseMethod(tokens, pointer) {
 	else errorAt(tokens[pointer], "Invalid method")
 
 	return objProperty(methodName, withPrefix(["fn"], method));
-
-//	var errorToken;
-//	pointer += 1; // skip "fn"
-//
-//
-//	// method signature example:
-//	// fn self.methodName(params) { body }
-//	// fn methodName(params) { body }
-//
-//	if (isIdentifier(tokens[pointer])) {
-//		var selfName = makeIdentifier(tokens[pointer].string);
-//		pointer += 1;
-//		checkToken(tokens, pointer, ".");
-//		if (isIdentifier(tokens[pointer + 1])) {
-//			var methodName = makeIdentifier(tokens[pointer + 1].string);
-//			var params = parseParams(tokens, pointer + 2);
-//			var body = parseBody(tokens, params.pointer);
-//
-//			return {
-//				exp: [
-//					makeIdentifier("fn"), 
-//					selfName,
-//					methodName, 
-//					params.exp, 
-//					body.exp
-//				],
-//				pointer: body.pointer
-//			};
-//		}
-//		else errorToken = tokens[pointer + 1];
-//	}
-//	else errorToken = tokens[pointer];
-//
-//	errorAt(errorToken, "Invalid method signature");
 }
 
 var prefixOperators = {
@@ -502,7 +477,8 @@ var prefixOperators = {
 	"if": parseIf,
 	"type": parseType,
 	"do": parseDoBlock,
-	"with": parseWithBlock
+	"with": parseWithBlock,
+	"set!": parseSetExpression
 };
 
 var infixOperators = {

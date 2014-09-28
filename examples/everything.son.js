@@ -137,6 +137,7 @@
         }).get('a'), 11));
         ensure(eq(Vector(1, 2, 3).get(2), 3));
         ensure(eq(Math.floor(Math.pow(sqrt(20), 2)), 20));
+        ensure(eq(mutatingDouble(5), 10));
         return print('All tests passed');
     }
     function doScoping(x) {
@@ -185,7 +186,6 @@
         return yo();
     }
     function country(name, continent) {
-        var self = this;
         ensure($sonata_ofType(name, String), 'Country name must be a String');
         ensure($sonata_ofType(continent, String), 'Continent name must be a String');
         return {
@@ -198,6 +198,12 @@
                 return bah();
             }
         };
+    }
+    function mutatingDouble(x) {
+        (function () {
+            return x = x * 2;
+        }());
+        return x;
     }
     $sonata_startMain();
 }());

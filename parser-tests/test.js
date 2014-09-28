@@ -78,6 +78,12 @@ var tests = {
 
 	"if y > z: y + 2": "((if (> y z) ((+ y 2))))",
 
+	"set! x = 2": "((set! x 2))",
+
+	"set! a = b = 3 + 4": "((set! a (= b (+ 3 4))))",
+
+	"inner = set! outer = 'foo'": "((= inner (set! outer 'foo')))",
+
 	"exp1, exp2":  "(exp1 exp2)",
 
 	"variable\n(another + expression)":  "(variable (+ another expression))",

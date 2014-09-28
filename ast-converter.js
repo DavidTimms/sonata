@@ -69,6 +69,7 @@ function convertBody(expressions, context) {
 			buildSnippet("selfNameAssignment", {
 				selfName: context.selfName
 			}));
+		context.selfName = null;
 	}
 
 	if ((!expressions) || expressions.length === 0) {
