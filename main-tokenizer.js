@@ -6,7 +6,7 @@ var punctuationChars = "(){}[].,;:|@";
 function tokenize(source) {
 	var input = source.split("");
 
-	function reduceInput(tokens, chr) {
+	function inputReducer(tokens, chr) {
 		var last = tokens.last();
 		var lastFirstChar = last.at(0);
 
@@ -17,7 +17,7 @@ function tokenize(source) {
 			// end of comment line
 			if (lastFirstChar === "#" && chr === "\n") {
 				tokens.add("");
-				return reduceInput(tokens, chr);
+				return inputReducer(tokens, chr);
 			}
 
 			last.string += chr;
@@ -79,11 +79,14 @@ function tokenize(source) {
 	}
 
 	return input
-		.reduce(reduceInput, emptyTokenArray())
+		.reduce(inputReducer, emptyTokenArray())
 		.map(Token)
 		.filter(function (token) {
 			return token.type !== "Empty";
 		}).concat([
+			// Add 4 end-of-file tokens because some parts of the 
+			// parser may look ahead up to four tokens, and will
+			// error if the token is null
 			new Token("End of File"), 
 			new Token("End of File"), 
 			new Token("End of File"), 
@@ -128,6 +131,20 @@ function isPunctuation(chr) {
 	return punctuationChars.indexOf(chr) >= 0;
 }
 
+function isValidNumber(tokenString) {
+	return Number(tokenString).toString() !== "NaN";
+}
+
+function isStringOrRegex(tokenString) {
+	return tokenString.length > 1 &&
+		isLiteralDelimiter(charAt(tokenString, 0)) &&
+		isLiteralDelimiter(charAt(tokenString, -1));
+}
+
+function alwaysTrue() {
+	return true;
+}
+
 function charAt(str, index) {
 	if (index < 0) index += str.length;
 	return str.charAt(index);
@@ -142,57 +159,110 @@ function Token(tokenString, position) {
 	this.position = position || this.position || {line: NaN, column: NaN};
 
 	this.string = tokenString;
-	if (tokenString === "") {
-		this.type = "Empty";
-	}
-	else if (tokenString === "End of File") {
-		this.type = "End of File";
-	}
-	else if (tokenString.match(/^\n.*/)) {
-		this.type = "Indent";
-		this.width = tokenString.length - 1;
-	}
-	else if (tokenString.charAt(0) === "#") {
-		this.type = "Comment";
-	}
-	else if (Number(tokenString).toString() !== "NaN") {
+	return extend(this, match(tokenString, [
+		// Empty Tokens, to be filtered out later
+		["", {type: "Empty"}],
 
-		this.type = "Number";
-		this.value = Number(tokenString);
-	}
-	else if (tokenString.length > 1 &&
-			 isLiteralDelimiter(charAt(tokenString, 0)) &&
-			 isLiteralDelimiter(charAt(tokenString, -1))) {
-		this.type = (charAt(tokenString, 0) === "/" ? "Regex" : "String");
-		this.value = evalMultiline(tokenString);
-	}
-	else if (tokenString === "true" || tokenString === "false") {
-		this.type = "Boolean";
-		this.value = evalMultiline(tokenString);
-	}
-	else if (isPunctuation(tokenString)) {
-		this.type = "Punctuation";
-	}
-	else {
-		this.type = "Identifier";
-	}
-	return this;
+		["End of File", {type: "End of File"}],
+
+		// Indent tokens start with a new line
+		[/^\n.*/, {type: "Indent", width: tokenString.length - 1}],
+
+		// Comment tokens start with an octothorpe
+		[/^#.*/, {type: "Comment"}],
+
+		[isValidNumber, {type: "Number", value: Number(tokenString)}],
+
+		[isStringOrRegex, function () {
+			return {
+				type: charAt(tokenString, 0) === "/" ? "Regex" : "String",
+				value: evalMultiline(tokenString)
+			};
+		}],
+
+		[/^(true|false)$/, function () {
+			return {type: "Boolean", value: evalMultiline(tokenString)};
+		}],
+
+		[isPunctuation, {type: "Punctuation"}],
+
+		// default case
+		[alwaysTrue, {type: "Identifier"}]
+	]));
 }
+
+Token.prototype = {
+	toString: TokenToString,
+	inspect: TokenToString,
+	at: function (index) {
+		return charAt(this.string, index);
+	},
+};
+
 function TokenToString() {
 	// show width for indents
-	return this.type + "(" + ("width" in this ? this.width : this.string) + ")"
-		+ " at line " + this.position.line + ", column " + this.position.column
+	return this.type + 
+		"(" + 
+		("width" in this ? this.width : this.string) + 
+		")" + 
+		" at line " + 
+		this.position.line + 
+		", column " + 
+		this.position.column;
 }
-Token.prototype = Object.create(Object, {
-	toString: {value: TokenToString},
-	inspect: {value: TokenToString},
-	at: {value: function (index) {
-		return charAt(this.string, index);
-	}}
-});
 
 function evalMultiline(str) {
 	return eval(str.replace(/\r\n|\r|\n/g, "\\n"));
+}
+
+function extend(obj, mixin) {
+	Object.keys(mixin).forEach(function (key) {
+		obj[key] = mixin[key];
+	});
+	return obj;
+}
+
+function match(str, patternResultTuples) {
+	var result = patternResultTuples.find(function (tuple) {
+		var pattern = tuple[0];
+		switch (pattern.constructor) {
+			case RegExp:
+				return pattern.test(str);
+			case Function:
+				return pattern(str);
+			default:
+				return str === pattern;
+		}
+	})[1];
+
+	// execute the result if it is a thunk
+	return typeof(result) === "function" ? result() : result;
+}
+
+// Array.prototype.find Polyfill from: 
+// developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
+if (!Array.prototype.find) {
+	Array.prototype.find = function(predicate) {
+		if (this == null) {
+			throw new TypeError(
+				"Array.prototype.find called on null or undefined");
+		}
+		if (typeof predicate !== "function") {
+			throw new TypeError("predicate must be a function");
+		}
+		var list = Object(this);
+		var length = list.length >>> 0;
+		var thisArg = arguments[1];
+		var value;
+
+		for (var i = 0; i < length; i++) {
+			value = list[i];
+			if (predicate.call(thisArg, value, i, list)) {
+				return value;
+			}
+		}
+		return undefined;
+	};
 }
 
 module.exports = tokenize;

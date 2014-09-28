@@ -88,6 +88,10 @@ var tests = {
 
 	"variable\n(another + expression)":  "(variable (+ another expression))",
 
+	"# this is a comment": "()",
+
+	"code # comment": "(code)",
+
 	"list[0]": "(((. list get) 0))",
 
 	"d()['user' ++ id()]['name']": "(((. ((. (d) get) (++ 'user' (id))) get) 'name'))",

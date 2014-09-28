@@ -1,6 +1,9 @@
 (function () {
     'use strict';
-    var $sonata_Immutable = require('immutable'), Sequence = $sonata_Immutable.Sequence, Vector = $sonata_Immutable.Vector, Map = $sonata_Immutable.Map, OrderedMap = $sonata_Immutable.OrderedMap, Range = $sonata_Immutable.Range, Repeat = $sonata_Immutable.Repeat, Record = $sonata_Immutable.Record, eq = $sonata_Immutable.is;
+    var $sonata_Immutable = require('immutable'), Sequence = $sonata_Immutable.Sequence, Vector = $sonata_Immutable.Vector, Map = $sonata_Immutable.Map, OrderedMap = $sonata_Immutable.OrderedMap, Range = $sonata_Immutable.Range, Repeat = $sonata_Immutable.Repeat, Record = $sonata_Immutable.Record, Set = $sonata_Immutable.Set, eq = $sonata_Immutable.is;
+    Sequence.prototype.$sonata_map_ = function (mapper, thisArg) {
+        return this.map(mapper, thisArg);
+    };
     var sqrt = Math.sqrt, floor = Math.floor, ceil = Math.ceil, round = Math.round, max = Math.max, min = Math.min, random = Math.random;
     function tryCatch(tryBody, catchBody) {
         try {
@@ -8,6 +11,9 @@
         } catch (e) {
             return catchBody(e);
         }
+    }
+    function obj() {
+        return Object;
     }
     function mix(parent, child) {
         var key;
@@ -93,21 +99,14 @@
             main.apply(null, process.argv.slice(2));
         }
     }
-    var Promise;
-    var request;
-    var fs;
-    var async;
-    var main;
+    var Promise, request, fs;
     Promise = require('bluebird');
     request = Promise.promisifyAll(require('request'));
     fs = Promise.promisifyAll(require('fs'));
-    async = function async(value, rest) {
-        if (value && $sonata_ofType(value.then, Function))
-            return value.then(rest);
-        else
-            return rest(value);
-    };
-    main = function main(url) {
+    function async(value, rest) {
+        return value && $sonata_ofType(value.then, Function) ? value.then(rest) : rest(value);
+    }
+    function main(url) {
         if (url === undefined)
             url = 'http://google.com';
         return async(request.getAsync(url), function (html) {
@@ -115,6 +114,6 @@
                 return print('written to content.html');
             });
         });
-    };
+    }
     $sonata_startMain();
 }());
