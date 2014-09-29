@@ -1,4 +1,3 @@
-var type = require("./utils/type.js");
 var printObj = require('./utils/print-object.js');
 
 module.exports = function (tokens) {
@@ -346,7 +345,7 @@ function parseBody(token, colonOptional) {
 
 function parseType(token) {
 	var behaviour;
-	var token = token.next();
+	token = token.next();
 	if (!isIdentifier(token)) errorAt(token, 
 			"Expected a type name, but found " + token.string);
 
@@ -440,7 +439,7 @@ function parseMethod(token) {
 		methodName = method.exp[0];
 	}
 	else {
-		method = fnMethod(token.next())
+		method = fnMethod(token.next());
 
 		if (method) {
 			methodName = method.exp[1];
@@ -569,6 +568,7 @@ function advanceToNextExpression(token, isEnd) {
 
 function isSkippable(token) {
 	return token.is(",") || 
+		token.is(";") || 
 		token.type === "Indent" || 
 		token.type === "Comment";
 }

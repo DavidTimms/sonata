@@ -90,6 +90,8 @@ var tests = {
 
 	"variable\n(another + expression)":  "(variable (+ another expression))",
 
+	"semi; colons; work; too": "(semi colons work too)",
+
 	"# this is a comment": "()",
 
 	"code # comment": "(code)",

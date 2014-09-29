@@ -275,7 +275,7 @@ function match(str, patternResultTuples) {
 // developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
 if (!Array.prototype.find) {
 	Array.prototype.find = function(predicate) {
-		if (this == null) {
+		if (!this) {
 			throw new TypeError(
 				"Array.prototype.find called on null or undefined");
 		}
