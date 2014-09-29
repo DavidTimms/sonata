@@ -6,7 +6,7 @@ fs = Promise.promisifyAll(require("fs"))
 # define the async controller function.
 # This is a simplified version without error handling
 fn async(value, rest):
-	if value and (value.then :: Function):
+	if value :: Promise:
 		value.then(rest)
 	else:
 		rest(value)

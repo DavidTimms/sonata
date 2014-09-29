@@ -72,9 +72,11 @@ var tests = {
 
 	"if x < 2: print(x)": "((if (< x 2) ((print x))))",
 
-	"if true: 34 * 23 else: 93 - 2": "((if true ((* 34 23)) ((- 93 2))))",
+	"if true: 34 * 23 else 93 - 2": "((if true ((* 34 23)) ((- 93 2))))",
 
 	"if isTrue():\n 10 \nelse:\n 5": "((if (isTrue) (10) (5)))",
+
+	"if a: a else if b: b else: c": "((if a (a) ((if b (b) (c)))))",
 
 	"if y > z: y + 2": "((if (> y z) ((+ y 2))))",
 
@@ -188,6 +190,11 @@ multilineTest([
 	"	x = read('file.txt')",
 	"	print(x)",
 ], "((with async ((= x (read 'file.txt')) (print x))))");
+
+multilineTest([
+	"fn foo() with bar:",
+	"	baz()",
+], "((fn foo () ((with bar ((baz))))))");
 
 
 runTests(tests);

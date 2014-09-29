@@ -116,7 +116,7 @@ function parseLiteral(tokens, pointer, precedence) {
 
 function parseNumber(tokens, pointer, precedence) {
 	// lookahead to detect decimals
-	if (tokens[pointer + 1].string === "." && 
+	if (tokens[pointer + 1].is(".") && 
 		tokens[pointer + 2].type === "Number") {
 
 		var value = Number(tokens[pointer].value + 
@@ -144,7 +144,7 @@ function ignoreToken(tokens, pointer, precedence) {
 }
 
 function parseIdentifier(tokens, pointer) {
-	return {exp: makeIdentifier(tokens[pointer].string), pointer: pointer + 1};
+	return {exp: makeIdentifier(tokens[pointer]), pointer: pointer + 1};
 }
 
 // Should never be reached by a valid program
@@ -159,7 +159,7 @@ function unaryOp(unaryOpPrecedence) {
 			pointer + 1, 
 			unaryOpPrecedence);
 		return {
-			exp: [makeIdentifier(tokens[pointer].string), operandResult.exp], 
+			exp: [makeIdentifier(tokens[pointer]), operandResult.exp], 
 			pointer: operandResult.pointer
 		};
 	}
@@ -173,7 +173,7 @@ function binaryOp(binaryOpPrecedence, rightAssociative) {
 			pointer + 1, 
 			binaryOpPrecedence - (rightAssociative ? 0.01 : 0));
 		return {
-			exp: [makeIdentifier(tokens[pointer].string), left, rightResult.exp], 
+			exp: [makeIdentifier(tokens[pointer]), left, rightResult.exp], 
 			pointer: rightResult.pointer
 		};
 	}
@@ -211,7 +211,7 @@ function parseMemberAccess(tokens, pointer, precedence, parent) {
 		errorAt(tokens[pointer], 
 			"the property of an object must be an identifier");
 	}
-	var property = makeIdentifier(tokens[pointer + 1].string);
+	var property = makeIdentifier(tokens[pointer + 1]);
 	return {
 		exp: [makeIdentifier("."), parent, property], 
 		pointer: pointer + 2
@@ -230,6 +230,13 @@ function parseDataStructureGetter(tokens, pointer, precedence, dataStruct) {
 	};
 }
 
+function parseGroupedOrLambda(tokens, pointer, precedence) {
+	var inner = parseExpression(tokens, pointer + 1, 0);
+	pointer = advancePointer(tokens, inner.pointer);
+	checkToken(tokens, pointer, ")");
+	return {exp: inner.exp, pointer: pointer + 1};
+}
+
 function parseFn(tokens, pointer) {
 	return withPrefix(["fn"], (
 						fnAnon(tokens, pointer + 1) || 
@@ -240,9 +247,9 @@ function parseFn(tokens, pointer) {
 }
 
 function fnAnon(tokens, pointer) {
-	if (tokens[pointer].string !== "(") return false;
+	if (tokens[pointer].isNot("(")) return false;
 	var params = parseParams(tokens, pointer);
-	var body = parseBody(tokens, params.pointer);
+	var body = parseBody(tokens, params.pointer, "colon optional");
 	return {
 		exp: [params.exp, body.exp], 
 		pointer: body.pointer
@@ -276,9 +283,9 @@ function parseParams(tokens, pointer) {
 	var param, params = [], endToken = ")";
 	checkToken(tokens, pointer, "(");
 	pointer += 1;
-	while (tokens[pointer].string !== endToken) {
+	while (tokens[pointer].isNot(endToken)) {
 		// rest parameter
-		if (tokens[pointer].string === "|") {
+		if (tokens[pointer].is("|")) {
 			param = parseParam(tokens, pointer + 1);
 			params.push([makeIdentifier("|"), param.exp]);
 			pointer = advancePointer(tokens, param.pointer);
@@ -318,8 +325,8 @@ function parseIf(tokens, pointer) {
 
 function parseElse(tokens, pointer) {
 	advPointer = advancePointer(tokens, pointer);
-	if (tokens[advPointer].string === "else") {
-		var elseBody = parseBody(tokens, advPointer + 1);
+	if (tokens[advPointer].is("else")) {
+		var elseBody = parseBody(tokens, advPointer + 1, "colon optional");
 		return {
 			exp: [elseBody.exp], 
 			pointer: elseBody.pointer
@@ -331,7 +338,7 @@ function parseElse(tokens, pointer) {
 function parseBraceBody(tokens, pointer) {
 	pointer = advancePointer(tokens, pointer);
 
-	if (tokens[pointer].string === "{") {
+	if (tokens[pointer].is("{")) {
 		return parseBraceBlock(tokens, pointer + 1);
 	}
 	else {
@@ -340,16 +347,22 @@ function parseBraceBody(tokens, pointer) {
 	}
 }
 
-function parseBody(tokens, pointer) {
+function parseBody(tokens, pointer, colonOptional) {
 	pointer = advancePointer(tokens, pointer);
 
-	checkToken(tokens, pointer, ":");
-
-	if (tokens[pointer + 1].type === "Indent") {
-		return parseWSBlock(tokens, pointer + 1, parseExpression);
+	if (colonOptional) {
+		if (tokens[pointer].is(":")) pointer += 1;
 	}
 	else {
-		var expResult = parseExpression(tokens, pointer + 1);
+		checkToken(tokens, pointer, ":");
+		pointer += 1;
+	}
+
+	if (tokens[pointer].type === "Indent") {
+		return parseWSBlock(tokens, pointer, parseExpression);
+	}
+	else {
+		var expResult = parseExpression(tokens, pointer);
 		return {exp: [expResult.exp], pointer: expResult.pointer};
 	}
 }
@@ -365,7 +378,7 @@ function parseType(tokens, pointer) {
 
 	// optional behaviour block
 	pointer = params.pointer;
-	if (tokens[pointer].string === ":") {
+	if (tokens[pointer].is(":")) {
 		behaviour = parseWSBlock(tokens, pointer + 1, parseObjProperty);
 		pointer = behaviour.pointer;
 	}
@@ -419,7 +432,7 @@ function parseObjProperty(tokens, pointer) {
 	var key, value;
 	var token = tokens[pointer];
 
-	if (token.string === "fn") {
+	if (token.is("fn")) {
 		return parseMethod(tokens, pointer);
 	}
 	else if (token.type === "Identifier") {
@@ -461,12 +474,7 @@ var prefixOperators = {
 	"-": unaryOp(60),
 	"not": unaryOp(23),
 	"@": unaryOp(65),
-	"(": function (tokens, pointer, precedence) {
-		var inner = parseExpression(tokens, pointer + 1, 0);
-		pointer = advancePointer(tokens, inner.pointer);
-		checkToken(tokens, pointer, ")");
-		return {exp: inner.exp, pointer: pointer + 1};
-	},
+	"(": parseGroupedOrLambda,
 	"[": function (tokens, pointer) {
 		//return parseCall(tokens, pointer, precedence, );
 		return withPrefix(["Vector"], 
@@ -585,15 +593,15 @@ function advanceToNextExpression(tokens, pointer, isEnd) {
 }
 
 function isSkippable(token) {
-	return token.type === "Indent" || 
-		token.string === "," ||
+	return token.is(",") || 
+		token.type === "Indent" || 
 		token.type === "Comment";
 }
 
-function checkToken(tokens, pointer, expected) {
+function checkToken(tokens, pointer, expectedToken) {
 	var token = tokens[pointer];
-	if (token.string !== expected) {
-		errorAt(token, "Expected \"" + expected + 
+	if (token.isNot(expectedToken)) {
+		errorAt(token, "Expected \"" + expectedToken + 
 			"\", but found \"" + token.string + "\"");
 	}
 	return true;

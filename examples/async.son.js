@@ -104,7 +104,7 @@
     request = Promise.promisifyAll(require('request'));
     fs = Promise.promisifyAll(require('fs'));
     function async(value, rest) {
-        return value && $sonata_ofType(value.then, Function) ? value.then(rest) : rest(value);
+        return $sonata_ofType(value, Promise) ? value.then(rest) : rest(value);
     }
     function main(url) {
         if (url === undefined)

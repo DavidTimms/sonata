@@ -197,6 +197,12 @@ Token.prototype = {
 	at: function (index) {
 		return charAt(this.string, index);
 	},
+	is: function (candidate) {
+		return this.string === candidate;
+	},
+	isNot: function (candidate) {
+		return this.string !== candidate;
+	},
 };
 
 function TokenToString() {

@@ -46,14 +46,14 @@ fn isDave(person):
 		person.gender == "male"
 		person.name == "Dave"
 
-fn findName(items): with findWhere:
+fn findName(items) with findWhere:
     item <- items
     item.length > 4
     item.charAt(0) == "D"
     item
 
 
-fn findParents(names, parents): with findAllWhere:
+fn findParents(names, parents) with findAllWhere:
 	name <- names
 	name.length > 4
 	name.charAt(0) == "D"

@@ -3,11 +3,11 @@ TODO
 
  - Syntax:
 	X replace braces with significant whitespace.
-	- make colon optional after else.
+	X make colon optional after else.
 	X combine parse operations for functions and methods so they can both be used 
 	  in object and expression contexts.
 	- ES6 style lambdas.
-	- 'type Point(x, y)' -> 'record Point {x, y}' 
+	- 'type Point(x, y)' -> 'record Point {x, y}'?
 	X Vector and Map property access syntax, eg. `items[2] and user["name"]`.
 	- For-in loops.
 	- import and export.
