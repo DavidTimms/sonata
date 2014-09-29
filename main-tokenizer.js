@@ -78,9 +78,13 @@ function tokenize(source) {
 		return tokens;
 	}
 
-	return input
+	var tokens = input
 		.reduce(inputReducer, emptyTokenArray())
-		.map(Token)
+		// construct tokens from the fully formed token strings
+		// to ensure the correct type has been given to each
+		.map(function (token) {
+			return new Token(token.string, token.position);
+		})
 		.filter(function (token) {
 			return token.type !== "Empty";
 		}).concat([
@@ -92,6 +96,12 @@ function tokenize(source) {
 			new Token("End of File"), 
 			new Token("End of File")
 		]);
+	tokens.forEach(function (token, i) {
+		token.index = i;
+		token.tokenArray = tokens;
+		return token;
+	});
+	return tokens;
 }
 
 function emptyTokenArray() {
@@ -151,12 +161,13 @@ function charAt(str, index) {
 }
 
 // Token Constructor
-function Token(tokenString, position) {
-	if (tokenString instanceof Token) {
-		return Token.call(tokenString, tokenString.string);
-	}
+function Token(tokenString, position, index) {
 
-	this.position = position || this.position || {line: NaN, column: NaN};
+	this.position = position || {line: NaN, column: NaN};
+
+	this.index = index || 0;
+
+	this.tokenArray = [];
 
 	this.string = tokenString;
 	return extend(this, match(tokenString, [
@@ -203,6 +214,14 @@ Token.prototype = {
 	isNot: function (candidate) {
 		return this.string !== candidate;
 	},
+	move: function (distance) {
+		var newIndex = this.index + distance;
+		// ensure new index is within the bounds of the token array
+		newIndex = Math.min(newIndex, this.tokenArray.length - 1);
+		newIndex = Math.max(newIndex, 0);
+
+		return this.tokenArray[newIndex];
+	},
 };
 
 function TokenToString() {
@@ -228,6 +247,7 @@ function extend(obj, mixin) {
 	return obj;
 }
 
+// pattern matching using a string, regex or predicate
 function match(str, patternResultTuples) {
 	var result = patternResultTuples.find(function (tuple) {
 		var pattern = tuple[0];

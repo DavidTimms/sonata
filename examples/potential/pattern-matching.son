@@ -13,10 +13,9 @@ toList([1, 2, 3]) == [1, 2, 3]
 toList(Array(1, 2, 3)) == [1, 2, 3]
 toList(1, 2, 3) == [1, 2, 3]
 
-http.get("http://www.google.com"):
+http.get("http://www.google.com") :>
 	(e :: Error) -> print("failed to fetch URL")
 	(response) -> print(response)
-
 
 obj = {
 	self.toString:

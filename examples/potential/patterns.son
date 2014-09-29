@@ -1,0 +1,5 @@
+
+fn map:
+	(items, func) -> map(items, func, [])
+	([], func, rest) -> rest
+	([head, ...tail], func, rest) -> rest.push(func(head))
