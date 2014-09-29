@@ -102,7 +102,7 @@ var tests = {
 
 	"{name: 'Dave', age: 21}":  "((:object (: name 'Dave') (: age 21)))",
 
-	"{fn self.method(a): a()}": "((:object (: method (fn self method (a) ((a))))))",
+	"{fn self.method(a): a()}": "((:object (: method (fn self null (a) ((a))))))",
 
 	"{fn method(a): a * a}": "((:object (: method (fn method (a) ((* a a))))))",
 
@@ -161,14 +161,14 @@ multilineTest([
 	"	fn self.greet(name):",
 	"		print('Hi' ++ name)",
 	"}"
-], "((:object (: greet (fn self greet (name) ((print (++ 'Hi' name)))))))");
+], "((:object (: greet (fn self null (name) ((print (++ 'Hi' name)))))))");
 
 multilineTest([
 	"type Door(colour):",
 	"	fn self.paint(newColour):",
 	"",
 	"		mix(self, {colour: newColour})"
-], 	"((type Door (colour) ((: paint (fn self paint (newColour) " + 
+], 	"((type Door (colour) ((: paint (fn self null (newColour) " + 
 		"((mix self (:object (: colour newColour)))))))))");
 
 multilineTest([
@@ -177,7 +177,7 @@ multilineTest([
 	"	fn self.sayHi():",
 	"		print('Hi, I am', self.name)",
 ], 	"((type Man (name) ((: gender 'male') " + 
-		"(: sayHi (fn self sayHi () ((print 'Hi, I am' (. self name))))))))");
+		"(: sayHi (fn self null () ((print 'Hi, I am' (. self name))))))))");
 
 multilineTest([
 	"do:",
@@ -224,6 +224,7 @@ function lispString(ast) {
 }
 
 function stringifyToken(token) {
+	if (token === null) return "null";
 	switch (typeof token.value) {
 		// string tokens
 		case "string": return "'" + token.value + "'";

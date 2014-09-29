@@ -2,7 +2,7 @@ var type = require("./utils/type.js");
 var printObj = require('./utils/print-object.js');
 
 module.exports = function (tokens) {
-	var parsed = parseWSBlock(tokens, 0, parseExpression);
+	var parsed = parseWSBlock(tokens[0], parseExpression);
 	return parsed.exp;
 };
 
@@ -13,117 +13,108 @@ var parseBraceBlock = parseSequence({
 	stopWhen: onToken("}")
 });
 
-function parseWSBlock(tokens, pointer, elementParser) {
-	if (tokens[pointer].type === "Indent") {
+function parseWSBlock(token, elementParser) {
+	if (token.type === "Indent") {
 		var parseResult = parseSequence({
 			of: elementParser, 
-			stopWhen: indentLessThan(tokens[pointer].width)
-		})(tokens, pointer);
+			stopWhen: indentLessThan(token.width)
+		})(token);
 
-		return {exp: parseResult.exp, pointer: parseResult.pointer - 1};
+		return {exp: parseResult.exp, token: parseResult.token.previous()};
 	}
-	else errorAt(tokens[pointer],
-		"Block must start on a new line");
+	else errorAt(token, "Block must start on a new line");
 }
 
 function indentLessThan(blockIndent) {
-	return function (tokens, pointer) {
-		var token =  tokens[pointer];
-		var nextToken = tokens[pointer + 1];
-
-		if (token.type === "End of File") return true;
-
-		// check if next token is also an indent,
+	return function (token) {
+		// checks if next token is also an indent,
 		// so empty lines can be skipped
-		return token.type === "Indent" && 
-			token.width < blockIndent && 
-			nextToken.type !== "Indent";
-	}
+		return token.type === "End of File" || 
+			(
+				token.type === "Indent" && 
+				token.width < blockIndent && 
+				token.next().type !== "Indent"
+			);
+	};
 }
 
 // Parse repeatedly using some parse function
 // until the isEnd predicate returns true
 function parseSequence(options) {
 	var parseNext = options.of;
-	return function (tokens, pointer, altIsEnd) {
+	return function (token, altIsEnd) {
 		var isEnd = altIsEnd || options.stopWhen;
 		var parseResult;
 		var expressions = [];
-		pointer = advancePointer(tokens, pointer || 0);
+		token = advanceToken(token);
 
-		while (!isEnd(tokens, pointer)) {
-			parseResult = parseNext(tokens, pointer);
+		while (!isEnd(token)) {
+			parseResult = parseNext(token);
 			expressions.push(parseResult.exp);
-			pointer = advanceToNextExpression(
-				tokens, parseResult.pointer, isEnd);
+			token = advanceToNextExpression(parseResult.token, isEnd);
 		}
 
-		return {exp: expressions, pointer: pointer + 1};
-	}
+		return {exp: expressions, token: token.next()};
+	};
 }
 
-function parseExpression(tokens, pointer, precedence) {
-	pointer = pointer || 0;
+function parseExpression(token, precedence) {
 	precedence = precedence || 0;
 	var parseResult;
 	var exp = null;
-	var token = tokens[pointer];
 
 	// Parse initial atom of the expression:
 
 	// try to find specific parse function for token, else 
 	// find generic parse function for the token type
-	var parseFunction = prefixOperators[token.string] || tokenTypeParsers[token.type];
-	if (!parseFunction) {
+	var parser = prefixOperators[token.string] || tokenTypeParsers[token.type];
+	if (!parser) {
 		throw SyntaxError("Unknown token type " + token);
 	}
 
 	// Parse expression fragments:
 	do {
-		parseResult = parseFunction(tokens, pointer, precedence, exp);
-		pointer = parseResult.pointer;
+		parseResult = parser(token, precedence, exp);
 		exp = parseResult.exp;
 
 		// get the infix parse function for the next token
-		pointer = advancePointer(tokens, pointer);
-		token = tokens[pointer];
-		parseFunction = infixOperators[token.string];
+		token = advanceToken(parseResult.token);
+		parser = infixOperators[token.string];
 
 		// Check that the operator has a precedence
-		if (parseFunction && parseFunction.precedence === undefined) {
-			throw Error("Undefined precedence for infix operator " + token);
+		if (parser && parser.precedence === undefined) {
+			throw Error(
+				"Undefined precedence for infix operator: " + token.string);
 		}
 
 		// break to stop function calls being split over line breaks
-		if (isBracketAtStartOfLine(tokens, pointer)) break;
+		if (isBracketAtStartOfLine(token)) break;
 
 		// if the token is an operator with higher precedence than 
 		// the current master operator, loop to add the partial expression
-	} while (parseFunction && parseFunction.precedence > precedence);
+	} while (parser && parser.precedence > precedence);
 
 	return parseResult;
 }
 
-function parseLiteral(tokens, pointer, precedence) {
+function parseLiteral(token, precedence) {
 	return {
 		exp: {
 			type: "Literal",
-			value: tokens[pointer].value
+			value: token.value
 		}, 
-		pointer: pointer + 1
+		token: token.next()
 	};
 }
 
-function parseNumber(tokens, pointer, precedence) {
+function parseNumber(token, precedence) {
 	// lookahead to detect decimals
-	if (tokens[pointer + 1].is(".") && 
-		tokens[pointer + 2].type === "Number") {
+	if (token.next().is(".") && token.move(2).type === "Number") {
 
-		var value = Number(tokens[pointer].value + 
-			"." + tokens[pointer + 2].string);
+		var value = Number(token.value + "." + token.move(2).string);
 
-		if ("" + value === "NaN") {
-			errorAt(tokens[pointer], "Invalid number");
+		if (String(value) === "NaN") {
+			errorAt(token, "Invalid number");
 		}
 
 		return {
@@ -131,50 +122,48 @@ function parseNumber(tokens, pointer, precedence) {
 				type: "Literal",
 				value: value
 			},
-			pointer: pointer + 3
+			token: token.move(3)
 		};
 	}
 	else {
-		return parseLiteral(tokens, pointer, precedence);
+		return parseLiteral(token, precedence);
 	}
 }
 
-function ignoreToken(tokens, pointer, precedence) {
-	return parseExpression(tokens, pointer + 1, precedence);
+function ignoreToken(token, precedence) {
+	return parseExpression(token.next(), precedence);
 }
 
-function parseIdentifier(tokens, pointer) {
-	return {exp: makeIdentifier(tokens[pointer]), pointer: pointer + 1};
+function parseIdentifier(token) {
+	return {exp: makeIdentifier(token), token: token.next()};
 }
 
 // Should never be reached by a valid program
-function parsePunctuation(tokens, pointer) {
-	throw SyntaxError("Unknown punctuation token: " + tokens[pointer]);
+function parsePunctuation(token) {
+	throw SyntaxError("Unknown punctuation token: " + token);
 }
 
 function unaryOp(unaryOpPrecedence) {
-	function parseUnary (tokens, pointer, precedence) {
-		var operandResult = parseExpression(
-			tokens, 
-			pointer + 1, 
-			unaryOpPrecedence);
+	function parseUnary (token, precedence) {
+		var operandResult = parseExpression(token.next(), unaryOpPrecedence);
 		return {
-			exp: [makeIdentifier(tokens[pointer]), operandResult.exp], 
-			pointer: operandResult.pointer
+			exp: [makeIdentifier(token), operandResult.exp], 
+			token: operandResult.token
 		};
 	}
 	return parseUnary;
 }
 
 function binaryOp(binaryOpPrecedence, rightAssociative) {
-	function parseBinary(tokens, pointer, precedence, left) {
+	function parseBinary(token, precedence, leftExp) {
+
 		var rightResult = parseExpression(
-			tokens, 
-			pointer + 1, 
-			binaryOpPrecedence - (rightAssociative ? 0.01 : 0));
+			token.next(), 
+			binaryOpPrecedence - (rightAssociative ? 0.01 : 0)
+		);
 		return {
-			exp: [makeIdentifier(tokens[pointer]), left, rightResult.exp], 
-			pointer: rightResult.pointer
+			exp: [makeIdentifier(token), leftExp, rightResult.exp], 
+			token: rightResult.token
 		};
 	}
 	// set the precedence to a property of the function, so 
@@ -189,8 +178,8 @@ var matchToken = {
 	"{": "}"
 };
 
-function parseCall(tokens, pointer, precedence, callee) {
-	return withPrefix([callee], parseArguments(tokens, pointer + 1));
+function parseCall(token, precedence, callee) {
+	return withPrefix([callee], parseArguments(token.next()));
 }
 
 var parseArguments = parseSequence({
@@ -198,229 +187,217 @@ var parseArguments = parseSequence({
 	stopWhen: onToken(")")
 });
 
-function parseCallWithObject(tokens, pointer, precedence, callee) {
-	var objResult = parseObjLiteral(tokens, pointer);
+function parseCallWithObject(token, precedence, callee) {
+	var objResult = parseObjLiteral(token);
 	return {
 		exp: [callee, objResult.exp],
-		pointer: objResult.pointer
+		token: objResult.token
 	};
 }
 
-function parseMemberAccess(tokens, pointer, precedence, parent) {
-	if (tokens[pointer + 1].type !== "Identifier") {
-		errorAt(tokens[pointer], 
-			"the property of an object must be an identifier");
+function parseMemberAccess(token, precedence, parent) {
+	if (token.next().type !== "Identifier") {
+		errorAt(token, "the property of an object must be an identifier");
 	}
-	var property = makeIdentifier(tokens[pointer + 1]);
+	var property = makeIdentifier(token.next());
 	return {
 		exp: [makeIdentifier("."), parent, property], 
-		pointer: pointer + 2
+		token: token.move(2)
 	};
 }
 
-function parseDataStructureGetter(tokens, pointer, precedence, dataStruct) {
-	var memberRes = parseExpression(tokens, pointer + 1);
-	checkToken(tokens, memberRes.pointer, "]");
+function parseDataStructureGetter(token, precedence, dataStruct) {
+	var memberRes = parseExpression(token.next());
+	checkToken(memberRes.token, "]");
 	return {
 		exp: [
 			[makeIdentifier("."), dataStruct, makeIdentifier("get")], 
 			memberRes.exp
 		], 
-		pointer: memberRes.pointer + 1
+		token: memberRes.token.next()
 	};
 }
 
-function parseGroupedOrLambda(tokens, pointer, precedence) {
-	var inner = parseExpression(tokens, pointer + 1, 0);
-	pointer = advancePointer(tokens, inner.pointer);
-	checkToken(tokens, pointer, ")");
-	return {exp: inner.exp, pointer: pointer + 1};
+function parseGroupedOrLambda(token, precedence) {
+	var inner = parseExpression(token.next(), 0);
+	token = advanceToken(inner.token);
+	checkToken(token, ")");
+	return {exp: inner.exp, token: token.next()};
 }
 
-function parseFn(tokens, pointer) {
+function parseFn(token) {
 	return withPrefix(["fn"], (
-						fnAnon(tokens, pointer + 1) || 
-						fnNamed(tokens, pointer + 1) || 
-						fnMethod(tokens, pointer + 1) ||
-						errorAt(tokens[pointer], "Invalid method")
+						fnAnon(token.next()) || 
+						fnNamed(token.next()) || 
+						fnMethod(token.next()) ||
+						errorAt(token, "Invalid method")
 					));
 }
 
-function fnAnon(tokens, pointer) {
-	if (tokens[pointer].isNot("(")) return false;
-	var params = parseParams(tokens, pointer);
-	var body = parseBody(tokens, params.pointer, "colon optional");
+function fnAnon(token) {
+	if (token.isNot("(")) return false;
+
+	var params = parseParams(token);
+	var body = parseBody(params.token, "colon optional");
 	return {
 		exp: [params.exp, body.exp], 
-		pointer: body.pointer
+		token: body.token
 	};
 }
 
-function fnNamed(tokens, pointer) {
-	var nameToken = tokens[pointer];
-	if (!isIdentifier(nameToken)) 
-		errorAt(nameToken, 
-			"Expected function name, but found " + nameToken.string);
+function fnNamed(token) {
+	if (!isIdentifier(token)) 
+		errorAt(token, "Expected function name, but found " + token.string);
 
-	return withPrefix([makeIdentifier(nameToken)], 
-		fnAnon(tokens, pointer + 1));
+	return withPrefix([makeIdentifier(token)], fnAnon(token.next()));
 }
 
-function fnMethod(tokens, pointer) {
-
-	if (!(isIdentifier(tokens[pointer]) &&
-		checkToken(tokens, pointer + 1, ".") &&
-		isIdentifier(tokens[pointer + 2])))
+function fnMethod(token) {
+	var methodNameToken = token.move(2);
+	if (!(isIdentifier(token) &&
+		checkToken(token.next(), ".") &&
+		isIdentifier(methodNameToken)))
 			return false;
 
-	var selfName = makeIdentifier(tokens[pointer]);
-	var name = makeIdentifier(tokens[pointer + 2]);
+	var selfName = makeIdentifier(token);
+	var methodName = makeIdentifier(methodNameToken);
 
-	return withPrefix([selfName, name], fnAnon(tokens, pointer + 3));
+	return withPrefix([selfName, methodName], fnAnon(methodNameToken.next()));
 }
 
-function parseParams(tokens, pointer) {
+function parseParams(token) {
 	var param, params = [], endToken = ")";
-	checkToken(tokens, pointer, "(");
-	pointer += 1;
-	while (tokens[pointer].isNot(endToken)) {
+	checkToken(token, "(");
+	token = token.next();
+
+	while (token.isNot(endToken)) {
 		// rest parameter
-		if (tokens[pointer].is("|")) {
-			param = parseParam(tokens, pointer + 1);
+		if (token.is("|")) {
+			param = parseParam(token.next());
 			params.push([makeIdentifier("|"), param.exp]);
-			pointer = advancePointer(tokens, param.pointer);
+			token = advanceToken(param.token);
 			// check for closing parenthesis
-			checkToken(tokens, pointer, endToken);
+			checkToken(token, endToken);
 			break;
 		}
-		param = parseParam(tokens, pointer);
-		params.push(param.exp);
-		pointer = advancePointer(tokens, param.pointer);
+		else {
+			param = parseParam(token);
+			params.push(param.exp);
+			token = advanceToken(param.token);
+		}
 	}
-	return {exp: params, pointer: pointer + 1};
+	return {exp: params, token: token.next()};
 }
 
-function parseParam(tokens, pointer) {
-	var param = parseExpression(tokens, pointer);
+function parseParam(token) {
+	var param = parseExpression(token);
 	if (isIdentifier(param.exp) ||
 		// check for default parameter assignment
 		(isCallTo(assignmentOp, param.exp) && isIdentifier(param.exp[1]))) {
 		return param;
 	}
-	else errorAt(tokens[pointer], 
-		"invalid parameter name in function");
+	else errorAt(token, "invalid parameter name in function");
 }
 
-function parseIf(tokens, pointer) {
-	var test = parseExpression(tokens, pointer + 1);
-
-	var ifBody = parseBody(tokens, test.pointer);
-	var elseBody = parseElse(tokens, ifBody.pointer);
+function parseIf(token) {
+	var test = parseExpression(token.next());
+	var ifBody = parseBody(test.token);
+	var elseBody = parseElse(ifBody.token);
 	//elseBody.exp will be an empty array if there is no else part
 	return {
 		exp: [makeIdentifier("if"), test.exp, ifBody.exp].concat(elseBody.exp),
-		pointer: elseBody.pointer
+		token: elseBody.token
 	};
 }
 
-function parseElse(tokens, pointer) {
-	advPointer = advancePointer(tokens, pointer);
-	if (tokens[advPointer].is("else")) {
-		var elseBody = parseBody(tokens, advPointer + 1, "colon optional");
+function parseElse(token) {
+	advToken = advanceToken(token);
+	if (advToken.is("else")) {
+		var elseBody = parseBody(advToken.next(), "colon optional");
 		return {
 			exp: [elseBody.exp], 
-			pointer: elseBody.pointer
+			token: elseBody.token
 		};
 	}
-	else return {exp: [], pointer: pointer};
+	else return {exp: [], token: token};
 }
 
-function parseBraceBody(tokens, pointer) {
-	pointer = advancePointer(tokens, pointer);
-
-	if (tokens[pointer].is("{")) {
-		return parseBraceBlock(tokens, pointer + 1);
-	}
-	else {
-		var expResult = parseExpression(tokens, pointer);
-		return {exp: [expResult.exp], pointer: expResult.pointer};
-	}
-}
-
-function parseBody(tokens, pointer, colonOptional) {
-	pointer = advancePointer(tokens, pointer);
+function parseBody(token, colonOptional) {
+	token = advanceToken(token);
 
 	if (colonOptional) {
-		if (tokens[pointer].is(":")) pointer += 1;
+		if (token.is(":")) {
+			token = token.next();
+		}
 	}
 	else {
-		checkToken(tokens, pointer, ":");
-		pointer += 1;
+		checkToken(token, ":");
+		token = token.next();
 	}
 
-	if (tokens[pointer].type === "Indent") {
-		return parseWSBlock(tokens, pointer, parseExpression);
+	if (token.type === "Indent") {
+		return parseWSBlock(token, parseExpression);
 	}
 	else {
-		var expResult = parseExpression(tokens, pointer);
-		return {exp: [expResult.exp], pointer: expResult.pointer};
+		var expResult = parseExpression(token);
+		return {exp: [expResult.exp], token: expResult.token};
 	}
 }
 
-function parseType(tokens, pointer) {
+function parseType(token) {
 	var behaviour;
-	var token = tokens[pointer + 1];
+	var token = token.next();
 	if (!isIdentifier(token)) errorAt(token, 
 			"Expected a type name, but found " + token.string);
 
-	var typeName = parseIdentifier(tokens, pointer + 1).exp;
-	var params = parseParams(tokens, pointer + 2);
+	var typeName = parseIdentifier(token).exp;
+	var params = parseParams(token.next());
 
 	// optional behaviour block
-	pointer = params.pointer;
-	if (tokens[pointer].is(":")) {
-		behaviour = parseWSBlock(tokens, pointer + 1, parseObjProperty);
-		pointer = behaviour.pointer;
+	token = params.token;
+	if (token.is(":")) {
+		behaviour = parseWSBlock(token.next(), parseObjProperty);
+		token = behaviour.token;
 	}
 
 	return {
 		exp: [makeIdentifier("type"), typeName, params.exp]
 			.concat(behaviour ? [behaviour.exp] : []), 
-		pointer: pointer
+		token: token
 	};
 }
 
-function parseDoBlock(tokens, pointer) {
-	var blockBody = parseBody(tokens, pointer + 1);
+function parseDoBlock(token) {
+	var blockBody = parseBody(token.next());
 	return {
 		exp: [makeIdentifier("do"), blockBody.exp], 
-		pointer: blockBody.pointer
+		token: blockBody.token
 	};
 }
 
-function parseWithBlock(tokens, pointer) {
-	var controller = parseExpression(tokens, pointer + 1);
+function parseWithBlock(token) {
+	var controller = parseExpression(token.next());
 
-	var blockBody = parseBody(tokens, controller.pointer);
+	var blockBody = parseBody(controller.token);
 
 	return {
 		exp: [makeIdentifier("with"), controller.exp, blockBody.exp], 
-		pointer: blockBody.pointer
+		token: blockBody.token
 	};
 }
 
-function parseSetExpression(tokens, pointer) {
+function parseSetExpression(token) {
 	var precedence = 8;
-	var assignResult = parseExpression(tokens, pointer + 1, precedence);
+	var assignResult = parseExpression(token.next(), precedence);
 	if (isCallTo(assignmentOp, assignResult.exp)) {
-		assignResult.exp[0] = makeIdentifier(tokens[pointer]);
+		assignResult.exp[0] = makeIdentifier(token);
 		return assignResult;
 	}
-	else errorAt(tokens[pointer], "invalid variable reassignment");
+	else errorAt(token, "invalid variable reassignment");
 }
 
-function parseObjLiteral(tokens, pointer, precedence) {
-	return withPrefix([":object"], parseObjLiteralBody(tokens, pointer + 1));
+function parseObjLiteral(token, precedence) {
+	return withPrefix([":object"], parseObjLiteralBody(token.next()));
 }
 
 var parseObjLiteralBody = parseSequence({
@@ -428,23 +405,22 @@ var parseObjLiteralBody = parseSequence({
 	stopWhen: onToken("}")
 });
 
-function parseObjProperty(tokens, pointer) {
+function parseObjProperty(token) {
 	var key, value;
-	var token = tokens[pointer];
 
 	if (token.is("fn")) {
-		return parseMethod(tokens, pointer);
+		return parseMethod(token);
 	}
 	else if (token.type === "Identifier") {
-		key = parseIdentifier(tokens, pointer);
+		key = parseIdentifier(token);
 	}
 	else if (token.type === "String" || token.type === "Number") {
-		key = parseLiteral(tokens, pointer);
+		key = parseLiteral(token);
 	}
-	else errorAt(tokens[pointer], "Invalid object property key");
+	else errorAt(token, "Invalid object property key");
 
-	checkToken(tokens, key.pointer, ":");
-	value = parseExpression(tokens, key.pointer + 1);
+	checkToken(key.token, ":");
+	value = parseExpression(key.token.next());
 
 	return objProperty(key.exp, value);
 }
@@ -452,20 +428,26 @@ function parseObjProperty(tokens, pointer) {
 function objProperty(keyExp, valueRes) {
 	return {
 		exp: [makeIdentifier(":"), keyExp, valueRes.exp],
-		pointer: valueRes.pointer
+		token: valueRes.token
 	};
 }
 
-function parseMethod(tokens, pointer) {
-	var method;
+function parseMethod(token) {
 
-	if (method = fnNamed(tokens, pointer + 1)) {
+	var method = fnNamed(token.next());
+
+	if (method) {
 		methodName = method.exp[0];
 	}
-	else if (method = fnMethod(tokens, pointer + 1)) {
-		methodName = method.exp[1];
+	else {
+		method = fnMethod(token.next())
+
+		if (method) {
+			methodName = method.exp[1];
+			method.exp[1] = null;
+		}
+		else errorAt(token, "Invalid method declaration");
 	}
-	else errorAt(tokens[pointer], "Invalid method")
 
 	return objProperty(methodName, withPrefix(["fn"], method));
 }
@@ -475,10 +457,9 @@ var prefixOperators = {
 	"not": unaryOp(23),
 	"@": unaryOp(65),
 	"(": parseGroupedOrLambda,
-	"[": function (tokens, pointer) {
-		//return parseCall(tokens, pointer, precedence, );
+	"[": function (token) {
 		return withPrefix(["Vector"], 
-			parseArguments(tokens, pointer + 1, onToken("]")));
+			parseArguments(token.next(), onToken("]")));
 	},
 	"{": parseObjLiteral,
 	"fn": parseFn,
@@ -539,19 +520,14 @@ function lispString(ast) {
 			: ast.value || ast.name;
 }
 
-function isBracketAtStartOfLine(tokens, pointer) {
-	return tokens[pointer].string in matchToken && 
-		tokens[pointer - 1] && 
-		isSkippable(tokens[pointer - 1]);
+function isBracketAtStartOfLine(token) {
+	return token.string in matchToken && isSkippable(token.previous());
 }
 
 function makeIdentifier(name) {
-	if (typeof name === "object")
-		name = name.string;
-
 	return {
 		type: "Identifier",
-		name: name
+		name: (typeof(name) === "object") ? name.string : name,
 	};
 }
 
@@ -559,37 +535,36 @@ function isCallTo(identifier, node) {
 	return node instanceof Array && node[0].name === identifier;
 }
 
-function onToken(tokenString) {
-	var f = function (tokens, pointer) {
-		var token = tokens[pointer];
-		return token.type === "End of File" || token.string === tokenString;
-	}
+function onToken(stopToken) {
+	var f = function (token) {
+		return token.type === "End of File" || token.is(stopToken);
+	};
 	f.toString = function () {
-		return "on token: " + tokenString;
-	}
+		return "on token: " + stopToken;
+	};
 	return f;
 }
 
-function advancePointer(tokens, pointer) {
-	while (isSkippable(tokens[pointer])) {
-		pointer += 1;
+function advanceToken(token) {
+	while (isSkippable(token)) {
+		token = token.next();
 	}
-	return pointer;
+	return token;
 }
 
-function advanceToNextExpression(tokens, pointer, isEnd) {
+function advanceToNextExpression(token, isEnd) {
 	var foundDivider = false;
-	while (isSkippable(tokens[pointer]) && !isEnd(tokens, pointer)) {
-		pointer += 1;
+	while (isSkippable(token) && !isEnd(token)) {
+		token = token.next();
 		foundDivider = true;
 	}
 
 	// throw an error if two expressions are 
 	// on the same line without a comma
-	if (!(foundDivider || isEnd(tokens, pointer))) {
-		errorAt(tokens[pointer], "Unexpected start of expression");
+	if (!(foundDivider || isEnd(token))) {
+		errorAt(token, "Unexpected start of expression");
 	}
-	return pointer;
+	return token;
 }
 
 function isSkippable(token) {
@@ -598,8 +573,7 @@ function isSkippable(token) {
 		token.type === "Comment";
 }
 
-function checkToken(tokens, pointer, expectedToken) {
-	var token = tokens[pointer];
+function checkToken(token, expectedToken) {
 	if (token.isNot(expectedToken)) {
 		errorAt(token, "Expected \"" + expectedToken + 
 			"\", but found \"" + token.string + "\"");
@@ -627,7 +601,7 @@ function prependCallee(callee, parseResult) {
 	if (typeof(callee) === "string") callee = makeIdentifier(callee);
 	return {
 		exp: [callee].concat(parseResult.exp),
-		pointer: parseResult.pointer
+		token: parseResult.token
 	};
 }
 
@@ -636,7 +610,7 @@ function withPrefix(prefix, parseResult) {
 	if (!parseResult) return false;
 	return {
 		exp: prefix.map(wrapIdentifier).concat(parseResult.exp),
-		pointer: parseResult.pointer
+		token: parseResult.token
 	};
 }
 

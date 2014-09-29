@@ -132,7 +132,8 @@ var statementConverters = {
 		});
 	},
 	"fn": function (parts, context) {
-		return converters.fn(parts, context, "FunctionDeclaration");
+		context.isFunctionDeclaration = true;
+		return converters.fn(parts, context);
 	},
 };
 
@@ -312,14 +313,15 @@ function convertObjKey(node) {
 }
 
 var converters = {
-	"fn": function (parts, context, functionDeclaration) {
+	"fn": function (parts, context) {
 		context = context || {};
-		var name;
+		var type;
+		var name = null;
 		var offset = 0;
-		
-		var functionIsNamed = parts[0].type === "Identifier";
+
+		var functionIsNamed = parts.length > 2;
 		if (functionIsNamed) {
-			var hasSelfName = parts[1].type === "Identifier";
+			var hasSelfName = parts.length > 3;
 			if (hasSelfName) {
 				context.selfName = parts[0];
 				name = parts[1];
@@ -330,8 +332,16 @@ var converters = {
 				offset = 1;
 			}
 		}
-		else if (functionDeclaration) {
-			throw SyntaxError("Function Declaration must have a name");
+
+		if (context.isFunctionDeclaration) {
+			type = "FunctionDeclaration";
+			context.isFunctionDeclaration = false;
+			if (!name) {
+				throw SyntaxError("Function Declaration must have a name");
+			}
+		}
+		else {
+			type = "FunctionExpression";
 		}
 
 		context.params = convertParameters(parts[offset]);
@@ -341,10 +351,8 @@ var converters = {
 		var funcBody = convertBody(bodyExpressions, context);
 
 		return {
-			type: functionDeclaration || "FunctionExpression",
+			type: type,
 			id: name,
-			//context.nameIdent ? 
-			//	makeIdentifier(context.nameIdent.name) : null,
 			params: context.params.identifiers,
 			body: makeBlock(funcBody),
 			defaults: [],

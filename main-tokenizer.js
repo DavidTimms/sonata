@@ -222,6 +222,12 @@ Token.prototype = {
 
 		return this.tokenArray[newIndex];
 	},
+	next: function () {
+		return this.move(1);
+	},
+	previous: function () {
+		return this.move(-1);
+	},
 };
 
 function TokenToString() {

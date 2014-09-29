@@ -1,6 +1,9 @@
 (function () {
     'use strict';
     var $sonata_Immutable = require('immutable'), Sequence = $sonata_Immutable.Sequence, Vector = $sonata_Immutable.Vector, Map = $sonata_Immutable.Map, OrderedMap = $sonata_Immutable.OrderedMap, Range = $sonata_Immutable.Range, Repeat = $sonata_Immutable.Repeat, Record = $sonata_Immutable.Record, Set = $sonata_Immutable.Set, eq = $sonata_Immutable.is;
+    Sequence.prototype.$sonata_map_ = function (mapper, thisArg) {
+        return this.map(mapper, thisArg);
+    };
     var sqrt = Math.sqrt, floor = Math.floor, ceil = Math.ceil, round = Math.round, max = Math.max, min = Math.min, random = Math.random;
     function tryCatch(tryBody, catchBody) {
         try {
@@ -96,14 +99,7 @@
             main.apply(null, process.argv.slice(2));
         }
     }
-    var nodeREPL;
-    var vm;
-    var tokenize;
-    var parse;
-    var convertAST;
-    var validateAST;
-    var escodegen;
-    var main;
+    var nodeREPL, vm, tokenize, parse, convertAST, validateAST, escodegen;
     nodeREPL = require('repl');
     vm = require('vm');
     tokenize = require('../main-tokenizer');
@@ -111,19 +107,15 @@
     convertAST = require('../ast-converter');
     validateAST = require('ast-validator');
     escodegen = require('escodegen');
-    main = function main() {
-        var options;
-        var repl;
+    function main() {
+        var options, repl;
         options = {
             'prompt': 'sonata> ',
             'useGlobal': true,
             'eval': function (wrappedInput, context, filename, callback) {
-                var self;
-                self = this;
+                var self = this;
                 return tryCatch(function () {
-                    var input;
-                    var tokens;
-                    var sonataAST;
+                    var input, tokens, sonataAST;
                     input = wrappedInput.slice(1, -2);
                     tokens = tokenize(input);
                     sonataAST = parse(tokens);
@@ -148,6 +140,6 @@
             js = escodegen.generate(preludeAST);
             return vm.runInThisContext(js, 'prelude');
         });
-    };
+    }
     $sonata_startMain();
 }());
