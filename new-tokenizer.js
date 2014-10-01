@@ -94,7 +94,13 @@ function indent(str, position) {
 function comment(str, position) {
 	if (str.charAt(0) === "#") {
 		var taken = takeStringWhile(str.slice(1), isCommentChar);
-		return {
+
+		if (taken.rest.charAt(0) === "#") return {
+			token: Token.comment("#" + taken.head + "#", position),
+			rest: taken.rest.slice(1),
+			position: position.moveColumn(taken.head.length + 2),
+		};
+		else return {
 			token: Token.comment("#" + taken.head, position),
 			rest: taken.rest,
 			position: position.moveColumn(taken.head.length + 1),

@@ -1,5 +1,5 @@
 var escodegen = require("escodegen");
-var tokenize = require("./main-tokenizer.js");
+var tokenize = require("./new-tokenizer.js");
 var parse = require("./tdop-parser.js");
 var convertAST = require("./ast-converter.js").convertProgram;
 var fs = require("fs");

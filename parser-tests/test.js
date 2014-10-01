@@ -1,4 +1,4 @@
-var tokenize = require("../main-tokenizer.js");
+var tokenize = require("../new-tokenizer.js");
 var parse = require("../tdop-parser.js");
 
 var tests = {
@@ -208,6 +208,7 @@ function test(input, output) {
 	}
 	catch (e) {
 		console.log("Test failed:\n" + input);
+		console.log(tokenize(input));
 		throw e;
 	}
 	if (parsed !== output) {

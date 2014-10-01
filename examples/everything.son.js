@@ -175,7 +175,7 @@
         });
     }
     maths = {
-        'add': function add(a, b) {
+        'add': function (a, b) {
             var self = this;
             return +a + +b;
         },
@@ -190,7 +190,7 @@
         ensure($sonata_ofType(continent, String), 'Continent name must be a String');
         return {
             'name': name,
-            'describe': function describe() {
+            'describe': function () {
                 var self = this;
                 return name.concat(' is a country in ').concat(continent);
             },
