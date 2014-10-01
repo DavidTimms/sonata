@@ -13,7 +13,7 @@ var parseBraceBlock = parseSequence({
 });
 
 function parseWSBlock(token, elementParser) {
-	if (token.type === "Indent") {
+	if (token.isIndent) {
 		var parseResult = parseSequence({
 			of: elementParser, 
 			stopWhen: indentLessThan(token.width)
@@ -24,18 +24,18 @@ function parseWSBlock(token, elementParser) {
 			token: parseResult.token.previous()
 		};
 	}
-	else errorAt(token, "Block must start on a new line");
+	else token.error("Block must start on a new line");
 }
 
 function indentLessThan(blockIndent) {
 	return function (token) {
 		// checks if next token is also an indent,
 		// so empty lines can be skipped
-		return token.type === "End of File" || 
+		return token.is("End of File") || 
 			(
-				token.type === "Indent" && 
+				token.isIndent && 
 				token.width < blockIndent && 
-				token.next().type !== "Indent"
+				!token.next().isIndent
 			);
 	};
 }
@@ -114,12 +114,12 @@ function parseLiteral(token, precedence) {
 
 function parseNumber(token, precedence) {
 	// lookahead to detect decimals
-	if (token.next().is(".") && token.move(2).type === "Number") {
+	if (token.next().is(".") && token.move(2).isNumber) {
 
 		var value = Number(token.value + "." + token.move(2).string);
 
 		if (String(value) === "NaN") {
-			errorAt(token, "Invalid number");
+			token.error("Invalid number");
 		}
 
 		return {
@@ -202,7 +202,7 @@ function parseCallWithObject(token, precedence, callee) {
 
 function parseMemberAccess(token, precedence, parent) {
 	if (token.next().type !== "Identifier") {
-		errorAt(token, "the property of an object must be an identifier");
+		token.error("the property of an object must be an identifier");
 	}
 	var property = makeIdentifier(token.next());
 	return {
@@ -235,7 +235,7 @@ function parseFn(token) {
 						fnAnon(token.next()) || 
 						fnNamed(token.next()) || 
 						fnMethod(token.next()) ||
-						errorAt(token, "Invalid method")
+						token.error("Invalid method")
 					));
 }
 
@@ -251,17 +251,17 @@ function fnAnon(token) {
 }
 
 function fnNamed(token) {
-	if (!isIdentifier(token)) 
-		errorAt(token, "Expected function name, but found " + token.string);
+	if (!token.isIdentifier) 
+		token.error("Expected function name, but found " + token.string);
 
 	return withPrefix([makeIdentifier(token)], fnAnon(token.next()));
 }
 
 function fnMethod(token) {
 	var methodNameToken = token.move(2);
-	if (!(isIdentifier(token) &&
-		checkToken(token.next(), ".") &&
-		isIdentifier(methodNameToken)))
+	if (!token.isIdentifier &&
+		!checkToken(token.next(), ".") &&
+		!methodNameToken.isIdentifier)
 			return false;
 
 	var selfName = makeIdentifier(token);
@@ -296,12 +296,12 @@ function parseParams(token) {
 
 function parseParam(token) {
 	var param = parseExpression(token);
-	if (isIdentifier(param.exp) ||
+	if (param.exp.isIdentifier ||
 		// check for default parameter assignment
-		(isCallTo(assignmentOp, param.exp) && isIdentifier(param.exp[1]))) {
+		(isCallTo(assignmentOp, param.exp) && param.exp[1].isIdentifier)) {
 		return param;
 	}
-	else errorAt(token, "invalid parameter name in function");
+	else token.error("invalid parameter name in function");
 }
 
 function parseIf(token) {
@@ -340,7 +340,7 @@ function parseBody(token, colonOptional) {
 		token = token.next();
 	}
 
-	if (token.type === "Indent") {
+	if (token.isIndent) {
 		return parseWSBlock(token, parseExpression);
 	}
 	else {
@@ -352,7 +352,7 @@ function parseBody(token, colonOptional) {
 function parseType(token) {
 	var behaviour;
 	token = token.next();
-	if (!isIdentifier(token)) errorAt(token, 
+	if (!token.isIdentifier) token.error(
 			"Expected a type name, but found " + token.string);
 
 	var typeName = parseIdentifier(token).exp;
@@ -398,7 +398,7 @@ function parseSetExpression(token) {
 		assignResult.exp[0] = makeIdentifier(token);
 		return assignResult;
 	}
-	else errorAt(token, "invalid variable reassignment");
+	else token.error("invalid variable reassignment");
 }
 
 function parseObjLiteral(token, precedence) {
@@ -416,13 +416,13 @@ function parseObjProperty(token) {
 	if (token.is("fn")) {
 		return parseMethod(token);
 	}
-	else if (token.type === "Identifier") {
+	else if (token.isIdentifier) {
 		key = parseIdentifier(token);
 	}
-	else if (token.type === "String" || token.type === "Number") {
+	else if (token.isString || token.isNumber) {
 		key = parseLiteral(token);
 	}
-	else errorAt(token, "Invalid object property key");
+	else token.error("Invalid object property key");
 
 	checkToken(key.token, ":");
 	value = parseExpression(key.token.next());
@@ -451,7 +451,7 @@ function parseMethod(token) {
 			methodName = method.exp[1];
 			method.exp[1] = null;
 		}
-		else errorAt(token, "Invalid method declaration");
+		else token.error("Invalid method declaration");
 	}
 
 	return objProperty(methodName, withPrefix(["fn"], method));
@@ -533,6 +533,7 @@ function makeIdentifier(name) {
 	return {
 		type: "Identifier",
 		name: (typeof(name) === "object") ? name.string : name,
+		isIdentifier: true,
 	};
 }
 
@@ -542,7 +543,7 @@ function isCallTo(identifier, node) {
 
 function onToken(stopToken) {
 	var f = function (token) {
-		return token.type === "End of File" || token.is(stopToken);
+		return token.is("End of File") || token.is(stopToken);
 	};
 	f.toString = function () {
 		return "on token: " + stopToken;
@@ -568,7 +569,7 @@ function advanceToNextExpression(token, isEnd) {
 	// on the same line without a comma
 	if (!(foundDivider || isEnd(token))) {
 		console.log(token);
-		errorAt(token, "Unexpected start of expression");
+		token.error("Unexpected start of expression");
 	}
 	return token;
 }
@@ -576,28 +577,25 @@ function advanceToNextExpression(token, isEnd) {
 function isSkippable(token) {
 	return token.is(",") || 
 		token.is(";") || 
-		token.type === "Indent" || 
-		token.type === "Comment";
+		token.isIndent || 
+		token.isComment;
 }
 
 function checkToken(token, expectedToken) {
 	if (token.isNot(expectedToken)) {
-		errorAt(token, "Expected \"" + expectedToken + 
+		token.error("Expected \"" + expectedToken + 
 			"\", but found \"" + token.string + "\"");
 	}
 	return true;
 }
 
+/*
 function isIdentifier(node, name) {
 	return typeof(node) === "object" && 
 		node.type === "Identifier" && 
 		(name ? node.name === name : true);
 }
-
-function errorAt(token, message) {
-	throw new SyntaxError(message + "\nat line " + 
-		token.position.line + ":" + token.position.column);
-}
+*/
 
 function withPrecedence(precedence, func) {
 	func.precedence = precedence;
