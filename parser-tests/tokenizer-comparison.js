@@ -1,5 +1,5 @@
-var tokenizeOld = require("../main-tokenizer.js");
-var tokenizeNew = require("../new-tokenizer.js");
+var tokenizeOld = require("../main-tokenizer");
+var tokenizeNew = require("../new-tokenizer");
 var fs = require("fs");
 
 var inputFile = process.argv[2];
@@ -31,6 +31,8 @@ function isSameToken(oldToken, newToken) {
 	return ["type", "string", "value", "width"]
 		.every(function (property) {
 			return (property === "string" && newToken.isIndent) || 
-				oldToken[property] === newToken[property];
+				String(oldToken[property]) === String(newToken[property]) ||
+				console.log("Different:", property, 
+					oldToken[property], newToken[property]);
 		});
 }

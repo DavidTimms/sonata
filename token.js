@@ -1,19 +1,16 @@
+var Position = require("./position");
+
 // Token Constructor
 function Token(type, position) {
 	this.type = type;
 
 	this["is" + type] = true;
 
-	this.position = position || {line: "???", column: "???"};
+	this.position = position || Position("???", "???");
 
 	// These will be assigned later
 	this.index = 0;
 	this.tokenArray = [];
-}
-
-Token.identifier = function (str, position) {
-	return new Token("Identifier", position)
-		.set("string", str);
 }
 
 Token.eof = function () {
@@ -26,41 +23,36 @@ Token.indent = function (str, position) {
 		.set("width", str.length);
 }
 
-Token.comment = function (str, position) {
-	return new Token("Comment", position)
-		.set("string", str);
+Token.identifier = tokenCreator("Identifier");
+
+Token.comment = tokenCreator("Comment");
+
+Token.punctuation = tokenCreator("Punctuation");
+
+Token.number =  valueTokenCreator("Number");
+
+Token.string =  valueTokenCreator("String");
+
+Token.regex =  valueTokenCreator("Regex");
+
+Token.boolean = valueTokenCreator("Boolean");
+
+function tokenCreator(type) {
+	return function (str, position) {
+		return new Token(type, position)
+			.set("string", str);
+	}
 }
 
-Token.number = function (str, position) {
-	return new Token("Number", position)
-		.set("string", str)
-		.set("value", Number(str));
-}
-
-Token.string = function (str, position) {
-	return new Token("String", position)
-		.set("value", evalMultiline(str));
-}
-
-Token.regex = function (str, position) {
-	return new Token("Regex", position)
-		.set("value", evalMultiline(str));
-}
-
-Token.boolean = function (str, position) {
-	return new Token("Boolean", position)
-		.set("string", str)
-		.set("value", evalMultiline(str));
-}
-
-Token.punctuation = function (str, position) {
-	return new Token("Punctuation", position)
-		.set("string", str);
+function valueTokenCreator(type) {
+	return function (str, position) {
+		return new Token(type, position)
+			.set("string", str)
+			.set("value", evalMultiline(str));
+	}
 }
 
 Token.prototype = {
-	toString: TokenToString,
-	inspect: TokenToString,
 	is: function (candidate) {
 		return this.string === candidate;
 	},
@@ -85,9 +77,12 @@ Token.prototype = {
 		this[property] = value;
 		return this;
 	},
+	error: function (message) {
+		this.position.error(message);
+	},
 };
 
-function TokenToString() {
+Token.prototype.toString = Token.prototype.inspect = function () {
 	// show width for indents
 	return this.type + 
 		"(" + 
