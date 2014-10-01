@@ -19,7 +19,10 @@ function parseWSBlock(token, elementParser) {
 			stopWhen: indentLessThan(token.width)
 		})(token);
 
-		return {exp: parseResult.exp, token: parseResult.token.previous()};
+		return {
+			exp: parseResult.exp, 
+			token: parseResult.token.previous()
+		};
 	}
 	else errorAt(token, "Block must start on a new line");
 }
@@ -53,7 +56,10 @@ function parseSequence(options) {
 			token = advanceToNextExpression(parseResult.token, isEnd);
 		}
 
-		return {exp: expressions, token: token.next()};
+		return {
+			exp: expressions, 
+			token: token.next()
+		};
 	};
 }
 
@@ -561,6 +567,7 @@ function advanceToNextExpression(token, isEnd) {
 	// throw an error if two expressions are 
 	// on the same line without a comma
 	if (!(foundDivider || isEnd(token))) {
+		console.log(token);
 		errorAt(token, "Unexpected start of expression");
 	}
 	return token;

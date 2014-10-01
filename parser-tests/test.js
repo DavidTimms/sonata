@@ -207,8 +207,8 @@ function test(input, output) {
 		var parsed = lispString(parse(tokenize(input)));
 	}
 	catch (e) {
+		console.log("Test failed:\n" + input);
 		throw e;
-		var parsed = "Error: " + e.message;
 	}
 	if (parsed !== output) {
 		console.log("Test failed: ");
