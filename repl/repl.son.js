@@ -102,8 +102,8 @@
     var nodeREPL, vm, tokenize, parse, convertAST, validateAST, escodegen;
     nodeREPL = require('repl');
     vm = require('vm');
-    tokenize = require('../main-tokenizer');
-    parse = require('../tdop-parser');
+    tokenize = require('../tokenizer');
+    parse = require('../parser');
     convertAST = require('../ast-converter');
     validateAST = require('ast-validator');
     escodegen = require('escodegen');

@@ -5,9 +5,9 @@ var Position = require("./position");
 
 // these characters are treated as separate tokens 
 // even if not surrounded by whitespace
-var punctuationChars = "(){}[].,;:|@";
+var punctuationChars = "(){}[].,;:@";
 
-var specialOperators = ["::"];
+var specialOperators = ["::", "..."];
 
 function tokenize(inputString) {
 	var tokens = [];

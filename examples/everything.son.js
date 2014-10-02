@@ -113,7 +113,7 @@
             return Person;
         }();
     function main() {
-        var dave, jane, names, parentDict, validParents;
+        var dave, jane, names, parentDict;
         ensure(eq(doScoping(2), doScoping(18)));
         dave = Person('Dave', 21, 'male');
         ensure(isDave(dave));
@@ -127,8 +127,7 @@
             'Derrick': Vector('Lucy', 'Matt')
         };
         ensure(eq(findName(names), 'David'));
-        validParents = Vector('Tina', 'Les', 'Lucy', 'Matt');
-        ensure(eq(findParents(names, parentDict), validParents));
+        ensure(eq(lastArg(1, 2, 3), 3));
         ensure(eq(maths.add(maths[45], 2), 34));
         ensure(eq(country('China', 'Asia').describe(), 'China is a country in Asia'));
         ensure(eq(Map({
@@ -138,6 +137,7 @@
         ensure(eq(Vector(1, 2, 3).get(2), 3));
         ensure(eq(Math.floor(Math.pow(sqrt(20), 2)), 20));
         ensure(eq(mutatingDouble(5), 10));
+        ensure(eq(max.apply(null, [1].concat(Vector(3, 7, 6).toArray(), Vector.apply(null, [3].concat(Vector(9, 11).toArray())).toArray(), [4])), 11));
         return print('All tests passed');
     }
     function doScoping(x) {
@@ -165,14 +165,13 @@
             });
         });
     }
-    function findParents(names, parents) {
-        return findAllWhere(names, function (name) {
-            return findAllWhere(name.length > 4, function () {
-                return findAllWhere(eq(name.charAt(0), 'D'), function () {
-                    return parents[name];
-                });
-            });
-        });
+    function lastArg(items) {
+        var $sonata_i, $sonata_restArray = [];
+        for ($sonata_i = 0; $sonata_i < arguments.length; $sonata_i++) {
+            $sonata_restArray.push(arguments[$sonata_i]);
+        }
+        items = Vector.from($sonata_restArray);
+        return items.last();
     }
     maths = {
         'add': function (a, b) {

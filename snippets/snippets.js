@@ -216,12 +216,24 @@ concat: {
 	$left.concat($right);
 }
 
+concatMany: {
+	$first.concat($each_rest);
+}
+
 staticProperty: {
 	$object.$property;
 }
 
 dynamicProperty: {
 	$object[$property];
+}
+
+toArray: {
+	$object.toArray();
+}
+
+apply: {
+	$func.apply(null, $argsArray);
 }
 
 ofType: {

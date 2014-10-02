@@ -171,7 +171,7 @@ function makeTypeParamAssignments(params) {
 
 function convertParameters(params) {
 	return params.reduce(function (output, node, index) {
-		if (isCallTo(assignmentOp, node) || isCallTo("|", node)) {
+		if (isCallTo(assignmentOp, node) || isCallTo("...", node)) {
 			output.identifiers.push(node[1]);
 			output.defaults[index] = node;
 		}
@@ -193,7 +193,7 @@ function createDefaultAssignments(defaults) {
 		}
 
 		// rest parameters
-		if (isCallTo("|", defaultAssign)) {
+		if (isCallTo("...", defaultAssign)) {
 			return buildSnippet("restParam", {
 				paramName: makeIdentifier(defaultAssign[1].name), 
 				fromIndex: makeLiteral(index)
@@ -441,26 +441,10 @@ var converters = {
 			right: convertExp(parts[1])
 		})
 	},
-	/* Sting concatenation operator removed in favour of generic "++"
-	"&": function (parts) {
-		var left =  convertExp(parts[0]);
-		var right = convertExp(parts[1]);
-
-		// add a concatenation to the empty string to
-		// convert the value to a string
-		if (!(isStringNode(parts[0]) || isStringNode(parts[1]))) {
-			left = snippetExp("concatString", {
-				left: makeLiteral(""), 
-				right: left
-			});
-		}
-
-		return snippetExp("concatString", {
-			left: left, 
-			right: right
-		});
+	"...": function () {
+		throw SyntaxError("'...'' operator can only be used" + 
+			" in a function call, array or parameter");
 	},
-	*/
 	"^": macro(function (left, right) {
 		return [[".", "Math", "pow"], left, right];
 	}),
@@ -587,11 +571,65 @@ function snippetProperty(name, data) {
 }
 
 function makeFunctionCall(func, args) {
+	return args.some(isCallTo("...")) ?
+		makeSpreadCall(func, args) :
+		makeCallExpression(func, args);
+}
+
+// converts a call with '...' spread parameters used to 
+// decompose a sequence into the arguments
+function makeSpreadCall(func, args) {
+
+	// build an array of the argument groups by putting 
+	// normal arguments into arrays and wrapping spread
+	// arguments in .toArray() calls
+	var argGroups = [makeArrayExp()];
+	args.forEach(function (arg) {
+		if (isCallTo("...", arg)) {
+			argGroups.push(
+				snippetExp("toArray", {
+					object: convertExp(arg[1])
+				}), 
+				makeArrayExp()
+			);
+		}
+		else {
+			last(argGroups).elements.push(arg);
+		}
+	});
+
+	// remove empty argument groups
+	argGroups = argGroups.filter(isNotEmptyArrayExpression);
+
+	return snippetExp("apply", {
+		func: func,
+		// generate an expression which concatenates 
+		// all the argument groups together
+		argsArray: snippetExp("concatMany", {
+			first: argGroups[0],
+			rest: argGroups.slice(1),
+		}),
+	});
+}
+
+function makeCallExpression(func, args) {
 	return {
 		type: "CallExpression",
 		callee: func,
 		arguments: args? args.map(convertExp) : []
 	};
+}
+
+function makeArrayExp(elements) {
+	return {
+		type: "ArrayExpression",
+		elements: elements ? elements.map(convertExp) : [],
+	};
+}
+
+function isNotEmptyArrayExpression(group) {
+	return group.type !== "ArrayExpression" ||
+		group.elements.length > 0;
 }
 
 function binaryExpressionMaker(type, op) {
@@ -634,14 +672,14 @@ function makeIdentifier(name, options) {
 function makeLiteral(value) {
 	return {
 		type: "Literal",
-		value: value
+		value: value,
 	};
 }
 
 function makeBlock(body) {
 	return {
 		type: "BlockStatement",
-		body: body
+		body: body,
 	};
 }
 
@@ -650,14 +688,14 @@ function makeAssignment(left, right) {
 		type: "AssignmentExpression",
 		operator: "=",
 		left: left,
-		right: right
+		right: right,
 	};
 }
 
 function makeExpStatement(expression) {
 	return {
 		type: "ExpressionStatement",
-		expression: expression
+		expression: expression,
 	}
 }
 
@@ -698,6 +736,14 @@ function walkNode(node, callback) {
 }
 
 function isCallTo(identifier, node) {
+
+	// if only one argument is given, return curried version
+	if (arguments.length < 2) {
+		return function (node) {
+			return isCallTo(identifier, node);
+		}
+	}
+
 	return node instanceof Array && node[0].name === identifier;
 }
 
@@ -761,6 +807,10 @@ function negate(predicate) {
 	return function () {
 		return !predicate.apply(this, arguments);
 	}
+}
+
+function last(arr) {
+	return arr[arr.length - 1];
 }
 
 module.exports = {

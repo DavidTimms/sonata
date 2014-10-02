@@ -1,18 +1,11 @@
 var printObj = require('./utils/print-object.js');
 
 module.exports = function (tokens) {
-	var parsed = parseWSBlock(tokens[0], parseExpression);
+	var parsed = parseBlock(tokens[0], parseExpression);
 	return parsed.exp;
 };
 
-var assignmentOp = "=";
-
-var parseBraceBlock = parseSequence({
-	of: parseExpression, 
-	stopWhen: onToken("}")
-});
-
-function parseWSBlock(token, elementParser) {
+function parseBlock(token, elementParser) {
 	if (token.isIndent) {
 		var parseResult = parseSequence({
 			of: elementParser, 
@@ -145,7 +138,7 @@ function parseIdentifier(token) {
 
 // Should never be reached by a valid program
 function parsePunctuation(token) {
-	throw SyntaxError("Unknown punctuation token: " + token);
+	throw token.error("Unexpected character: " + token.string);
 }
 
 function unaryOp(unaryOpPrecedence) {
@@ -242,7 +235,7 @@ function parseFn(token) {
 function fnAnon(token) {
 	if (token.isNot("(")) return false;
 
-	var params = parseParams(token);
+	var params = parseParams(token.next());
 	var body = parseBody(params.token, "colon optional");
 	return {
 		exp: [params.exp, body.exp], 
@@ -270,38 +263,23 @@ function fnMethod(token) {
 	return withPrefix([selfName, methodName], fnAnon(methodNameToken.next()));
 }
 
-function parseParams(token) {
-	var param, params = [], endToken = ")";
-	checkToken(token, "(");
-	token = token.next();
-
-	while (token.isNot(endToken)) {
-		// rest parameter
-		if (token.is("|")) {
-			param = parseParam(token.next());
-			params.push([makeIdentifier("|"), param.exp]);
-			token = advanceToken(param.token);
-			// check for closing parenthesis
-			checkToken(token, endToken);
-			break;
-		}
-		else {
-			param = parseParam(token);
-			params.push(param.exp);
-			token = advanceToken(param.token);
-		}
-	}
-	return {exp: params, token: token.next()};
-}
+var parseParams = parseSequence({
+	of: parseParam,
+	stopWhen: onToken(")")
+});
 
 function parseParam(token) {
 	var param = parseExpression(token);
-	if (param.exp.isIdentifier ||
+	return isValidParam(param.exp) ? 
+		param : token.error("invalid parameter name in function");
+}
+
+function isValidParam(exp) {
+	return exp.isIdentifier || 
 		// check for default parameter assignment
-		(isCallTo(assignmentOp, param.exp) && param.exp[1].isIdentifier)) {
-		return param;
-	}
-	else token.error("invalid parameter name in function");
+		(isCallTo("=", exp) && isValidParam(exp[1])) ||
+		// check for rest parameters
+		(isCallTo("...", exp) && exp[1].isIdentifier);
 }
 
 function parseIf(token) {
@@ -341,7 +319,7 @@ function parseBody(token, colonOptional) {
 	}
 
 	if (token.isIndent) {
-		return parseWSBlock(token, parseExpression);
+		return parseBlock(token, parseExpression);
 	}
 	else {
 		var expResult = parseExpression(token);
@@ -356,12 +334,14 @@ function parseType(token) {
 			"Expected a type name, but found " + token.string);
 
 	var typeName = parseIdentifier(token).exp;
-	var params = parseParams(token.next());
+
+	checkToken(token.next(), "(");
+	var params = parseParams(token.move(2));
 
 	// optional behaviour block
 	token = params.token;
 	if (token.is(":")) {
-		behaviour = parseWSBlock(token.next(), parseObjProperty);
+		behaviour = parseBlock(token.next(), parseObjProperty);
 		token = behaviour.token;
 	}
 
@@ -394,7 +374,7 @@ function parseWithBlock(token) {
 function parseSetExpression(token) {
 	var precedence = 8;
 	var assignResult = parseExpression(token.next(), precedence);
-	if (isCallTo(assignmentOp, assignResult.exp)) {
+	if (isCallTo("=", assignResult.exp)) {
 		assignResult.exp[0] = makeIdentifier(token);
 		return assignResult;
 	}
@@ -458,6 +438,7 @@ function parseMethod(token) {
 }
 
 var prefixOperators = {
+	"...": unaryOp(5),
 	"-": unaryOp(60),
 	"not": unaryOp(23),
 	"@": unaryOp(65),
@@ -588,14 +569,6 @@ function checkToken(token, expectedToken) {
 	}
 	return true;
 }
-
-/*
-function isIdentifier(node, name) {
-	return typeof(node) === "object" && 
-		node.type === "Identifier" && 
-		(name ? node.name === name : true);
-}
-*/
 
 function withPrecedence(precedence, func) {
 	func.precedence = precedence;

@@ -17,8 +17,8 @@ fn main():
 		Derrick: ["Lucy", "Matt"]
 	}
 	ensure(findName(names) == "David")
-	validParents = ["Tina", "Les", "Lucy", "Matt"]
-	ensure(findParents(names, parentDict) == validParents)
+
+	ensure(lastArg(1, 2, 3) == 3)
 
 	ensure(maths.add(get(maths, 45), 2) == 34)
 
@@ -31,6 +31,8 @@ fn main():
 	ensure((20 => sqrt => Math.pow(2) => Math.floor) == 20)
 
 	ensure(mutatingDouble(5) == 10)
+
+	ensure(max(1, ...[3, 7, 6], ...[3, ...[9, 11]], 4) == 11)
 
 	print("All tests passed")
 
@@ -52,12 +54,8 @@ fn findName(items) with findWhere:
     item.charAt(0) == "D"
     item
 
-
-fn findParents(names, parents) with findAllWhere:
-	name <- names
-	name.length > 4
-	name.charAt(0) == "D"
-	get(parents, name)
+fn lastArg(...items):
+	items.last()
 
 maths = {
 	fn self.add(a, b):

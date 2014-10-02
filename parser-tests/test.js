@@ -1,5 +1,5 @@
-var tokenize = require("../new-tokenizer.js");
-var parse = require("../tdop-parser.js");
+var tokenize = require("../tokenizer.js");
+var parse = require("../parser.js");
 
 var tests = {
 	"-2":  "(-2)",
@@ -56,13 +56,15 @@ var tests = {
 
 	"[1, 2] ++ [3, 4, 5]":  "((++ (Vector 1 2) (Vector 3 4 5)))",
 
+	"[first, ...middle, last]": "((Vector first (... middle) last))",
+
 	"Map {a: 77, b: 99}": "((Map (:object (: a 77) (: b 99))))",
 
 	"fn (): 45 - 2": "((fn () ((- 45 2))))",
 
-	"fn sum(h | t): t.append(h)": "((fn sum (h (| t)) (((. t append) h))))",
+	"fn sum(h, ...t): t.concat(h)": "((fn sum (h (... t)) (((. t concat) h))))",
 
-	"fn add(a b): a + b": "((fn add (a b) ((+ a b))))",
+	"fn add(a, b): a + b": "((fn add (a b) ((+ a b))))",
 
 	"xs.reduce(fn (x, y): x ++ y, '')": "(((. xs reduce) (fn (x y) ((++ x y))) ''))",
 
