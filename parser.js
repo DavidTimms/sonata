@@ -1,4 +1,7 @@
-var printObj = require('./utils/print-object.js');
+var printObj = require('./utils/print-object');
+var utils = require("./utils/utils");
+var bareObject = utils.bareObject;
+var generateVarName = utils.generateVarName;
 
 module.exports = function (tokens) {
 	var parsed = parseBlock(tokens[0], parseExpression);
@@ -170,11 +173,11 @@ function binaryOp(binaryOpPrecedence, rightAssociative) {
 	return parseBinary;
 }
 
-var matchToken = {
+var matchToken = bareObject({
 	"(": ")",
 	"[": "]",
 	"{": "}"
-};
+});
 
 function parseCall(token, precedence, callee) {
 	return withPrefix([callee], parseArguments(token.next()));
@@ -216,7 +219,7 @@ function parseDataStructureGetter(token, precedence, dataStruct) {
 	};
 }
 
-function parseGroupedOrLambda(token, precedence) {
+function parseGroupedOrLambda(token) {
 	var inner = parseExpression(token.next(), 0);
 	token = advanceToken(inner.token);
 	checkToken(token, ")");
@@ -450,7 +453,19 @@ function parseMethod(token) {
 	return objProperty(methodName, withPrefix(["fn"], method));
 }
 
-var prefixOperators = {
+// Not yet working
+function curriedOperator(operator) {
+	return function (token) {
+		var arg = makeIdentifier(generateVarName());
+		var body = infixOperators[operator](token, 0, arg);
+		return {
+			exp: [makeIdentifier("fn"), [arg], [body.exp]],
+			token: body.token,
+		}
+	}
+}
+
+var prefixOperators = bareObject({
 	"...": unaryOp(5),
 	"-": unaryOp(60),
 	"not": unaryOp(23),
@@ -466,10 +481,10 @@ var prefixOperators = {
 	"type": parseType,
 	"do": parseDoBlock,
 	"with": parseWithBlock,
-	"set!": parseSetExpression
-};
+	"set!": parseSetExpression,
+});
 
-var infixOperators = {
+var infixOperators = bareObject({
 	".": withPrecedence(80, parseMemberAccess),
 	"[": withPrecedence(75, parseDataStructureGetter),
 	"(": withPrecedence(70, parseCall),
@@ -481,8 +496,6 @@ var infixOperators = {
 	"+": binaryOp(40),
 	"-": binaryOp(40),
 	"++": binaryOp(55),
-	// String concatenation operator removed, as ++ can be used
-	//"&": binaryOp(55), 
 	"<": binaryOp(30),
 	">": binaryOp(30),
 	"<=": binaryOp(30),
@@ -499,9 +512,9 @@ var infixOperators = {
 	"->": withPrecedence(11, parseLambda),
 	"=": binaryOp(10, "right associative"),
 	"<-": binaryOp(10, "right associative"),
-};
+});
 
-var tokenTypeParsers = {
+var tokenTypeParsers = bareObject({
 	"Number": parseNumber,
 	"String": parseLiteral,
 	"Regex": parseLiteral,
@@ -510,7 +523,7 @@ var tokenTypeParsers = {
 	"Comment": ignoreToken,
 	"Identifier": parseIdentifier,
 	"Punctuation": parsePunctuation,
-};
+});
 
 // --------------------HELPER FUNCTIONS-----------------------
 

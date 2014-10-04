@@ -99,19 +99,19 @@
             main.apply(null, process.argv.slice(2));
         }
     }
-    var maths;
-    var Person = function () {
-            function Person(name, age, gender) {
-                if (!(this instanceof Person))
-                    return new Person(name, age, gender);
-                this.name = name;
-                this.age = age;
-                this.gender = gender;
-            }
-            Object.defineProperties(Person, {});
-            Person.prototype = Object.create(Object.prototype, { constructor: { value: Person } });
-            return Person;
-        }();
+    var maths, Person;
+    Person = function () {
+        function Person(name, age, gender) {
+            if (!(this instanceof Person))
+                return new Person(name, age, gender);
+            this.name = name;
+            this.age = age;
+            this.gender = gender;
+        }
+        Object.defineProperties(Person, {});
+        Person.prototype = Object.create(Object.prototype, { constructor: { value: Person } });
+        return Person;
+    }();
     function main() {
         var dave, jane, names, parentDict;
         ensure(eq(doScoping(2), doScoping(18)));
@@ -166,7 +166,8 @@
         });
     }
     function lastArg(items) {
-        var $sonata_i, $sonata_restArray = [];
+        var $sonata_i, $sonata_restArray;
+        $sonata_i = undefined, $sonata_restArray = [];
         for ($sonata_i = 0; $sonata_i < arguments.length; $sonata_i++) {
             $sonata_restArray.push(arguments[$sonata_i]);
         }
@@ -175,13 +176,15 @@
     }
     maths = {
         'add': function (a, b) {
-            var self = this;
+            var self;
+            self = this;
             return +a + +b;
         },
         45: 32
     };
     function blob() {
-        var self = this;
+        var self;
+        self = this;
         return yo();
     }
     function country(name, continent) {
@@ -190,7 +193,8 @@
         return {
             'name': name,
             'describe': function () {
-                var self = this;
+                var self;
+                self = this;
                 return name.concat(' is a country in ').concat(continent);
             },
             'foo': function foo() {

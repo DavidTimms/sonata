@@ -6,6 +6,8 @@ var identifierUtils = require("./utils/identifier-utils");
 var normalizeIdentifier = identifierUtils.normalizeIdentifier;
 var isValidJSIdentifier = identifierUtils.isValidJSIdentifier;
 
+var bareObject = require("./utils/utils").bareObject;
+
 // This throws an error if it is used before it is redefined later
 var buildSnippet = function () {
 	throw Error("Attempted to call snippet builder before it was initialised.");
@@ -120,7 +122,7 @@ function convertStatement(exp, context) {
 }
 
 // For functions which need special behaviour when in statement position
-var statementConverters = {
+var statementConverters = bareObject({
 	"#": function () { return [] },
 	"type": function (parts) {
 		var data = typeSnippetData(parts);
@@ -133,7 +135,7 @@ var statementConverters = {
 		context.isFunctionDeclaration = true;
 		return converters.fn(parts, context);
 	},
-};
+});
 
 function typeSnippetData(parts) {
 	var params = convertParameters(parts[1]);
@@ -310,7 +312,7 @@ function convertObjKey(node) {
 	return node.type === "Identifier" ? makeLiteral(node.name) : node;
 }
 
-var converters = {
+var converters = bareObject({
 	"fn": function (parts, context) {
 		context = context || {};
 		var type;
@@ -510,7 +512,7 @@ var converters = {
 		throw new SyntaxError(
 			"The '<-' operator is only valid in a 'with' block");
 	}
-};
+});
 
 (["*", "/", "%"]).forEach(function (op) {
 	converters[op] = binaryExpressionMaker("BinaryExpression", op);
@@ -554,7 +556,7 @@ function wrapToken(token) {
 }
 
 function isNormalFunctionCall(node) {
-	return node instanceof Array && !converters.hasOwnProperty(node[0].name);
+	return node instanceof Array && !(node[0].name in converters);
 }
 
 function isStringNode(node) {
