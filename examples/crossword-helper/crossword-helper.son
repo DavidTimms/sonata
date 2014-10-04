@@ -1,0 +1,15 @@
+fs = require("fs")
+
+fn main(query):
+	fs.readFileSync("word-list.txt", "utf8")
+		.split("\n")
+		.map(word -> word.trim())
+		.filter(matches(query.toUpperCase()))
+		.forEach(word -> print(word))
+
+fn matches(query):
+	queryChars = query.split("")
+	fn (word):
+		query.length == word.length & queryChars.every(
+			fn (char, i): char == "_" | char == word.charAt(i)
+		)

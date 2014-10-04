@@ -72,6 +72,12 @@ var tests = {
 
 	"fn self.method(): 2": "((fn self method () (2)))",
 
+	"x -> x + 1": "((fn (x) ((+ x 1))))",
+
+	"(x = 4) -> x * x": "((fn ((= x 4)) ((* x x))))",
+
+	"xs.map(x -> x.toString())": "(((. xs map) (fn (x) (((. x toString))))))",
+
 	"if x < 2: print(x)": "((if (< x 2) ((print x))))",
 
 	"if true: 34 * 23 else 93 - 2": "((if true ((* 34 23)) ((- 93 2))))",
@@ -166,6 +172,13 @@ multilineTest([
 	"		print('Hi' ++ name)",
 	"}"
 ], "((:object (: greet (fn self null (name) ((print (++ 'Hi' name)))))))");
+
+multilineTest([
+	"[1, 2, 3].forEach(a ->",
+	"	print(a)",
+	"	print(a)",
+	")"
+], "(((. (Vector 1 2 3) forEach) (fn (a) ((print a) (print a)))))");
 
 multilineTest([
 	"type Door(colour):",

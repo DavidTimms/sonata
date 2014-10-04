@@ -1,0 +1,48 @@
+
+numeralValues = Map {
+	I: 1
+	V: 5
+	X: 10
+	L: 50
+	C: 100
+	D: 500
+	M: 1000
+}
+
+fn decodeNumeralWithReduce(str):
+	str.split("")
+		.reverse()
+		.map(char -> numeralValues[char])
+		.reduce(fn (total = 0, value, i, values):
+			if value >= (get(values, i - 1) or 0):
+				total + value
+			else:
+				total - value
+		)
+
+fn decodeNumeral(remaining, total = 0, previous = 0):
+	if remaining:
+		value = numeralValues[remaining.slice(-1)]
+
+		newTotal = if value >= previous: total + value else total - value
+
+		decodeNumeral(remaining.slice(0, -1), newTotal, value)
+
+	else total
+
+fn main():
+	romanize = require("romanize")
+	[decodeNumeral, decodeNumeralWithReduce].forEach(
+		fn (func):
+			console.time(func.name)
+			Range(1, 20000).forEach(i -> test(romanize(i), i, func))
+			console.timeEnd(func.name)
+	)
+
+fn test(input, expected, testFunc):
+	actual = testFunc(input)
+	if actual == expected: true
+	else:
+		print("\nTest failed:", input,
+			"\nExpected:", expected, "Found:", actual)
+

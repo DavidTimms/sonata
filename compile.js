@@ -12,6 +12,7 @@ var outputFile = inputFile + ".js";
 fs.readFile(inputFile, "utf8", function (err, source) {
 	if (err) {
 		console.log("Unable to open file:", inputFile);
+		process.exit();
 	}
 	var start = Date.now();
 	

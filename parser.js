@@ -223,6 +223,17 @@ function parseGroupedOrLambda(token, precedence) {
 	return {exp: inner.exp, token: token.next()};
 }
 
+function parseLambda(token, precedence, argExp) {
+	if (!isValidParam(argExp)) {
+		token.error("Invalid parameter in lambda function");
+	}
+	var body = parseBody(token.next(), "colon optional");
+	return {
+		exp: [makeIdentifier("fn"), [argExp], body.exp], 
+		token: body.token
+	};
+}
+
 function parseFn(token) {
 	return withPrefix(["fn"], (
 						fnAnon(token.next()) || 
@@ -306,7 +317,9 @@ function parseElse(token) {
 }
 
 function parseBody(token, colonOptional) {
-	token = advanceToken(token);
+	while (token.isComment) {
+		token = token.next();
+	}
 
 	if (colonOptional) {
 		if (token.is(":")) {
@@ -479,8 +492,11 @@ var infixOperators = {
 	"==": binaryOp(25),
 	"!=": binaryOp(25),
 	"and": binaryOp(20),
+	"&": binaryOp(20),
 	"or": binaryOp(15),
+	"|": binaryOp(15),
 	"=>": binaryOp(12),
+	"->": withPrecedence(11, parseLambda),
 	"=": binaryOp(10, "right associative"),
 	"<-": binaryOp(10, "right associative"),
 };
@@ -549,7 +565,6 @@ function advanceToNextExpression(token, isEnd) {
 	// throw an error if two expressions are 
 	// on the same line without a comma
 	if (!(foundDivider || isEnd(token))) {
-		console.log(token);
 		token.error("Unexpected start of expression");
 	}
 	return token;

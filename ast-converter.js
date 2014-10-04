@@ -28,8 +28,6 @@ function convertAST(ast, callback) {
 
 		var context = {isFuncBody: true, noReturn: true};
 
-		tailCallElim = function (a) { return a };
-
 		var program = tailCallElim({
 			type: "Program",
 			body: buildSnippet("functionWrapper", {
@@ -523,6 +521,8 @@ var converters = {
 converters["==="] = binaryExpressionMaker("BinaryExpression", "===");
 converters["!=="] = binaryExpressionMaker("BinaryExpression", "!==");
 
+converters["&"] = binaryExpressionMaker("LogicalExpression", "&&");
+converters["|"] = binaryExpressionMaker("LogicalExpression", "||");
 converters["and"] = binaryExpressionMaker("LogicalExpression", "&&");
 converters["or"] = binaryExpressionMaker("LogicalExpression", "||");
 
