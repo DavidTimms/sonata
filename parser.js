@@ -219,20 +219,30 @@ function parseDataStructureGetter(token, precedence, dataStruct) {
 	};
 }
 
-function parseGroupedOrLambda(token) {
-	var inner = parseExpression(token.next(), 0);
-	token = advanceToken(inner.token);
-	checkToken(token, ")");
-	return {exp: inner.exp, token: token.next()};
+function parseGrouped(token) {
+	var grouped = parseArguments(token.next());
+	if (grouped.exp.length === 1) return {
+		exp: grouped.exp[0],
+		token: grouped.token
+	};
+	else return withPrefix([":seq"], grouped);
 }
 
-function parseLambda(token, precedence, argExp) {
-	if (!isValidParam(argExp)) {
-		token.error("Invalid parameter in lambda function");
-	}
+function parseLambda(token, precedence, paramExp) {
+	var params = isCallTo(":seq", paramExp) ?
+		paramExp.slice(1) : 
+		[paramExp];
+
+	params.forEach(function (param, i) {
+		if (!isValidParam(param)) {
+			token.error("Parameter number " + i + 
+				" is invalid in a lambda function");
+		}
+	});
+
 	var body = parseBody(token.next(), "colon optional");
 	return {
-		exp: [makeIdentifier("fn"), [argExp], body.exp], 
+		exp: [makeIdentifier("fn"), params, body.exp], 
 		token: body.token
 	};
 }
@@ -470,7 +480,7 @@ var prefixOperators = bareObject({
 	"-": unaryOp(60),
 	"not": unaryOp(23),
 	"@": unaryOp(65),
-	"(": parseGroupedOrLambda,
+	"(": parseGrouped,
 	"[": function (token) {
 		return withPrefix(["Vector"], 
 			parseArguments(token.next(), onToken("]")));

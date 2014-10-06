@@ -78,6 +78,11 @@ var tests = {
 
 	"xs.map(x -> x.toString())": "(((. xs map) (fn (x) (((. x toString))))))",
 
+	"(a, b) -> a + b": "((fn (a b) ((+ a b))))",
+
+	"[1, 2, 3].reduce((product = 1, x) -> total * x": 
+		"(((. (Vector 1 2 3) reduce) (fn ((= product 1) x) ((* total x)))))",
+
 	"if x < 2: print(x)": "((if (< x 2) ((print x))))",
 
 	"if true: 34 * 23 else 93 - 2": "((if true ((* 34 23)) ((- 93 2))))",
@@ -115,6 +120,12 @@ var tests = {
 	"{fn self.method(a): a()}": "((:object (: method (fn self null (a) ((a))))))",
 
 	"{fn method(a): a * a}": "((:object (: method (fn method (a) ((* a a))))))",
+
+	"(a + b) * 3": "((* (+ a b) 3))",
+
+	"(a + b, 3)": "((:seq (+ a b) 3))",
+
+	"()": "((:seq))",
 
 	"{}":  "((:object))",
 

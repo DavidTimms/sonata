@@ -66,6 +66,48 @@
         }
         return true;
     }
+    function Struct() {
+    }
+    Struct.clone = function (structure) {
+        var newStruct = new structure.constructor();
+        for (var property in structure) {
+            newStruct[property] = structure[property];
+        }
+        return newStruct;
+    };
+    Struct.prototype = Object.create(Object.prototype, {
+        get: {
+            value: function (property) {
+                return this[property];
+            }
+        },
+        set: {
+            value: function (changed, newValue) {
+                var property, newStruct = Struct.clone(this);
+                if (arguments.length > 1) {
+                    newStruct[changed] = newValue;
+                } else {
+                    for (property in changed) {
+                        newStruct[property] = changed[property];
+                    }
+                }
+                return newStruct;
+            }
+        },
+        update: {
+            value: function (changed, updater) {
+                if (arguments.length > 1) {
+                    return this.set(changed, updater(this[changed], changed, this));
+                } else {
+                    var newStruct = Struct.clone(this);
+                    for (var property in changed) {
+                        newStruct[property] = changed[property](this[property], property, this);
+                    }
+                    return newStruct;
+                }
+            }
+        }
+    });
     function $sonata_ofType(x, type) {
         switch (typeof x) {
         case 'number':
@@ -93,6 +135,29 @@
                 return value instanceof constructor;
             }
         };
+    var bitwise = {
+            or: function (a, b) {
+                return a | b;
+            },
+            and: function (a, b) {
+                return a & b;
+            },
+            xor: function (a, b) {
+                return a ^ b;
+            },
+            not: function (a) {
+                return ~a;
+            },
+            leftShift: function (a, b) {
+                return a << b;
+            },
+            rightShift: function (a, b) {
+                return a >> b;
+            },
+            rightShiftZF: function (a, b) {
+                return a >>> b;
+            }
+        };
     var print = console.log.bind(console);
     function $sonata_startMain() {
         if (typeof main === 'function' && require && require.main && module && require.main === module && process && process.argv instanceof Array) {
@@ -113,7 +178,8 @@
             'prompt': 'sonata> ',
             'useGlobal': true,
             'eval': function (wrappedInput, context, filename, callback) {
-                var self = this;
+                var self;
+                self = this;
                 return tryCatch(function () {
                     var input, tokens, sonataAST;
                     input = wrappedInput.slice(1, -2);
