@@ -1,0 +1,59 @@
+utils = require("../utils/utils")
+wrapStringTokens = utils.wrapStringTokens
+printObject = utils.printObject
+
+set! module.exports = matchPattern
+
+fn main(shouldTest):
+	if (shouldTest == "TEST"):
+		test("a", "val")
+		test("[a, b]", "val")
+
+fn test(pattern, expression):
+	tokenize = require("../tokenizer")
+	parse = require("../parser")
+	printObject(get(pattern => tokenize => parse, 0)
+		=> matchPattern(wrapStringTokens(expression)))
+
+fn matchPattern(pattern, expression):
+
+	if pattern :: Array:
+		callee = get(pattern, 0)
+		if callee.isIdentifier:
+			if patternMatchers.has(callee.name):
+				patternMatchers[callee.name](pattern, expression)
+			else
+				structMatcher(pattern, expression)
+		else:
+			fail
+	else if pattern.isIdentifier:
+		{
+			conditions: Array()
+			assignments: Array(exp("=", pattern, expression))
+		}
+
+patternMatchers = Map {
+	"Vector": (pattern, expression) ->
+		initialState = {
+			conditions: Array(
+				exp("::", expression, "IndexedSequence")
+				exp("===", exp(".", expression, "length"), pattern.length - 1)
+			)
+			assignments: Array()
+		}
+		pattern.slice(1).reduce(
+			(state, subPattern, i) ->
+				subMatch = matchPattern(subPattern, 
+					exp(exp(".", expression, "get"), i))
+				{
+					conditions: state.conditions ++ subMatch.conditions
+					assignments: state.assignments ++ subMatch.assignments
+				}
+			initialState
+		)
+
+fn structMatcher(pattern):
+	fail
+
+fn exp(...subExps):
+	wrapStringTokens(subExps.toArray())

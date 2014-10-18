@@ -4,6 +4,38 @@
 		"selected_items":
 		[
 			[
+				"param",
+				"paramExp"
+			],
+			[
+				"para",
+				"paramExp"
+			],
+			[
+				"ad",
+				"advanceToken"
+			],
+			[
+				"new",
+				"newStruct"
+			],
+			[
+				"ch",
+				"changedProperty"
+			],
+			[
+				"prop",
+				"properties"
+			],
+			[
+				"op",
+				"operator"
+			],
+			[
+				"word",
+				"wordList"
+			],
+			[
 				"block",
 				"blockBody"
 			],
@@ -56,20 +88,12 @@
 				"Identifier"
 			],
 			[
-				"ch",
-				"charAt"
-			],
-			[
 				"es",
 				"escapedLiteralPredicates"
 			],
 			[
 				"ba",
 				"backslashCount"
-			],
-			[
-				"new",
-				"newLine"
 			],
 			[
 				"co",
@@ -228,10 +252,6 @@
 				"predicate"
 			],
 			[
-				"prop",
-				"property"
-			],
-			[
 				"dist",
 				"distanceTo"
 			],
@@ -306,10 +326,6 @@
 			[
 				"ver",
 				"verb"
-			],
-			[
-				"param",
-				"parameters"
 			],
 			[
 				"conv",
@@ -402,10 +418,6 @@
 			[
 				"mult",
 				"multiTail"
-			],
-			[
-				"op",
-				"optimisedAST"
 			],
 			[
 				"temp",
@@ -502,18 +514,6 @@
 			[
 				"convert",
 				"convertExp"
-			],
-			[
-				"ass",
-				"assignmentOp"
-			],
-			[
-				"player",
-				"playerMove"
-			],
-			[
-				"so",
-				"sonata_startMain"
 			]
 		]
 	},
@@ -528,6 +528,14 @@
 			}
 		},
 		{
+			"file": "tokenizer.js",
+			"settings":
+			{
+				"buffer_size": 6572,
+				"line_ending": "Windows"
+			}
+		},
+		{
 			"file": "token.js",
 			"settings":
 			{
@@ -536,10 +544,34 @@
 			}
 		},
 		{
+			"file": "parser.js",
+			"settings":
+			{
+				"buffer_size": 14740,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "utils/utils.js",
+			"settings":
+			{
+				"buffer_size": 331,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "examples/crossword-helper/crossword-helper.son",
+			"settings":
+			{
+				"buffer_size": 362,
+				"line_ending": "Windows"
+			}
+		},
+		{
 			"file": "parser-tests/test.js",
 			"settings":
 			{
-				"buffer_size": 6135,
+				"buffer_size": 6716,
 				"line_ending": "Windows"
 			}
 		},
@@ -547,7 +579,7 @@
 			"file": "ast-converter.js",
 			"settings":
 			{
-				"buffer_size": 19821,
+				"buffer_size": 20051,
 				"line_ending": "Windows"
 			}
 		},
@@ -555,7 +587,7 @@
 			"file": "snippets/snippets.js",
 			"settings":
 			{
-				"buffer_size": 5308,
+				"buffer_size": 6734,
 				"line_ending": "Windows"
 			}
 		},
@@ -571,7 +603,7 @@
 			"file": "examples/everything.son",
 			"settings":
 			{
-				"buffer_size": 1572,
+				"buffer_size": 1600,
 				"line_ending": "Windows"
 			}
 		},
@@ -579,7 +611,7 @@
 			"file": "examples/everything.son.js",
 			"settings":
 			{
-				"buffer_size": 6946,
+				"buffer_size": 9093,
 				"line_ending": "Unix"
 			}
 		},
@@ -587,7 +619,7 @@
 			"file": "todo.md",
 			"settings":
 			{
-				"buffer_size": 1157,
+				"buffer_size": 1168,
 				"line_ending": "Windows"
 			}
 		},
@@ -660,10 +692,21 @@
 	},
 	"file_history":
 	[
-		"/C/Users/Dave/Java/Tom Schwarz Project/WriteToFile.c",
 		"/C/Users/Dave/Web/compile-to-js/repl/repl.son",
-		"/C/Users/Dave/Web/compile-to-js/examples/roman-numerals.son",
+		"/C/Users/Dave/Web/immutable-js/src/Sequence.js",
+		"/C/Users/Dave/Web/immutable-js/__tests__/flatten.ts",
+		"/C/Users/Dave/Web/immutable-js/type-definitions/Immutable.d.ts",
+		"/C/Users/Dave/Web/compile-to-js/utils/utils.js",
+		"/C/Users/Dave/Web/compile-to-js/parser-tests/lambda.son",
+		"/C/Users/Dave/Web/compile-to-js/parser-tests/lambda.son.js",
 		"/C/Users/Dave/Web/compile-to-js/examples/roman-numerals.son.js",
+		"/C/Users/Dave/Web/compile-to-js/examples/roman-numerals.son",
+		"/C/Users/Dave/Web/compile-to-js/examples/crossword-helper.son",
+		"/C/Users/Dave/Web/compile-to-js/word-list.txt",
+		"/C/Users/Dave/Web/compile-to-js/examples/crossword-helper.son.js",
+		"/C/Users/Dave/Web/compile-to-js/yo",
+		"/C/Users/Dave/Java/Tom Schwarz Project/SubtitleRenderer/run.cmd",
+		"/C/Users/Dave/Java/Tom Schwarz Project/WriteToFile.c",
 		"/C/Users/Dave/Web/tail-call-eliminator/test-tco.js",
 		"/C/Users/Dave/Web/tail-call-eliminator/package.json",
 		"/C/Users/Dave/Web/tail-call-eliminator/tail-call-op.js",
@@ -694,11 +737,9 @@
 		"/C/Users/Dave/Web/compile-to-js/examples/potential/pattern-matching.son",
 		"/C/Users/Dave/Web/compile-to-js/examples/everything.son.js",
 		"/C/Users/Dave/Web/immutable-js/src/Vector.js",
-		"/C/Users/Dave/Web/immutable-js/src/Sequence.js",
 		"/C/Users/Dave/Web/immutable-js/__tests__/Vector.ts",
 		"/C/Users/Dave/Web/immutable-js/__tests__/ArraySequence.ts",
 		"/C/Users/Dave/Web/immutable-js/__tests__/concat.ts",
-		"/C/Users/Dave/Web/immutable-js/type-definitions/Immutable.d.ts",
 		"/C/Users/Dave/Web/compile-to-js/examples/type.son",
 		"/C/Users/Dave/Web/compile-to-js/examples/type.son.js",
 		"/C/Users/Dave/Web/compile-to-js/utils/decompose-expression.son",
@@ -754,7 +795,6 @@
 		"/C/Users/Dave/Web/compile-to-js/examples/list.son.js",
 		"/C/Users/Dave/Web/compile-to-js/out",
 		"/C/Users/Dave/Web/compile-to-js/snippets/test-snippets.js",
-		"/C/Users/Dave/Web/compile-to-js/yo",
 		"/C/Users/Dave/Web/compile-to-js/examples/trig.son",
 		"/C/Users/Dave/Web/compile-to-js/examples/torn.son",
 		"/C/Users/Dave/Web/compile-to-js/examples/templating.son",
@@ -779,15 +819,7 @@
 		"/C/Users/Dave/Web/compile-to-js/.gitignore",
 		"/C/Users/Dave/Web/compile-to-js/examples/curried-operator-lambdas.potential.son",
 		"/C/Users/Dave/Web/compile-to-js/ast_good.json",
-		"/C/Users/Dave/Web/compile-to-js/ast.json",
-		"/C/Users/Dave/Web/compile-to-js/node_modules/tail-call-eliminator/tail-call-op.js",
-		"/C/Users/Dave/Web/compile-to-js/ast-converter.js",
-		"/C/Users/Dave/AppData/Roaming/Sublime Text 2/Packages/Pretty JSON/Pretty JSON.sublime-settings",
-		"/C/Users/Dave/AppData/Roaming/Sublime Text 2/Packages/User/Pretty JSON.sublime-settings",
-		"/C/Users/Dave/Web/compile-to-js/runtime.js",
-		"/C/Users/Dave/Uni/C/ruby-ish.c",
-		"/C/Users/Dave/Web/compile-to-js/examples/parser-test.son.js",
-		"/C/Users/Dave/Web/compile-to-js/examples/parser-test.son"
+		"/C/Users/Dave/Web/compile-to-js/ast.json"
 	],
 	"find":
 	{
@@ -805,6 +837,18 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"convertSequence",
+			"isCallTo",
+			"Or",
+			"parseCal",
+			"parseSeq",
+			"find",
+			"converters",
+			"\"name\"",
+			"toString",
+			".name",
+			"binaryOp",
+			"advanceToken",
 			"convertTailCall",
 			"mapChildren",
 			"convertTailCall",
@@ -920,19 +964,7 @@
 			"parseObjLiteral",
 			"isBracketAtStartOfLine",
 			"parseCall",
-			"withPrecedence",
-			"parseCall",
-			"parseWSBlock",
-			"parseObjLiteral",
-			";",
-			"function",
-			"\"colo",
-			"console.",
-			"advanceTo",
-			"isE",
-			"onToken",
-			"parseArguments",
-			"onToken"
+			"withPrecedence"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1031,7 +1063,7 @@
 	"groups":
 	[
 		{
-			"selected": 8,
+			"selected": 3,
 			"sheets":
 			[
 				{
@@ -1046,8 +1078,8 @@
 						"selection":
 						[
 							[
-								504,
-								504
+								298,
+								298
 							]
 						],
 						"settings":
@@ -1063,18 +1095,18 @@
 				},
 				{
 					"buffer": 1,
-					"file": "token.js",
+					"file": "tokenizer.js",
 					"settings":
 					{
-						"buffer_size": 2160,
+						"buffer_size": 6572,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								370,
-								370
+								301,
+								301
 							]
 						],
 						"settings":
@@ -1090,18 +1122,18 @@
 				},
 				{
 					"buffer": 2,
-					"file": "parser-tests/test.js",
+					"file": "token.js",
 					"settings":
 					{
-						"buffer_size": 6135,
+						"buffer_size": 2160,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								161,
-								161
+								270,
+								270
 							]
 						],
 						"settings":
@@ -1117,18 +1149,18 @@
 				},
 				{
 					"buffer": 3,
-					"file": "ast-converter.js",
+					"file": "parser.js",
 					"settings":
 					{
-						"buffer_size": 19821,
+						"buffer_size": 14740,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								686,
-								686
+								9912,
+								9912
 							]
 						],
 						"settings":
@@ -1137,25 +1169,78 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1800.0,
+						"translation.y": 7868.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "snippets/snippets.js",
+					"file": "utils/utils.js",
 					"settings":
 					{
-						"buffer_size": 5308,
+						"buffer_size": 331,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4214,
-								4214
+								193,
+								208
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "examples/crossword-helper/crossword-helper.son",
+					"settings":
+					{
+						"buffer_size": 362,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								362,
+								362
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Rust/Rust.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "parser-tests/test.js",
+					"settings":
+					{
+						"buffer_size": 6716,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2102,
+								2102
 							]
 						],
 						"settings":
@@ -1164,13 +1249,67 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 4080.0,
+						"translation.y": 1260.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 7,
+					"file": "ast-converter.js",
+					"settings":
+					{
+						"buffer_size": 20051,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11574,
+								11574
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 8726.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "snippets/snippets.js",
+					"settings":
+					{
+						"buffer_size": 6734,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4727,
+								4727
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 4116.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
 					"file": "snippets/snippet-parser.js",
 					"settings":
 					{
@@ -1197,19 +1336,19 @@
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 10,
 					"file": "examples/everything.son",
 					"settings":
 					{
-						"buffer_size": 1572,
+						"buffer_size": 1600,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								466,
-								466
+								860,
+								860
 							]
 						],
 						"settings":
@@ -1218,25 +1357,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 300.0,
+						"translation.y": 660.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 11,
 					"file": "examples/everything.son.js",
 					"settings":
 					{
-						"buffer_size": 6946,
+						"buffer_size": 9093,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								7086,
+								7086
 							]
 						],
 						"settings":
@@ -1246,25 +1385,25 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2520.0,
+						"translation.y": 3660.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 12,
 					"file": "todo.md",
 					"settings":
 					{
-						"buffer_size": 1157,
+						"buffer_size": 1168,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								9,
-								9
+								899,
+								899
 							]
 						],
 						"settings":
@@ -1279,7 +1418,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 13,
 					"file": "/C/Users/Dave/Documents/job-applications/companies.md",
 					"settings":
 					{

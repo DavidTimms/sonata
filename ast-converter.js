@@ -1,12 +1,21 @@
-var jsonpretty = require('jsonpretty');
-var snippets = require("./snippets/snippet-parser.js");
+var snippets = require("./snippets/snippet-parser");
 var tailCallElim = require("tail-call-eliminator");
+
+var matchPattern = require("./pattern-matching/pattern-matching.son.js");
 
 var identifierUtils = require("./utils/identifier-utils");
 var normalizeIdentifier = identifierUtils.normalizeIdentifier;
 var isValidJSIdentifier = identifierUtils.isValidJSIdentifier;
 
-var bareObject = require("./utils/utils").bareObject;
+var utils = require("./utils/utils");
+var bareObject = utils.bareObject;
+var combineObjects = utils.combineObjects;
+var flatMap = utils.flatMap;
+var negate = utils.negate;
+var last = utils.last;
+var printObject = utils.printObject;
+var wrapStringTokens = utils.wrapStringTokens;
+var generateVarName = utils.generateVarName;
 
 // This throws an error if it is used before it is redefined later
 var buildSnippet = function () {
@@ -14,11 +23,6 @@ var buildSnippet = function () {
 };
 
 var assignmentOp = "=";
-
-function printObj(obj) {
-	console.log(jsonpretty(obj));
-	return obj;
-}
 
 function convertAST(ast, callback) {
 
@@ -40,7 +44,6 @@ function convertAST(ast, callback) {
 		});
 
 		var funcWrapper = program.body[0].expression.callee.body;
-
 
 		funcWrapper.body = 
 			buildSnippet("prelude")
@@ -107,11 +110,9 @@ function convertStatements(expressions, context) {
 	//var isFuncBody = false;
 	context.isFuncBody = false;
 
-	return expressions
-		.map(function (exp) {
+	return flatMap(expressions, function (exp) {
 			return convertStatement(exp, context);
-		})
-		.reduce(concatArrays, []);
+		});
 }
 
 function convertStatement(exp, context) {
@@ -134,6 +135,31 @@ var statementConverters = bareObject({
 	"fn": function (parts, context) {
 		context.isFunctionDeclaration = true;
 		return converters.fn(parts, context);
+	},
+	"match": function (parts) {
+		var tempVar = makeIdentifier(generateVarName(), {escape: false});
+		var matchExpressions = matchPattern(parts[0], tempVar);
+		var condition = matchExpressions.conditions.length > 0 ?
+			matchExpressions.conditions
+				.map(convertExp)
+				.reduce(function (left, right) {
+					return {
+						type: "LogicalExpression",
+						operator: "&&",
+						left: left,
+						right: right,
+					};
+				}) :
+			makeLiteral(true);
+
+		return buildSnippet("patternAssign", {
+			input: convertExp(parts[1]),
+			tempVar: tempVar,
+			condition: condition,
+			assignments: matchExpressions.assignments
+				.map(convertExp)
+				.map(makeExpStatement)
+		});
 	},
 });
 
@@ -162,11 +188,9 @@ function typeSnippetData(parts) {
 }
 
 function makeTypeParamAssignments(params) {
-	return params.map(function (param) {
-		return buildSnippet("typeParamAssignment", {
-			param: param
-		});
-	}).reduce(concatArrays, []);
+	return flatMap(params, function (param) {
+		return buildSnippet("typeParamAssignment", {param: param});
+	});
 }
 
 function convertParameters(params) {
@@ -183,7 +207,7 @@ function convertParameters(params) {
 }
 
 function createDefaultAssignments(defaults) {
-	return flatmap(defaults, function (defaultAssign, index) {
+	return flatMap(defaults, function (defaultAssign, index) {
 
 		if (isCallTo(assignmentOp, defaultAssign)) {
 			return buildSnippet("defaultArgument", {
@@ -465,6 +489,7 @@ var converters = bareObject({
 			properties: parts.map(convertObjProperty)
 		};
 	},
+	":seq": convertSequence,
 	"@": function () {
 		throw Error("The @ operator is not yet implemented");
 	},
@@ -535,23 +560,7 @@ converters["function"] = converters["fn"];
 function macro(macroFunc) {
 	return function (parts) {
 		var fragment = macroFunc.apply(null, parts);
-		return convertExp(wrapToken(fragment));
-	}
-}
-
-function wrapToken(token) {
-	if (token instanceof Array) {
-		return token.map(wrapToken);
-	}
-	else {
-		switch (typeof(token)) {
-			case "number":
-				return makeLiteral(token);
-			case "string":
-				return makeIdentifier(token, {escape: false});
-			default:
-				return token;
-		}
+		return convertExp(wrapStringTokens(fragment));
 	}
 }
 
@@ -781,38 +790,6 @@ function isStaticMethod(typeIdentifier) {
 			property[2][2].type === "Identifier" && 
 			property[2][1].name === typeIdentifier;
 	}
-}
-
-function concatArrays(a, b) {
-	return a.concat(b);
-}
-
-function combineObjects(x, y) {
-	var key;
-	var combined = Object.create(null);
-	for (key in x) {
-		combined[key] = x[key];
-	}
-	for (key in y) {
-		combined[key] = y[key];
-	}
-	return combined;
-}
-
-function flatmap(arr, func) {
-	return arr.map(func).reduce(function (a, b) {
-		return a.concat(b);
-	}, []);
-}
-
-function negate(predicate) {
-	return function () {
-		return !predicate.apply(this, arguments);
-	}
-}
-
-function last(arr) {
-	return arr[arr.length - 1];
 }
 
 module.exports = {

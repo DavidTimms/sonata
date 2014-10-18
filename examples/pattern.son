@@ -1,0 +1,6 @@
+a = b = 1
+
+match([a, b], ["foo", "bar"])
+
+print(a)
+print(b)

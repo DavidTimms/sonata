@@ -3,6 +3,7 @@ prelude: {
 	var _Immutable = require("immutable"),
 		Sequence = _Immutable.Sequence,
 		Vector = _Immutable.Vector,
+		IndexedSequence = Sequence(1).concat(1).constructor,
 		Map = _Immutable.Map,
 		OrderedMap = _Immutable.OrderedMap,
 		Range = _Immutable.Range,
@@ -368,4 +369,12 @@ withBlock: {
 
 selfNameAssignment: {
 	var $selfName = this;
+}
+
+patternAssign: {
+	var $tempVar = $input;
+	if ($condition) {
+		$each_assignments;
+	}
+	else throw new Error("failed to match pattern");
 }

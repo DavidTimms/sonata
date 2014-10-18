@@ -1,9 +1,9 @@
 var escodegen = require("escodegen");
-var tokenize = require("./tokenizer.js");
-var parse = require("./parser.js");
-var convertAST = require("./ast-converter.js").convertProgram;
+var tokenize = require("./tokenizer");
+var parse = require("./parser");
+var convertAST = require("./ast-converter").convertProgram;
 var fs = require("fs");
-var printObj = require('./utils/print-object.js');
+var printObj = require('./utils/print-object');
 var validateAST = require("ast-validator");
 
 var inputFile = process.argv[2];

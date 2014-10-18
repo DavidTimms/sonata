@@ -34,6 +34,8 @@ fn main():
 
 	ensure(max(1, ...[3, 7, 6], ...[3, ...[9, 11]], 4) == 11)
 
+	ensure((1, 2, 3, 4) == 4)
+
 	print("All tests passed")
 
 fn doScoping(x):
