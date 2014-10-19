@@ -1,6 +1,6 @@
 a = b = 1
 
-match([a, b], ["foo", "bar"])
-
-print(a)
-print(b)
+if match([a, 42], ["foo", 42]):
+	print(a)
+else:
+	print("match failed")

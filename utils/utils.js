@@ -79,6 +79,17 @@ function makeIdentifier(name, options) {
 	};
 }
 
+function isCallTo(identifier, node) {
+	// if only one argument is given, return curried version
+	if (arguments.length < 2) {
+		return function (node) {
+			return isCallTo(identifier, node);
+		}
+	}
+
+	return node instanceof Array && node[0].name === identifier;
+}
+
 module.exports = {
 	bareObject: bareObject,
 	combineObjects: combineObjects,
@@ -88,4 +99,5 @@ module.exports = {
 	printObject: printObject,
 	generateVarName: generateVarName,
 	wrapStringTokens: wrapStringTokens,
+	isCallTo: isCallTo,
 };

@@ -1,9 +1,6 @@
 (function () {
     'use strict';
     var $sonata_Immutable = require('immutable'), Sequence = $sonata_Immutable.Sequence, Vector = $sonata_Immutable.Vector, IndexedSequence = Sequence(1).concat(1).constructor, Map = $sonata_Immutable.Map, OrderedMap = $sonata_Immutable.OrderedMap, Range = $sonata_Immutable.Range, Repeat = $sonata_Immutable.Repeat, Record = $sonata_Immutable.Record, Set = $sonata_Immutable.Set, eq = $sonata_Immutable.is;
-    Sequence.prototype.$sonata_map_ = function (mapper, thisArg) {
-        return this.map(mapper, thisArg);
-    };
     var sqrt = Math.sqrt, floor = Math.floor, ceil = Math.ceil, round = Math.round, max = Math.max, min = Math.min, random = Math.random;
     function tryCatch(tryBody, catchBody) {
         try {
@@ -11,9 +8,6 @@
         } catch (e) {
             return catchBody(e);
         }
-    }
-    function obj() {
-        return Object;
     }
     function mix(parent, child) {
         var key;
@@ -164,10 +158,11 @@
             main.apply(null, process.argv.slice(2));
         }
     }
-    var utils, wrapStringTokens, printObject, patternMatchers;
+    var utils, wrapStringTokens, printObject, isCallTo, matchers, Matcher;
     utils = require('../utils/utils');
     wrapStringTokens = utils.wrapStringTokens;
     printObject = utils.printObject;
+    isCallTo = utils.isCallTo;
     module.exports = matchPattern;
     function main(shouldTest) {
         if (eq(shouldTest, 'TEST')) {
@@ -183,45 +178,59 @@
         return printObject(matchPattern(parse(tokenize(pattern))[0], wrapStringTokens(expression)));
     }
     function matchPattern(pattern, expression) {
-        var callee;
-        if ($sonata_ofType(pattern, Array)) {
-            callee = pattern[0];
-            if (callee.isIdentifier) {
-                print(callee.name);
-                if (patternMatchers.has(callee.name))
-                    return patternMatchers.get(callee.name)(pattern, expression);
-                else
-                    return structMatcher(pattern, expression);
-            } else
-                return fail;
-        } else if (pattern.isIdentifier)
-            return {
-                'conditions': Array(),
-                'assignments': Array(exp('=', pattern, expression))
-            };
-        else
-            return false;
+        return matchers.find(function (matcher) {
+            return matcher.filterPredicate(pattern);
+        }).matcherFunc(pattern, expression);
     }
-    patternMatchers = Map({
-        'Vector': function (pattern, expression) {
-            var initialState;
-            initialState = {
-                'conditions': Array(exp('::', expression, 'IndexedSequence'), exp('===', exp('.', expression, 'length'), pattern.length - 1)),
-                'assignments': Array()
-            };
-            return pattern.slice(1).reduce(function (state, subPattern, i) {
-                var subMatch;
-                subMatch = matchPattern(subPattern, exp(exp('.', expression, 'get'), i));
-                return {
-                    'conditions': state.conditions.concat(subMatch.conditions),
-                    'assignments': state.assignments.concat(subMatch.assignments)
-                };
-            }, initialState);
+    Matcher = function () {
+        function Matcher(filterPredicate, matcherFunc) {
+            if (!(this instanceof Matcher))
+                return new Matcher(filterPredicate, matcherFunc);
+            this.filterPredicate = filterPredicate;
+            this.matcherFunc = matcherFunc;
         }
-    });
-    function structMatcher(pattern) {
-        return fail;
+        Object.defineProperties(Matcher, {});
+        Matcher.prototype = Object.create(Struct.prototype, { constructor: { value: Matcher } });
+        return Matcher;
+    }();
+    matchers = Vector();
+    function defineMatcher(filterPredicate, matcherFunc) {
+        return matchers = matchers.push(Matcher(filterPredicate, matcherFunc));
     }
+    defineMatcher(function (pattern) {
+        return eq(pattern.type, 'Identifier');
+    }, function (pattern, expression) {
+        return {
+            'conditions': Array(),
+            'assignments': Array(exp('=', pattern, expression))
+        };
+    });
+    defineMatcher(function (pattern) {
+        return eq(pattern.type, 'Literal');
+    }, function (pattern, expression) {
+        return {
+            'conditions': Array(exp('===', expression, pattern)),
+            'assignments': Array()
+        };
+    });
+    defineMatcher(isCallTo('Vector'), function (pattern, expression) {
+        var initialState;
+        initialState = {
+            'conditions': Array(exp('::', expression, 'IndexedSequence'), exp('===', exp('.', expression, 'length'), pattern.length - 1)),
+            'assignments': Array()
+        };
+        return pattern.slice(1).reduce(function (state, subPattern, i) {
+            var subMatch;
+            subMatch = matchPattern(subPattern, exp(exp('.', expression, 'get'), i));
+            return {
+                'conditions': state.conditions.concat(subMatch.conditions),
+                'assignments': state.assignments.concat(subMatch.assignments)
+            };
+        }, initialState);
+    });
+    defineMatcher(always, function (pattern, expression) {
+        return fail;
+    });
     function exp(subExps) {
         var $sonata_i, $sonata_restArray;
         $sonata_i = undefined, $sonata_restArray = [];
@@ -230,6 +239,9 @@
         }
         subExps = Vector.from($sonata_restArray);
         return wrapStringTokens(subExps.toArray());
+    }
+    function always() {
+        return true;
     }
     $sonata_startMain();
 }());

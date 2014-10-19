@@ -479,6 +479,7 @@ var prefixOperators = bareObject({
 	"...": unaryOp(5),
 	"-": unaryOp(60),
 	"not": unaryOp(23),
+	"throw": unaryOp(14),
 	"@": unaryOp(65),
 	"(": parseGrouped,
 	"[": function (token) {

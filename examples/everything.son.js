@@ -1,9 +1,6 @@
 (function () {
     'use strict';
     var $sonata_Immutable = require('immutable'), Sequence = $sonata_Immutable.Sequence, Vector = $sonata_Immutable.Vector, IndexedSequence = Sequence(1).concat(1).constructor, Map = $sonata_Immutable.Map, OrderedMap = $sonata_Immutable.OrderedMap, Range = $sonata_Immutable.Range, Repeat = $sonata_Immutable.Repeat, Record = $sonata_Immutable.Record, Set = $sonata_Immutable.Set, eq = $sonata_Immutable.is;
-    Sequence.prototype.$sonata_map_ = function (mapper, thisArg) {
-        return this.map(mapper, thisArg);
-    };
     var sqrt = Math.sqrt, floor = Math.floor, ceil = Math.ceil, round = Math.round, max = Math.max, min = Math.min, random = Math.random;
     function tryCatch(tryBody, catchBody) {
         try {
@@ -11,9 +8,6 @@
         } catch (e) {
             return catchBody(e);
         }
-    }
-    function obj() {
-        return Object;
     }
     function mix(parent, child) {
         var key;
@@ -204,6 +198,13 @@
         ensure(eq(mutatingDouble(5), 10));
         ensure(eq(max.apply(null, [1].concat(Vector(3, 7, 6).toArray(), Vector.apply(null, [3].concat(Vector(9, 11).toArray())).toArray(), [4])), 11));
         ensure(eq((1, 2, 3, 4), 4));
+        ensure(tryCatch(function () {
+            return function () {
+                throw 'error';
+            }();
+        }, function (e) {
+            return e;
+        }) === 'error');
         return print('All tests passed');
     }
     function doScoping(x) {

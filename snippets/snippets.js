@@ -12,10 +12,6 @@ prelude: {
 		Set = _Immutable.Set,
 		eq = _Immutable.is;
 
-	Sequence.prototype._map_ = function (mapper, thisArg) {
-		return this.map(mapper, thisArg);
-	};
-
 	var sqrt = Math.sqrt,
 		floor = Math.floor,
 		ceil = Math.ceil,
@@ -31,10 +27,6 @@ prelude: {
 		catch (e) {
 			return catchBody(e);
 		}
-	}
-
-	function obj() {
-		return Object;
 	}
 
 	function mix(parent, child) {
@@ -320,7 +312,17 @@ ifExpression: {
 functionWrapper: {
 	(function ($each_parameters) {
 		$each_statements;
-	}($each_arguments));
+	})($each_arguments);
+}
+
+throwExpression: {
+	(function () {
+		throw $error;
+	})();
+}
+
+throwStatement: {
+	throw $error;
 }
 
 typeExpression: {
@@ -377,4 +379,14 @@ patternAssign: {
 		$each_assignments;
 	}
 	else throw new Error("failed to match pattern");
+}
+
+patternAssignExpression: {
+	(function ($tempVar) {
+		if ($condition) {
+			$each_assignments;
+			return $tempVar;
+		}
+		else throw new Error("failed to match pattern");
+	})($input);
 }

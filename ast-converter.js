@@ -16,6 +16,7 @@ var last = utils.last;
 var printObject = utils.printObject;
 var wrapStringTokens = utils.wrapStringTokens;
 var generateVarName = utils.generateVarName;
+var isCallTo = utils.isCallTo;
 
 // This throws an error if it is used before it is redefined later
 var buildSnippet = function () {
@@ -137,31 +138,46 @@ var statementConverters = bareObject({
 		return converters.fn(parts, context);
 	},
 	"match": function (parts) {
-		var tempVar = makeIdentifier(generateVarName(), {escape: false});
-		var matchExpressions = matchPattern(parts[0], tempVar);
-		var condition = matchExpressions.conditions.length > 0 ?
-			matchExpressions.conditions
-				.map(convertExp)
-				.reduce(function (left, right) {
-					return {
-						type: "LogicalExpression",
-						operator: "&&",
-						left: left,
-						right: right,
-					};
-				}) :
-			makeLiteral(true);
-
-		return buildSnippet("patternAssign", {
-			input: convertExp(parts[1]),
-			tempVar: tempVar,
-			condition: condition,
-			assignments: matchExpressions.assignments
-				.map(convertExp)
-				.map(makeExpStatement)
+		return buildSnippet("patternAssign", 
+			patternMatchSnippetData(parts[0], parts[1]));
+	},
+	"throw": function (parts) {
+		return buildSnippet("throwStatement", {
+			error: parts[0]
 		});
 	},
 });
+
+function patternMatchSnippetData(pattern, expression) {
+	var tempVar = makeIdentifier(generateVarName(), {escape: false});
+	var matchExpressions = matchPattern(pattern, tempVar);
+
+	var condition = matchExpressions.conditions.length > 0 ?
+		matchExpressions
+			.conditions
+			.map(convertExp)
+			.reduce(function (left, right) {
+				return {
+					type: "LogicalExpression",
+					operator: "&&",
+					left: left,
+					right: right,
+				};
+			}) :
+		makeLiteral(true);
+
+	var assignments = matchExpressions
+		.assignments
+		.map(convertExp)
+		.map(makeExpStatement);
+
+	return {
+		input: convertExp(expression),
+		tempVar: tempVar,
+		condition: condition,
+		assignments: assignments
+	};
+}
 
 function typeSnippetData(parts) {
 	var params = convertParameters(parts[1]);
@@ -536,6 +552,15 @@ var converters = bareObject({
 	"<-": function () {
 		throw new SyntaxError(
 			"The '<-' operator is only valid in a 'with' block");
+	},
+	"match": function (parts) {
+		return snippetExp("patternAssignExpression", 
+			patternMatchSnippetData(parts[0], parts[1]));
+	},
+	"throw": function (parts) {
+		return snippetExp("throwExpression", {
+			error: parts[0]
+		});
 	}
 });
 
@@ -744,18 +769,6 @@ function walkNode(node, callback) {
 		callback(node);
 		node.forEach(function (child) { walkNode(child, callback); });
 	}
-}
-
-function isCallTo(identifier, node) {
-
-	// if only one argument is given, return curried version
-	if (arguments.length < 2) {
-		return function (node) {
-			return isCallTo(identifier, node);
-		}
-	}
-
-	return node instanceof Array && node[0].name === identifier;
 }
 
 // create an object containing every identifier assigned to in the function

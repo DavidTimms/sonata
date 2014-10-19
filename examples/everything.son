@@ -36,6 +36,8 @@ fn main():
 
 	ensure((1, 2, 3, 4) == 4)
 
+	ensure(tryCatch(() -> throw "error", e -> e) === "error")
+
 	print("All tests passed")
 
 fn doScoping(x):

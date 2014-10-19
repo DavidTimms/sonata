@@ -23,6 +23,8 @@ TODO
 
  - Pattern matching:
  	- write matchers for:
+ 		X literals
+ 		X vectors
  		- splats
  		- objects
  		- structs

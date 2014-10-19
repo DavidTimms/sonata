@@ -1,6 +1,7 @@
 utils = require("../utils/utils")
 wrapStringTokens = utils.wrapStringTokens
 printObject = utils.printObject
+isCallTo = utils.isCallTo
 
 set! module.exports = matchPattern
 
@@ -16,44 +17,61 @@ fn test(pattern, expression):
 		=> matchPattern(wrapStringTokens(expression)))
 
 fn matchPattern(pattern, expression):
+	matchers
+		.find(matcher -> matcher.filterPredicate(pattern))
+		.matcherFunc(pattern, expression)
 
-	if pattern :: Array:
-		callee = get(pattern, 0)
-		if callee.isIdentifier:
-			if patternMatchers.has(callee.name):
-				patternMatchers[callee.name](pattern, expression)
-			else
-				structMatcher(pattern, expression)
-		else:
-			fail
-	else if pattern.isIdentifier:
-		{
-			conditions: Array()
-			assignments: Array(exp("=", pattern, expression))
-		}
+type Matcher(filterPredicate, matcherFunc)
 
-patternMatchers = Map {
-	"Vector": (pattern, expression) ->
-		initialState = {
-			conditions: Array(
-				exp("::", expression, "IndexedSequence")
-				exp("===", exp(".", expression, "length"), pattern.length - 1)
-			)
-			assignments: Array()
-		}
-		pattern.slice(1).reduce(
-			(state, subPattern, i) ->
-				subMatch = matchPattern(subPattern, 
-					exp(exp(".", expression, "get"), i))
-				{
-					conditions: state.conditions ++ subMatch.conditions
-					assignments: state.assignments ++ subMatch.assignments
-				}
-			initialState
+matchers = []
+	
+fn defineMatcher(filterPredicate, matcherFunc):
+		set! matchers = matchers.push(Matcher(filterPredicate, matcherFunc))
+
+
+# identifier matcher
+defineMatcher(pattern -> pattern.type == "Identifier", (pattern, expression) ->
+	{
+		conditions: Array()
+		assignments: Array(exp("=", pattern, expression))
+	}
+)
+
+# literal matcher
+defineMatcher(pattern -> pattern.type == "Literal", (pattern, expression) ->
+	{
+		conditions: Array(exp("===", expression, pattern))
+		assignments: Array()
+	}
+)
+
+# vector matcher
+defineMatcher(isCallTo("Vector"), (pattern, expression) ->
+	initialState = {
+		conditions: Array(
+			exp("::", expression, "IndexedSequence")
+			exp("===", exp(".", expression, "length"), pattern.length - 1)
 		)
+		assignments: Array()
+	}
+	pattern.slice(1).reduce(
+		(state, subPattern, i) ->
+			subMatch = matchPattern(subPattern, 
+				exp(exp(".", expression, "get"), i))
+			{
+				conditions: state.conditions ++ subMatch.conditions
+				assignments: state.assignments ++ subMatch.assignments
+			}
+		initialState
+	)
+)
 
-fn structMatcher(pattern):
+# struct matcher
+defineMatcher(always, (pattern, expression) ->
 	fail
+)
 
 fn exp(...subExps):
 	wrapStringTokens(subExps.toArray())
+
+fn always(): true

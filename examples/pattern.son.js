@@ -1,9 +1,6 @@
 (function () {
     'use strict';
     var $sonata_Immutable = require('immutable'), Sequence = $sonata_Immutable.Sequence, Vector = $sonata_Immutable.Vector, IndexedSequence = Sequence(1).concat(1).constructor, Map = $sonata_Immutable.Map, OrderedMap = $sonata_Immutable.OrderedMap, Range = $sonata_Immutable.Range, Repeat = $sonata_Immutable.Repeat, Record = $sonata_Immutable.Record, Set = $sonata_Immutable.Set, eq = $sonata_Immutable.is;
-    Sequence.prototype.$sonata_map_ = function (mapper, thisArg) {
-        return this.map(mapper, thisArg);
-    };
     var sqrt = Math.sqrt, floor = Math.floor, ceil = Math.ceil, round = Math.round, max = Math.max, min = Math.min, random = Math.random;
     function tryCatch(tryBody, catchBody) {
         try {
@@ -11,9 +8,6 @@
         } catch (e) {
             return catchBody(e);
         }
-    }
-    function obj() {
-        return Object;
     }
     function mix(parent, child) {
         var key;
@@ -164,15 +158,14 @@
             main.apply(null, process.argv.slice(2));
         }
     }
-    var a, b, $sonata_var0;
+    var a, b;
     a = b = 1;
-    $sonata_var0 = Vector('foo', 'bar');
-    if ($sonata_ofType($sonata_var0, IndexedSequence) && $sonata_var0.length === 2) {
-        a = $sonata_var0.get(0);
-        b = $sonata_var0.get(1);
-    } else
-        throw new Error('failed to match pattern');
-    print(a);
-    print(b);
+    (function ($sonata_var0) {
+        if ($sonata_ofType($sonata_var0, IndexedSequence) && $sonata_var0.length === 2 && $sonata_var0.get(1) === 42) {
+            a = $sonata_var0.get(0);
+            return $sonata_var0;
+        } else
+            throw new Error('failed to match pattern');
+    }(Vector('foo', 42)) ? print(a) : print('match failed'));
     $sonata_startMain();
 }());
