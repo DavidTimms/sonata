@@ -2,6 +2,7 @@ utils = require("../utils/utils")
 wrapStringTokens = utils.wrapStringTokens
 printObject = utils.printObject
 isCallTo = utils.isCallTo
+isOperator = utils.isOperator
 
 set! module.exports = matchPattern
 
@@ -47,23 +48,46 @@ defineMatcher(pattern -> pattern.type == "Literal", (pattern, expression) ->
 
 # vector matcher
 defineMatcher(isCallTo("Vector"), (pattern, expression) ->
+	subPatterns = pattern.slice(1)
+
 	initialState = {
 		conditions: Array(
 			exp("::", expression, "IndexedSequence")
-			exp("===", exp(".", expression, "length"), pattern.length - 1)
+			if subPatterns.some(isCallTo("...")):
+				exp(">=", exp(".", expression, "length"), subPatterns.length - 1)
+			else:
+				exp("===", exp(".", expression, "length"), subPatterns.length)
 		)
 		assignments: Array()
 	}
-	pattern.slice(1).reduce(
+
+	subPatterns.reduce(
 		(state, subPattern, i) ->
-			subMatch = matchPattern(subPattern, 
-				exp(exp(".", expression, "get"), i))
+			subMatch = 
+				if isCallTo("...", subPattern):
+					sliceEndIndex = i + 1 - subPatterns.length
+					sliceExp = 
+						if sliceEndIndex < 0:
+							exp(exp(".", expression, "slice"), i, sliceEndIndex)
+						else:
+							exp(exp(".", expression, "slice"), i)
+
+					matchPattern(get(subPattern, 1), sliceExp)
+				else:
+					matchPattern(subPattern, 
+						exp(exp(".", expression, "get"), i))
 			{
 				conditions: state.conditions ++ subMatch.conditions
 				assignments: state.assignments ++ subMatch.assignments
 			}
 		initialState
 	)
+)
+
+# struct matcher
+defineMatcher(
+	pattern -> pattern :: Array & isOperator(get(pattern, 0))
+	(pattern, expression) -> throw SyntaxError("Invalid pattern")
 )
 
 # struct matcher

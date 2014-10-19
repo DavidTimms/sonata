@@ -158,11 +158,12 @@
             main.apply(null, process.argv.slice(2));
         }
     }
-    var utils, wrapStringTokens, printObject, isCallTo, matchers, Matcher;
+    var utils, wrapStringTokens, printObject, isCallTo, isOperator, matchers, Matcher;
     utils = require('../utils/utils');
     wrapStringTokens = utils.wrapStringTokens;
     printObject = utils.printObject;
     isCallTo = utils.isCallTo;
+    isOperator = utils.isOperator;
     module.exports = matchPattern;
     function main(shouldTest) {
         if (eq(shouldTest, 'TEST')) {
@@ -214,19 +215,27 @@
         };
     });
     defineMatcher(isCallTo('Vector'), function (pattern, expression) {
-        var initialState;
+        var subPatterns, initialState;
+        subPatterns = pattern.slice(1);
         initialState = {
-            'conditions': Array(exp('::', expression, 'IndexedSequence'), exp('===', exp('.', expression, 'length'), pattern.length - 1)),
+            'conditions': Array(exp('::', expression, 'IndexedSequence'), subPatterns.some(isCallTo('...')) ? exp('>=', exp('.', expression, 'length'), subPatterns.length - 1) : exp('===', exp('.', expression, 'length'), subPatterns.length)),
             'assignments': Array()
         };
-        return pattern.slice(1).reduce(function (state, subPattern, i) {
-            var subMatch;
-            subMatch = matchPattern(subPattern, exp(exp('.', expression, 'get'), i));
+        return subPatterns.reduce(function (state, subPattern, i) {
+            var subMatch, sliceEndIndex, sliceExp;
+            subMatch = isCallTo('...', subPattern) ? (sliceEndIndex = +i + +1 - subPatterns.length, sliceExp = sliceEndIndex < 0 ? exp(exp('.', expression, 'slice'), i, sliceEndIndex) : exp(exp('.', expression, 'slice'), i), matchPattern(subPattern[1], sliceExp)) : matchPattern(subPattern, exp(exp('.', expression, 'get'), i));
             return {
                 'conditions': state.conditions.concat(subMatch.conditions),
                 'assignments': state.assignments.concat(subMatch.assignments)
             };
         }, initialState);
+    });
+    defineMatcher(function (pattern) {
+        return $sonata_ofType(pattern, Array) && isOperator(pattern[0]);
+    }, function (pattern, expression) {
+        return function () {
+            throw SyntaxError('Invalid pattern');
+        }();
     });
     defineMatcher(always, function (pattern, expression) {
         return fail;

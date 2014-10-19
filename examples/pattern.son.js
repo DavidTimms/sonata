@@ -158,14 +158,15 @@
             main.apply(null, process.argv.slice(2));
         }
     }
-    var a, b;
-    a = b = 1;
-    (function ($sonata_var0) {
-        if ($sonata_ofType($sonata_var0, IndexedSequence) && $sonata_var0.length === 2 && $sonata_var0.get(1) === 42) {
-            a = $sonata_var0.get(0);
-            return $sonata_var0;
-        } else
-            throw new Error('failed to match pattern');
-    }(Vector('foo', 42)) ? print(a) : print('match failed'));
+    var a, b, rest, $sonata_var0;
+    a = b = rest = 1;
+    $sonata_var0 = Vector('foo', 42, 34, 7, 92);
+    if ($sonata_ofType($sonata_var0, IndexedSequence) && $sonata_var0.length >= 2 && $sonata_var0.get(1) === 42) {
+        a = $sonata_var0.get(0);
+        rest = $sonata_var0.slice(2);
+    } else
+        throw new Error('failed to match pattern');
+    print(a);
+    print(rest);
     $sonata_startMain();
 }());

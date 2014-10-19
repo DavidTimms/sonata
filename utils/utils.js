@@ -90,6 +90,18 @@ function isCallTo(identifier, node) {
 	return node instanceof Array && node[0].name === identifier;
 }
 
+var operators = (
+		"... - not throw @ fn if type do with set! . ^ * / % +" +
+		" - ++ < > <= >= :: === == != and & or | => -> = <-"
+	).split(" ");
+
+function isOperator(identifier) {
+	if (typeof(identifier) === "object")
+		identifier = identifier.name;
+
+	return identifier[0] === ":" || operators.indexOf(identifier) >= 0;
+}
+
 module.exports = {
 	bareObject: bareObject,
 	combineObjects: combineObjects,
@@ -100,4 +112,5 @@ module.exports = {
 	generateVarName: generateVarName,
 	wrapStringTokens: wrapStringTokens,
 	isCallTo: isCallTo,
+	isOperator: isOperator,
 };

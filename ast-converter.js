@@ -143,7 +143,7 @@ var statementConverters = bareObject({
 	},
 	"throw": function (parts) {
 		return buildSnippet("throwStatement", {
-			error: parts[0]
+			error: convertExp(parts[0])
 		});
 	},
 });
@@ -559,7 +559,7 @@ var converters = bareObject({
 	},
 	"throw": function (parts) {
 		return snippetExp("throwExpression", {
-			error: parts[0]
+			error: convertExp(parts[0])
 		});
 	}
 });

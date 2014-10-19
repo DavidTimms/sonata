@@ -1,6 +1,6 @@
-a = b = 1
+a = b = rest = 1
 
-if match([a, 42], ["foo", 42]):
-	print(a)
-else:
-	print("match failed")
+match([a, 42, ...rest], ["foo", 42, 34, 7, 92])
+
+print(a)
+print(rest)
